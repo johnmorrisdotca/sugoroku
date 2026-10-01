@@ -1,0 +1,143 @@
+/**
+ * THE WORDS A SUGOROKU BOARD SAYS, in English and Japanese: the buttons, the
+ * line that says whose turn it is and what to do, and the result of a game.
+ * Plain data, so a page can read them, replace a few or add a language of its
+ * own beside these two.
+ *
+ * `{name}` in a line is a value filled in. The Japanese is a first draft that no
+ * native reader has yet checked.
+ */
+export type SugorokuLanguage = "en" | "ja";
+
+export const SUGOROKU_STRINGS: Record<SugorokuLanguage, Record<string, string>> = {
+  en: {
+    variant_backgammon: "Backgammon",
+    "variant_backgammon-race": "Backgammon Race",
+    "variant_anti-backgammon": "Anti-Backgammon",
+    variant_nackgammon: "Nackgammon",
+    "variant_long-gammon": "Long Gammon",
+    variant_hypergammon: "Hypergammon",
+    variant_tabula: "Tabula",
+    white: "White",
+    black: "Black",
+    computer: "Computer",
+    you: "You",
+    board: "{variant} board",
+    roll: "Roll dice",
+    rollOpening: "Roll to start",
+    done: "Done",
+    undo: "Undo",
+    double: "Double",
+    take: "Take",
+    drop: "Drop",
+    beaver: "Beaver",
+    nextGame: "Next game",
+    newMatch: "New match",
+    waitingDice: "Waiting for the dice",
+    opening: "Roll the dice: the higher die goes first.",
+    openingTie: "A tie, {die} each. Roll again.",
+    started: "{side} goes first with {dice}.",
+    toRoll: "{side} to roll.",
+    toRollYou: "Your roll.",
+    toPlay: "{side} to play {dice}.",
+    toPlayYou: "Your move: {dice}.",
+    played: "Turn played. Press Done.",
+    noMove: "{side} cannot move.",
+    noMoveYou: "No legal move. Press Done.",
+    thinking: "{side} is thinking…",
+    doubled: "{side} doubles to {value}.",
+    answerDouble: "{side} doubles to {value}. Take it, or drop and lose {points}?",
+    beavered: "{side} beavers: the cube goes to {value}.",
+    answerBeaver: "{side} beavers to {value}. Take it, or drop and lose {points}?",
+    tookDouble: "{side} takes: the cube is {value}.",
+    singleGame: "a single game",
+    gammon: "a gammon",
+    backgammon: "a backgammon",
+    wonBy: "{side} wins {kind}: {points}.",
+    wonDrop: "{side} wins: the double was dropped. {points}.",
+    wonConcede: "{side} wins: the other side gave up. {points}.",
+    drawn: "The game is drawn.",
+    point: "{n} point",
+    points: "{n} points",
+    matchWon: "{side} wins the match, {a} to {b}.",
+    matchDrawn: "The match is drawn.",
+    score: "{white} {a}, {black} {b}",
+    matchTo: "match to {points}",
+    money: "money play",
+    crawford: "Crawford game: no cube",
+    cubeMiddle: "cube in the middle",
+    cubeHeld: "cube {value}, {side}'s",
+    dice: "dice {dice}",
+  },
+  ja: {
+    variant_backgammon: "バックギャモン",
+    "variant_backgammon-race": "バックギャモン・レース",
+    "variant_anti-backgammon": "アンチ・バックギャモン",
+    variant_nackgammon: "ナックギャモン",
+    "variant_long-gammon": "ロングギャモン",
+    variant_hypergammon: "ハイパーギャモン",
+    variant_tabula: "タブラ",
+    white: "白",
+    black: "黒",
+    computer: "コンピューター",
+    you: "あなた",
+    board: "{variant}の盤",
+    roll: "サイコロを振る",
+    rollOpening: "振って先攻を決める",
+    done: "終わり",
+    undo: "戻す",
+    double: "ダブル",
+    take: "テイク",
+    drop: "ドロップ",
+    beaver: "ビーバー",
+    nextGame: "次のゲーム",
+    newMatch: "新しいマッチ",
+    waitingDice: "サイコロを待っています",
+    opening: "サイコロを振ります。大きい目の方が先攻です。",
+    openingTie: "同じ目（{die}）です。もう一度振ります。",
+    started: "{side}が{dice}で先攻です。",
+    toRoll: "{side}の番です。サイコロを振ります。",
+    toRollYou: "あなたの番です。サイコロを振ってください。",
+    toPlay: "{side}の番：{dice}",
+    toPlayYou: "あなたの番：{dice}",
+    played: "動かし終わりました。「終わり」を押してください。",
+    noMove: "{side}は動かせません。",
+    noMoveYou: "動かせません。「終わり」を押してください。",
+    thinking: "{side}が考えています…",
+    doubled: "{side}がダブルして、キューブは{value}になりました。",
+    answerDouble: "{side}が{value}にダブルしました。テイクしますか、それともドロップして{points}を失いますか。",
+    beavered: "{side}がビーバーして、キューブは{value}になりました。",
+    answerBeaver: "{side}が{value}にビーバーしました。テイクしますか、それともドロップして{points}を失いますか。",
+    tookDouble: "{side}がテイクしました。キューブは{value}です。",
+    singleGame: "シングルゲーム",
+    gammon: "ギャモン",
+    backgammon: "バックギャモン",
+    wonBy: "{side}の{kind}勝ち：{points}",
+    wonDrop: "{side}の勝ち。ダブルはドロップされました。{points}",
+    wonConcede: "{side}の勝ち。相手が降りました。{points}",
+    drawn: "引き分けです。",
+    point: "{n}ポイント",
+    points: "{n}ポイント",
+    matchWon: "{side}がマッチに勝ちました（{a}対{b}）。",
+    matchDrawn: "マッチは引き分けです。",
+    score: "{white} {a}、{black} {b}",
+    matchTo: "{points}ポイントマッチ",
+    money: "マネーゲーム",
+    crawford: "クロフォードゲーム：キューブなし",
+    cubeMiddle: "キューブは中央",
+    cubeHeld: "キューブ{value}（{side}）",
+    dice: "サイコロ {dice}",
+  },
+};
+
+/** A line in a language with its `{name}`s filled in. A name left unfilled stays as written, so a missing value is visible. */
+export function sugorokuSay(language: SugorokuLanguage, key: string, values: Record<string, string | number> = {}): string {
+  const line = SUGOROKU_STRINGS[language][key] ?? SUGOROKU_STRINGS.en[key] ?? key;
+  return line.replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole));
+}
+
+/** The language an element or its page is in: its own `lang`, or the nearest above, and English unless that begins with `ja`. */
+export function sugorokuLanguageOf(element: Element | null): SugorokuLanguage {
+  const tag = element?.closest("[lang]")?.getAttribute("lang") ?? element?.ownerDocument?.documentElement.getAttribute("lang") ?? "en";
+  return tag.toLowerCase().startsWith("ja") ? "ja" : "en";
+}

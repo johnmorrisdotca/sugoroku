@@ -1,0 +1,14 @@
+The four sounds here are from "Casino Audio" (version 1.1) by Kenney Vleugels
+(Kenney, https://kenney.nl/assets/casino-audio), released under Creative Commons
+Zero (CC0 1.0, http://creativecommons.org/publicdomain/zero/1.0/): public domain,
+free for any use. The licence is stated on the pack's page and in the pack's own
+License.txt, which says "Credit (Kenney or www.kenney.nl) would be nice but is not
+mandatory", and credit is given here.
+
+They are the pack's files re-encoded as short mono 22.05 kHz WAV, trimmed and
+levelled, so that every browser plays them:
+
+  clack.wav   from chips-collide-1.ogg   a checker set down
+  hit.wav     from chips-collide-3.ogg   a checker hit
+  dice.wav    from dice-throw-1.ogg      the dice thrown
+  cube.wav    from chip-lay-1.ogg        the doubling cube turned

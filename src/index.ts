@@ -12,4 +12,7 @@ export type { Random } from "./random.ts";
 export * from "./notation.ts";
 export * from "./positionId.ts";
 export * from "./record.ts";
+export * from "./computer.ts";
+export { EVALUATION_WEIGHTS, evaluate, evaluateFor, keithCount, winChance } from "./evaluate.ts";
+export type { EvaluationWeights } from "./evaluate.ts";
 export { VERSION } from "./version.ts";
