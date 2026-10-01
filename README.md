@@ -13,7 +13,7 @@ The full rules, the doubling cube and match play with the Crawford rule, Nackgam
 <p align="center"><a href="https://johnmorrisdotca.github.io/sugoroku/"><strong>Play a game →</strong></a> · <a href="https://johnmorrisdotca.github.io/sugoroku/api.html">API reference</a> · <a href="docs/VARIANTS.md">The variants and their sources</a></p>
 
 <p align="center">
-  <img src="docs/desktop.jpg" alt="A backgammon board on the demo page, in the middle of a match to 3 with the cube turned to 2, the dice shown on the right half, the choices of variant and match length above it and the buttons below" width="620">
+  <img src="docs/desktop.jpg" alt="A backgammon board on the demo page, in the middle of a match to 3 with the cube turned to 2, the dice shown on the right half, under the demo's header with its language chooser, cloth patches and Help switch, the choices of variant and match length above it and the buttons below" width="620">
   <img src="docs/phone.jpg" alt="The same board standing up on a phone in dark mode and in Japanese, with the Roll, Double and Undo buttons under it" width="200">
 </p>
 
@@ -57,6 +57,119 @@ And in a page, a game to play against the computer, by touch and mouse, with not
 - **Anyone making a board game on the backgammon board**, who wants a variant to be a row
   of settings rather than a new engine, and a computer opponent and a drawing that
   already work for it.
+
+## Features
+
+- **Seven variants as rows of settings**, not seven engines: the classic, Backgammon Race, Anti-Backgammon, Nackgammon, Long Gammon, Hypergammon and Tabula, and the named ways of playing the two old sites printed (`PRESETS`).
+- **Every rule checked**: the dice that must be played, entry from the bar, hitting, bearing off, the doubling cube, gammons and backgammons, the Crawford rule, Jacoby and beavers in money play. Held to a brute-force search on thousands of positions of every variant.
+- **Games as text a server can replay**, move by move against the rules, with the dice held to a seed, so a server can tell dice the game was given from dice somebody made up.
+- **Standard notation** (`24/18 13/11`, `bar/22*`, `6/off`) read and written, and position IDs in the GNU Backgammon form for the standard board.
+- **A computer player in four strengths**, written for this package, none of it GPL, with a cube it takes and offers sensibly.
+- **Drawn as SVG text**, in an entry of its own: five boards, four sets of checkers, and either way up for a phone.
+- **Played in any page** by touch and mouse (tap a checker then a point, or drag), as one function call (`mountSugoroku`) or one tag (`<sugoroku-board>`), with a match, a cube, undo and a record kept for you.
+- **Optional sounds**: short CC0 clips for a checker set down, a hit, the dice and the cube.
+- **English and Japanese** in the board's words and the demo.
+- **No dependencies**, no network requests, and nothing stored outside the page it is in.
+
+## Use it in your project
+
+Sugoroku is three things, each usable without the others: **the rules** (a position, a game, a match, text records, dice and the computer, as plain functions), **the drawing** (SVG text), and **the page** (a mounted board or a tag). The table at the end of [API](#api) says which entry holds which.
+
+### 1. The API alone, on a server
+
+A server that wants to be sure what was played takes the record the board keeps and replays it:
+
+```ts
+import { replayRecord } from "@johnmorrisdotca/sugoroku";
+
+const replayed = replayRecord(textFromTheBrowser);
+if (!replayed.ok) throw new Error(`line ${replayed.line}: ${replayed.reason}`);
+replayed.match.over;      // every game's result and the match's score, worked out from the moves
+replayed.match.winner;
+```
+
+Importing the main entry on a server is safe: it touches no page.
+
+### 2. One tag, no bundler
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/@johnmorrisdotca/sugoroku@1/dist/element-define.js"></script>
+<sugoroku-board variant="nackgammon" points="5" cube="on" gammons="on" black="strong"></sugoroku-board>
+<script>
+  document.querySelector("sugoroku-board").addEventListener("sugoroku-end", (event) => console.log(event.detail.record));
+</script>
+```
+
+### 3. A bundler, and a framework
+
+`import "@johnmorrisdotca/sugoroku/element/define"` once, in code that runs in the browser, and `<sugoroku-board>` is a tag like any other. The tag draws itself in the page's own DOM, so the page's CSS reaches it. Its attributes are read again when they change (a change to the variant or the rules starts a new match), and it speaks through DOM events (`sugoroku-roll`, `sugoroku-move`, `sugoroku-turn`, `sugoroku-cube`, `sugoroku-end`) that carry a `detail`.
+
+```jsx
+// React 19
+import { useEffect, useRef } from "react";
+import "@johnmorrisdotca/sugoroku/element/define";
+
+export function Table({ onEnd }) {
+  const board = useRef(null);
+  useEffect(() => {
+    const listen = (event) => onEnd(event.detail.record);
+    board.current?.addEventListener("sugoroku-end", listen);
+    return () => board.current?.removeEventListener("sugoroku-end", listen);
+  }, [onEnd]);
+  return <sugoroku-board ref={board} variant="backgammon" points="5" cube="on" gammons="on" black="strong" />;
+}
+```
+
+```vue
+<!-- Vue 3: tell the compiler the tag is not a Vue component -->
+<script setup>
+import "@johnmorrisdotca/sugoroku/element/define";
+</script>
+<template>
+  <sugoroku-board variant="backgammon" points="5" cube="on" gammons="on" black="strong" @sugoroku-end="(event) => console.log(event.detail.record)" />
+</template>
+<!-- in vite.config: vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith("sugoroku-") } } }) -->
+```
+
+```svelte
+<!-- Svelte 5 -->
+<script>
+  import "@johnmorrisdotca/sugoroku/element/define";
+  let board;
+  $effect(() => {
+    const listen = (event) => console.log(event.detail.record);
+    board.addEventListener("sugoroku-end", listen);
+    return () => board.removeEventListener("sugoroku-end", listen);
+  });
+</script>
+<sugoroku-board bind:this={board} variant="backgammon" points="5" cube="on" gammons="on" black="strong"></sugoroku-board>
+```
+
+```ts
+// Angular: a standalone component with CUSTOM_ELEMENTS_SCHEMA
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import "@johnmorrisdotca/sugoroku/element/define";
+
+@Component({
+  selector: "app-table",
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `<sugoroku-board variant="backgammon" points="5" cube="on" gammons="on" black="strong" (sugoroku-end)="ended($event)"></sugoroku-board>`,
+})
+export class Table {
+  ended(event: Event) { console.log((event as CustomEvent).detail.record); }
+}
+```
+
+In Next.js or any server-rendering framework, import the define entry from a client component, so the tag is defined in the browser. Or skip the tag and call `mountSugoroku(element, options)` from `@johnmorrisdotca/sugoroku/play` in an effect: the handle it returns has `destroy()`.
+
+These recipes are written to the tag's documented attributes and events; they are not built from the packed tarball by this repository's tests, which play the tag in a bare page in Chromium and WebKit.
+
+### What a developer gets
+
+- **Typed results**, with a doc comment on every export. Every function is pure and returns new values; the recorder and the mounted board are the two things that keep state.
+- **No dependencies.** ES modules, an entry per concern, and `sideEffects` set so that only the define entry has an effect.
+- **Where it runs.** See [Browser support](#browser-support).
 
 ## The variants
 
@@ -332,6 +445,87 @@ there are no dependencies. The generated [API reference](https://johnmorrisdotca
 | `@johnmorrisdotca/sugoroku/element` | the `SugorokuBoard` class of the tag |
 | `@johnmorrisdotca/sugoroku/element/define` | defines `<sugoroku-board>` on the page |
 
+## Theming
+
+Nothing here is branded: a site chooses its own colours. The board is drawn in code, and coloured by custom properties on `.sugoroku`, so a page sets only the ones it wants different. The felt follows `--felt` where the page defines one, and the whole board follows the device's light or dark setting; `data-theme="light"` or `"dark"` on `<html>` (or on the board) forces one. Four of the properties, the points' two tones and the felt among them, are also set by a named `board` (`green`, `blue`, `red`, `black`, `wood`) and the checkers by a named `checkers` set (`classic`, `red-and-white`, `gold-and-blue`, `contrast`); any single colour is passed as `colours` and becomes the matching property.
+
+**The board** (`drawSugoroku`), custom properties on `.sugoroku`:
+
+| Property | What it colours | Light | Dark |
+| --- | --- | --- | --- |
+| `--sg-frame` | the wooden frame | `#5b3a1f` | `#2b1c0e` |
+| `--sg-felt` | the felt between the points | `var(--felt, #2f5d4a)` | `var(--felt, #1f4135)` |
+| `--sg-point-a` | every other point | `#e7d8b1` | `#bdad88` |
+| `--sg-point-b` | the points between them | `#8e3a2b` | `#6b2a1f` |
+| `--sg-bar` | the bar | `#4a2f19` | `#21160b` |
+| `--sg-tray` | the rails and the trays | `#24493a` | `#173026` |
+| `--sg-white` | the white checkers | `#f6f0df` | `#e9e3d0` |
+| `--sg-white-edge` | the white checkers' edge | `#b3a888` | `#9a9078` |
+| `--sg-black` | the black checkers | `#2b2724` | the same |
+| `--sg-black-edge` | the black checkers' edge | `#0d0b0a` | the same |
+| `--sg-number` | the numbers by the points | `#e8dcc0` | `#b9ae92` |
+| `--sg-selected` | the checker picked up | `#ffd23f` | the same |
+| `--sg-target` | where it may go | `#7fe3a1` | the same |
+| `--sg-die` | a die's face | `#fbf8f1` | `#e9e3d0` |
+| `--sg-pip` | a die's pips, and the count on a white stack | `#1f2320` | the same |
+| `--sg-cube` | the doubling cube's face | `#fbf8f1` | `#e9e3d0` |
+| `--sg-cube-ink` | the number on the cube | `#1f2320` | the same |
+
+**The playable board** (`mountSugoroku` and `<sugoroku-board>`) wears the board's properties, and six of its own on `.sugoroku-play`:
+
+| Property | What it colours | Light | Dark |
+| --- | --- | --- | --- |
+| `--sgp-ink` | text, and a primary button | `#1f2320` | `#ece8dc` |
+| `--sgp-muted` | the score line | `#6b6f68` | `#a09d93` |
+| `--sgp-rule` | borders | `#ddd6c6` | `#3a3d38` |
+| `--sgp-surface` | the buttons | `#fbf8f1` | `#1d201e` |
+| `--sgp-accent` | the glow on the button that wants pressing | `#b5452c` | `#ff8a6b` |
+| `--sgp-good` | the result, when the game is over | `#2f7a4f` | `#6fcf97` |
+
+```css
+.sugoroku { --sg-point-b: #3b5b8e; --sg-selected: #ffffff; }
+.sugoroku-play { --sgp-accent: #8a1c1c; }
+```
+
+The demo's own page is the worked example: its green felt and its cloth patches are the family's stylesheet, [`demo/family.css`](./demo/family.css), which is the same file byte for byte in every sibling's demo, and a test holds it to its hash. Points, bar and trays carry `data-board`, `data-bar` and `data-tray` for a page to listen on; checkers carry `data-side`.
+
+## Limits
+
+All of these are held by tests, and the ones with a name are exported.
+
+| Limit | Value | Where |
+| --- | --- | --- |
+| Variants | the keys of `VARIANT_KEYS` | the table under [The variants](#the-variants) |
+| A match | 0 (money play, game after game) or a whole number of points | `rulesProblems` says what else is refused |
+| What the cube shows | up to 64 | `CUBE_LIMIT` |
+| Checkers a side | 15, except Hypergammon's 3 | `variantSpec(key).checkers` |
+| Dice to a turn | 2, and 3 at Tabula | `variantSpec(key).dice` |
+| A game of Anti-Backgammon | a draw after 500 turns each | `variantSpec("anti-backgammon").drawAfter` |
+| Checkers drawn on a stack | 5, then a count on the fifth | `MOST_DRAWN` |
+| The computer's strengths | `random`, `greedy`, `careful`, `strong` | `STRENGTHS` |
+| The computer's look-ahead | its best 4 plays (`careful`) or 10 (`strong`), stopping after 60 ms | the `budget` option of `choosePlay` |
+| A position ID | 14 characters, for the standard board; null for Backgammon Race and Tabula | `positionId` |
+| A record | starts with `sugoroku 1` | `RECORD_VERSION` |
+
+The look-ahead is held to a time budget, not to a count of moves: a position of hundreds of plays, such as a double, stays well under a tenth of a second.
+
+## Browser support
+
+Any browser with ES2020 modules, custom elements, Pointer Events, `ResizeObserver` and CSS `color-mix`: Chrome and Edge 111, Safari 16.2, Firefox 113, all from early 2023. The element draws in the page's own DOM, with no shadow DOM. The demo is played in a real Chromium at a phone's width (with touch) and a desk's, and in WebKit, Safari's engine, at a phone's width; Firefox is not in that run. The package itself (the rules, the formats and the computer) needs no DOM: it runs in Node 22 or later (CI tests 22 and 24). Deno and Bun are not tested. The sounds need `Audio` and are off unless asked for.
+
+## Languages
+
+English and Japanese, chosen by the `lang` of the board's element or the page's, and followed when it changes. The demo has a chooser of its own and takes the browser's language on a first visit. The board's words (`SUGOROKU_STRINGS`) are in both. **Japanese: included; not yet reviewed by a native reader. Corrections welcome.** Every string of the board is listed beside its English in [docs/strings-ja.md](./docs/strings-ja.md), and there is an [issue template](https://github.com/johnmorrisdotca/sugoroku/issues/new?template=fix-a-translation.md) for fixing one. Any other language is a table of your own. The rules' notation is the standard one (`24/18 13/11`) in either.
+
+## Roadmap
+
+Not here yet, and each welcome as an [issue](https://github.com/johnmorrisdotca/sugoroku/issues):
+
+- Keyboard play. The board is played by touch and mouse; there are no key handlers yet.
+- A command line: play a game between two computers and print it as text, replay a record, read a position ID.
+
+Left out on purpose: play over a network, which needs a server (a record is plain text, so your own server can carry it), and anything played for stakes.
+
 ## Architecture
 
 The rules, the formats and the computer are plain functions over plain data with no DOM. The
@@ -399,6 +593,38 @@ This package is for the older game. The sources are
 [すごろく on the Japanese Wikipedia](https://ja.wikipedia.org/wiki/%E3%81%99%E3%81%94%E3%82%8D%E3%81%8F),
 which cites the *Nihon Shoki* and the *Shoku Nihongi*; checked 2026-10-01.
 
+## Where it comes from, and where it is used
+
+Sugoroku was made for [Itsutsu](https://itsutsu.com), a site for board games, puzzles, card games and dice games played at your own pace. *Itsutsu* (五つ) is Japanese for "five", after five in a row, the game the site began with. The variants are the ones ItsYourTurn.com and GoldToken.com offered; [docs/VARIANTS.md](./docs/VARIANTS.md) says how each name was read and from which pages. The computer player, the evaluation and the cube are written for this package, and nothing in them is taken from any other program.
+
+### Used by
+
+Nobody is listed yet. Using Sugoroku in something? Open an *Add my project* issue and we will add you.
+
+### The family
+
+Sugoroku is one of sixteen packages, each made for the same site, each MIT, each at
+[github.com/johnmorrisdotca](https://github.com/johnmorrisdotca):
+
+- [Korokoro](https://github.com/johnmorrisdotca/korokoro) (コロコロ, the sound of something small rolling): dice, with notation, exact odds and games.
+- [Kyuubu](https://github.com/johnmorrisdotca/kyuubu) (キューブ, how Japanese says "cube"): a turning cube for the browser, 2×2 to 7×7.
+- [Hitotsu](https://github.com/johnmorrisdotca/hitotsu) (一つ, "one"): a colour-card game, named for the call a player makes with one card left.
+- [Toranpu](https://github.com/johnmorrisdotca/toranpu) (トランプ, the everyday Japanese word for a deck of playing cards): card games as pure rules.
+- [Tane](https://github.com/johnmorrisdotca/tane) (種, a seed, the kind you plant): seeded random numbers and daily seeds.
+- [Narabe](https://github.com/johnmorrisdotca/narabe) (並べ, "line them up"): a rules engine for gomoku, Reversi, Go, checkers and many more.
+- [Tenka](https://github.com/johnmorrisdotca/tenka) (天下, "under heaven"): a world-conquest game for two to six.
+- [Kumimoji](https://github.com/johnmorrisdotca/kumimoji) (組み文字, "letters put together"): a crossword tile race in English and Japanese.
+- [Tsunagi](https://github.com/johnmorrisdotca/tsunagi) (繋ぎ, "joining"): a line-joining puzzle.
+- [Jarajara](https://github.com/johnmorrisdotca/jarajara) (ジャラジャラ, the rattle of mahjong tiles being shuffled): mahjong tiles and a matching solitaire.
+- [Suido](https://github.com/johnmorrisdotca/suido) (水道, "waterworks"): a pipe puzzle.
+- [Domino](https://github.com/johnmorrisdotca/domino) (ドミノ, the Japanese word for dominoes): dominoes and Mexican Train.
+- [Kotoba](https://github.com/johnmorrisdotca/kotoba) (言葉, "words"): word lists and word-game rules.
+- [Sugoroku](https://github.com/johnmorrisdotca/sugoroku) (双六, backgammon's Japanese name): backgammon and its variants.
+- [Kazu](https://github.com/johnmorrisdotca/kazu) (数, "number"): grid number puzzles, Sudoku and five more.
+- [Meikyuu](https://github.com/johnmorrisdotca/meikyuu) (迷宮, "labyrinth"): mazes to draw a line through.
+
+**This package is Sugoroku.** The demos of all sixteen share one header and footer, so each links the rest.
+
 ## Development
 
 ```sh
@@ -408,6 +634,16 @@ pnpm test:package   # pack, install and import it as somebody who installed it w
 pnpm site           # build the demo into site/, as the Pages workflow publishes it
 pnpm test:demo      # play the demo in Chromium and WebKit
 ```
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md). The commands are under [Development](#development).
+
+Please follow the [code of conduct](./CODE_OF_CONDUCT.md). A record or a position that makes the replay or the computer run for long, or markup that gets out of the drawing, is for the [security policy](./SECURITY.md), not a public issue.
+
+## Changes
+
+See [CHANGELOG.md](./CHANGELOG.md).
 
 ## Licence
 

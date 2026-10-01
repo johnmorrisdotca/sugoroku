@@ -5,7 +5,7 @@ title: "Translation: "
 labels: translation
 ---
 
-The board's own Japanese is in `src/strings.ts` (`SUGOROKU_STRINGS.ja`) and the demo page's in `demo/demo.js` (`WORDS.ja`), each beside its English.
+Every string of the board is listed beside its English in `docs/strings-ja.md`. The board's own Japanese is in `src/strings.ts` (`SUGOROKU_STRINGS.ja`) and the demo page's in `demo/demo.js` (`WORDS.ja`), each beside its English.
 
 **Which string** (its name in that table, such as `answerDouble` or `noMoveYou`):
 
