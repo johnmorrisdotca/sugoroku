@@ -1,0 +1,101 @@
+{
+  "name": "@johnmorrisdotca/sugoroku",
+  "version": "1.0.0",
+  "description": "Sugoroku, backgammon and its variants for JavaScript and TypeScript: the rules, the doubling cube and match play with the Crawford rule, Long Gammon, Nackgammon, Hypergammon, Tabula, Anti-Backgammon and race starts, games as text that a server can replay, a seeded dice sequence, standard move notation, a computer player with four strengths, and the board drawn as SVG and played by touch and mouse in any page. Zero dependencies.",
+  "keywords": [
+    "backgammon",
+    "nackgammon",
+    "long-gammon",
+    "hypergammon",
+    "tabula",
+    "tables-games",
+    "board-game",
+    "dice",
+    "doubling-cube",
+    "match-play",
+    "game-engine",
+    "computer-player",
+    "svg",
+    "seeded-random",
+    "typescript",
+    "javascript",
+    "zero-dependencies",
+    "browser",
+    "node",
+    "itsutsu"
+  ],
+  "homepage": "https://github.com/johnmorrisdotca/sugoroku#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnmorrisdotca/sugoroku.git"
+  },
+  "bugs": {
+    "url": "https://github.com/johnmorrisdotca/sugoroku/issues"
+  },
+  "author": "John Morris",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "./dist/element-define.js"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./draw": {
+      "types": "./dist/draw-entry.d.ts",
+      "import": "./dist/draw-entry.js",
+      "default": "./dist/draw-entry.js"
+    },
+    "./play": {
+      "types": "./dist/play-entry.d.ts",
+      "import": "./dist/play-entry.js",
+      "default": "./dist/play-entry.js"
+    },
+    "./element": {
+      "types": "./dist/element.d.ts",
+      "import": "./dist/element.js",
+      "default": "./dist/element.js"
+    },
+    "./element/define": {
+      "types": "./dist/element-define.d.ts",
+      "import": "./dist/element-define.js",
+      "default": "./dist/element-define.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.check.json",
+    "test": "vitest run",
+    "test:package": "pnpm build && node scripts/check-package.mjs",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "prepublishOnly": "pnpm check && pnpm build",
+    "site": "pnpm build && node scripts/site.mjs",
+    "test:demo": "pnpm site && playwright test",
+    "pictures": "pnpm site && node scripts/readme-pictures.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.63.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^5.0.0"
+  },
+  "packageManager": "pnpm@10.11.0"
+}
