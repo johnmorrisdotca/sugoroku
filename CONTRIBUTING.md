@@ -35,6 +35,10 @@ Creative Commons Zero or public domain, verified at the source and credited in
 - Option values and names are kebab case.
 - Art and sound are CC0 or public domain only, checked at the source, and credited in the README. No GPL or LGPL code.
 - Needs Node 22 or later. A change a user would notice gets a line in `CHANGELOG.md`.
+- **The list of the family in the README is made, not written.** `pnpm family:readme` writes it between its
+  markers from `scripts/family-template.mjs` (the names, the Japanese names and a line on each), and
+  `scripts/family-readme.mjs` is the same file in every package. To add a package or change a line, change the
+  template in every repository, bump `FAMILY_TEMPLATE_VERSION` and record the new hash in `src/family.test.js`.
 
 ## Releasing
 

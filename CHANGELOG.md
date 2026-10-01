@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.0.0 — 2026-10-01
+All notable changes to this project are written here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
+[Semantic Versioning](https://semver.org/).
+
+## [Unreleased]
+
+## [1.0.0] - 2026-10-01
 
 The first release: Sugoroku, backgammon and its variants, with their rules, the
 doubling cube and matches, games as text, a computer player and the board drawn and
