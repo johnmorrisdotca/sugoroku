@@ -127,6 +127,14 @@ describe("the drawing", () => {
     for (const checkers of SUGOROKU_CHECKER_SET_NAMES) expect(drawSugoroku(startPosition(VARIANTS.backgammon), { checkers })).toContain("--sg-white");
   });
 
+  it("cannot be made to break out of its own attributes by a colour or a label", () => {
+    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), { colours: { felt: '#fff" onload="alert(1)' }, label: '"><script>alert(1)</script>' });
+    expect(svg).not.toMatch(/<script/);
+    // The quote that would end the attribute is escaped, so what follows it is still only text inside it.
+    expect(svg).toContain("--sg-felt:#fff&quot; onload=&quot;alert(1)");
+    expect(svg).not.toMatch(/"\s*onload=/);
+  });
+
   it("marks the checker picked up and the places it may go", () => {
     const svg = drawSugoroku(startPosition(VARIANTS.backgammon), { highlight: { side: "white", from: 13, targets: [10, 0] } });
     expect(svg).toMatch(/data-board="13" data-tone="[ab]" data-selected="true"/);

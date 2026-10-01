@@ -255,3 +255,30 @@ test("a seeded game is the same game every time", async ({ page }) => {
   await start(page);
   expect((await gameOf(page)).dice).toEqual(a);
 });
+
+test("in a race that starts from the bar, a tap on the bar picks a checker up and a tap on a point enters it", async ({ page }) => {
+  const errors = await open(page, "?players=two&seed=5&delay=0&points=1&variant=backgammon-race");
+  await start(page);
+  if ((await gameOf(page)).phase === "before-roll") await tap(page, primary);
+  const before = await gameOf(page);
+  const enter = legalMoves(before).find((move) => move.from === 25);
+  expect(enter).toBeDefined();
+  await expect(page.locator(`${at("board")} svg .sg-bar-hit[data-bar="${before.turn}"]`)).toHaveAttribute("data-movable", "true");
+  await tapMove(page, before, enter);
+  const after = await gameOf(page);
+  expect(after.moves[0]).toMatchObject({ from: 25, to: enter.to });
+  expect(after.position.reserve[before.turn === "white" ? 0 : 1]).toBe(14);
+  expect(errors).toEqual([]);
+});
+
+test("a game of Tabula takes three dice and shows all three", async ({ page }) => {
+  await open(page, "?players=two&seed=5&delay=0&points=1&variant=tabula");
+  await start(page);
+  if ((await gameOf(page)).phase === "before-roll") await tap(page, primary);
+  expect(await page.locator(`${at("board")} svg .sg-die`).count()).toBe(3);
+  const game = await gameOf(page);
+  const move = legalMoves(game)[0];
+  await tapMove(page, game, move);
+  expect((await gameOf(page)).moves).toHaveLength(1);
+  expect(await page.locator(`${at("board")} svg .sg-die[data-spent="true"]`).count()).toBe(1);
+});

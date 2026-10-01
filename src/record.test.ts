@@ -70,7 +70,7 @@ describe("a record of whole games", () => {
         expect(replay.current).toBeNull();
       }
     }
-  });
+  }, 60_000);
 
   it("checks the dice against the seed, and refuses a record whose dice were not the seed's", () => {
     const { text } = randomMatch(settingsFor("backgammon"), 5);

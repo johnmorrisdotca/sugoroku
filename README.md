@@ -166,8 +166,9 @@ result …
 - `GameRecorder` writes a record as a game is played; the playable board keeps one for you.
 - **Positions** as text for any variant (`formatPosition`, `parsePosition`), and **position
   IDs** (`positionId`, `positionFromId`) in the 14-character form that the GNU Backgammon
-  manual describes for the standard board: its starting position is `4HPwATDgc/ABMA`. Only
-  the written format is used. An ID cannot hold checkers yet to enter or tracks that are
+  manual describes for the standard board: its starting position is `4HPwATDgc/ABMA`, the
+  manual's own example, and the test holds it to that; the order of the two sides in other
+  positions (the side not on roll first) follows the manual's description. Only the written format is used. An ID cannot hold checkers yet to enter or tracks that are
   shared, so it is null for Backgammon Race and Tabula.
 
 ## The computer

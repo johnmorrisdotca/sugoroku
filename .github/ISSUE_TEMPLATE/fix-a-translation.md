@@ -1,13 +1,13 @@
 ---
 name: Fix a translation
-about: A Japanese string that reads wrongly or unnaturally, or a better word for a term of the game
+about: A Japanese string that reads wrongly or unnaturally, or a better word for a term of backgammon (the cube, take, drop, gammon)
 title: "Translation: "
 labels: translation
 ---
 
-Every Japanese string is in the demo's table of words, `demo/demo.js` (`WORDS.ja`), beside its English (`WORDS.en`).
+The board's own Japanese is in `src/strings.ts` (`SUGOROKU_STRINGS.ja`) and the demo page's in `demo/demo.js` (`WORDS.ja`), each beside its English.
 
-**Which string** (its name in that table, such as `outOfStrokes` or `boomIn`):
+**Which string** (its name in that table, such as `answerDouble` or `noMoveYou`):
 
 **What it says now:**
 

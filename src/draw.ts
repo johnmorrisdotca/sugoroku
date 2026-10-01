@@ -63,7 +63,7 @@ const PIPS: readonly (readonly number[])[] = [[], [4], [0, 8], [0, 4, 8], [0, 2,
 /** The inline custom properties of a drawing: the named board and checkers, then any colour given. */
 export function colourStyle(options: Pick<SugorokuDrawOptions, "board" | "checkers" | "colours">): string {
   const colours: Partial<SugorokuColours> = { ...(options.board === undefined ? {} : SUGOROKU_BOARDS[options.board]), ...(options.checkers === undefined ? {} : SUGOROKU_CHECKER_SETS[options.checkers]), ...options.colours };
-  return SUGOROKU_COLOUR_NAMES.filter((name) => colours[name] !== undefined).map((name) => `${colourProperty(name)}:${colours[name]}`).join(";");
+  return SUGOROKU_COLOUR_NAMES.filter((name) => colours[name] !== undefined).map((name) => `${colourProperty(name)}:${escape(String(colours[name]))}`).join(";");
 }
 
 /** The words a screen reader hears of a drawing when none is given. */

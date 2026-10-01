@@ -87,11 +87,15 @@ describe("the computer's play", () => {
   it("moves in a few milliseconds, and the strongest in well under a tenth of a second, even with hundreds of plays to weigh", () => {
     const rolled = rollDice(game("white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5"), [4, 4]);
     expect(legalPlaysOf(rolled).length).toBeGreaterThan(50);
+    // The quickest of three tries of each, so that another process on the machine does not decide the test.
     const times: number[] = [];
     for (const [roll, strength] of [[[4, 4], "strong"], [[6, 6], "strong"], [[3, 1], "strong"], [[5, 2], "careful"]] as const) {
-      const start = performance.now();
-      choosePlay(rollDice(game("white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5"), [...roll]), { strength });
-      times.push(performance.now() - start);
+      const tries = [0, 1, 2].map(() => {
+        const start = performance.now();
+        choosePlay(rollDice(game("white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5"), [...roll]), { strength });
+        return performance.now() - start;
+      });
+      times.push(Math.min(...tries));
     }
     expect(Math.max(...times)).toBeLessThan(100);
   });
