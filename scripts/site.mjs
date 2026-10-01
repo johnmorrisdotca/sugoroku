@@ -43,18 +43,18 @@ const page = `<!doctype html>
       ${familyHeader({ id, links: [{ href: "api.html", say: "pageApi" }] })}
       ${row("game", "variants")}
       <p class="note" id="variant-note" data-testid="variant-note" aria-live="polite"></p>
-      ${row("match", "points")}
-      <div class="setup fam-row"><span class="fam-label" data-say="rules"></span>
-        <span class="fam-label" data-say="cube" style="min-width:0"></span>${seg("cube")}
-        <span class="fam-label" data-say="gammons" style="min-width:0"></span>${seg("gammons")}
-      </div>
-      <div class="setup fam-row"><span class="fam-label" data-say="jacoby" style="min-width:3.2rem"></span>${seg("jacoby")}
-        <span class="fam-label" data-say="beaver" style="min-width:0"></span>${seg("beaver")}
-      </div>
       ${row("players", "players")}
-      ${row("strength", "strength")}
       <div class="setup fam-actions"><button type="button" class="fam-button" id="new-match" data-testid="new-match" data-say="newMatch"></button></div>
       <div id="board" data-testid="board"></div>
+      <section class="settings" aria-labelledby="match-title">
+        <h2 id="match-title" data-say="matchTitle"></h2>
+        ${row("match", "points")}
+        <div class="setup fam-row"><span class="fam-label" data-say="cube"></span>${seg("cube")}</div>
+        <div class="setup fam-row"><span class="fam-label" data-say="gammons"></span>${seg("gammons")}</div>
+        <div class="setup fam-row"><span class="fam-label" data-say="jacoby"></span>${seg("jacoby")}</div>
+        <div class="setup fam-row"><span class="fam-label" data-say="beaver"></span>${seg("beaver")}</div>
+        ${row("strength", "strength")}
+      </section>
       <section class="settings" aria-labelledby="look-title">
         <h2 id="look-title" data-say="look"></h2>
         ${row("boardLook", "board-look")}

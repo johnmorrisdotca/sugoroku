@@ -166,11 +166,6 @@ export function legalPlaysOf(game: GameState): Play[] {
   return legalPlays(game.settings.variant, game.position, game.turn, game.need);
 }
 
-/** Whether the side on turn must roll (and has not yet): the game is at the start of a turn. */
-export function mustRoll(game: GameState): boolean {
-  return game.phase === "before-roll";
-}
-
 /** Whether the turn is played out and the side on turn has only to end it. */
 export function turnIsPlayed(game: GameState): boolean {
   return game.phase === "playing" && game.need.length === 0;

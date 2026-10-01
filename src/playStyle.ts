@@ -26,7 +26,7 @@ export const SUGOROKU_PLAY_STYLE = `${SUGOROKU_STYLE}
 .sugoroku-play .sgp-board { position: relative; width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; cursor: default; }
 .sugoroku-play[data-drag="off"] .sgp-board { touch-action: manipulation; }
 .sugoroku-play .sgp-board svg { display: block; width: 100%; height: 100%; }
-.sugoroku-play .sgp-score { margin: 0 0 8px; font-size: .8rem; color: var(--sgp-muted); min-height: 1.3em; font-variant-numeric: tabular-nums; }
+.sugoroku-play .sgp-score { margin: 0 0 8px; font-size: .8rem; color: var(--sgp-muted); min-height: 2.7em; font-variant-numeric: tabular-nums; }
 .sugoroku-play .sgp-status { margin: 10px 0 0; min-height: 2.9em; font-size: .92rem; font-weight: 600; line-height: 1.4; }
 .sugoroku-play[data-over="true"] .sgp-status { color: var(--sgp-good); }
 .sugoroku-play .sgp-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }

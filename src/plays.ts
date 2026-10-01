@@ -101,9 +101,6 @@ export function nextMoves(spec: VariantSpec, position: Position, side: Side, nee
   return moves;
 }
 
-/** Whether a move is the same checker going the same way as another, whatever die it used. */
-export const sameStep = (a: Move, b: Move): boolean => a.from === b.from && a.to === b.to;
-
 /**
  * Every different turn a side may make with a roll: one for each position
  * that playing the roll as the rules require can leave, with one way of

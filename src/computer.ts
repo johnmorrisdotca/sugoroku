@@ -38,6 +38,12 @@ export type ComputerOptions = {
   strength?: Strength;
   /** Where its choices come from, for `random` and for choosing between plays that score the same. Default `Math.random`. */
   random?: Random;
+  /**
+   * The longest, in milliseconds, it spends looking ahead at one move: it looks at its best plays in order and stops when the time is
+   * up (always having looked at the best two). Default 60, so a move stays well under a tenth of a second even in a position of
+   * hundreds of plays on a slow device. `Infinity` for a search that does not depend on how fast the machine is.
+   */
+  budget?: number;
   /** Weights for the evaluation, to play with a different taste. Default `EVALUATION_WEIGHTS`. */
   weights?: EvaluationWeights;
 };
@@ -87,6 +93,8 @@ function lookedAhead(spec: VariantSpec, position: Position, side: Side, weights:
   return total / weight;
 }
 
+const now = (): number => (typeof performance === "undefined" ? Date.now() : performance.now());
+
 /** The play the computer makes for the rest of the turn of the side on turn, from the plays the rules leave it. */
 export function choosePlay(game: GameState, options: ComputerOptions = {}): Play {
   const strength = options.strength ?? "strong";
@@ -106,7 +114,10 @@ export function choosePlay(game: GameState, options: ComputerOptions = {}): Play
   const candidates = order.slice(0, k);
   let best = candidates[0] as { play: Play; score: number };
   let bestValue = -Infinity;
-  for (const candidate of candidates) {
+  const started = now();
+  const budget = options.budget ?? 60;
+  for (const [index, candidate] of candidates.entries()) {
+    if (index >= 2 && now() - started > budget) break;
     const value = lookedAhead(spec, candidate.play.position, side, weights) + candidate.score * 0.15;
     if (value > bestValue) {
       bestValue = value;

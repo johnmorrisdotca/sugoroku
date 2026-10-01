@@ -3,7 +3,7 @@
 import { expect, test } from "@playwright/test";
 
 import { boardPoint, legalMoves } from "../dist/index.js";
-import { at, board, gameOf, matchOf, noSidewaysScroll, open, pointAt, tap } from "./demo.mjs";
+import { at, gameOf, matchOf, noSidewaysScroll, open, pointAt, tap } from "./demo.mjs";
 
 const primary = `${at("board")} ${at("sg-primary")}`;
 const secondary = `${at("board")} ${at("sg-secondary")}`;
@@ -85,8 +85,7 @@ test("tapping a checker and then a point makes the move the package says it is, 
   expect(errors).toEqual([]);
 });
 
-test("a checker can be dragged to a point it may go to", async ({ page }, info) => {
-  test.skip(info.project.name === "webkit-phone", "WebKit's emulated touch does not drag with the mouse");
+test("a checker can be dragged to a point it may go to", async ({ page }) => {
   await open(page, TWO);
   await start(page);
   const before = await gameOf(page);

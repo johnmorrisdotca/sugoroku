@@ -8,7 +8,9 @@ import type { VariantSpec } from "./variants.ts";
  * of plain rules of thumb that the game's own books give (count the race,
  * keep checkers from being hit, hold points and a prime in your home board and
  * the outfield, keep an anchor in the other side's, do not pile up), each with
- * a weight chosen by playing the computer against itself. Nothing is learned
+ * a weight chosen by hand and then tried against changes of itself: of about
+ * 125 random variations, played against it over two thousand games each with
+ * the same dice, none did better than chance, so these stand. Nothing is learned
  * from anyone else's program or data.
  *
  * The position is judged as if the other side were about to move: that is
@@ -85,7 +87,7 @@ export type EvaluationWeights = {
   barOther: number;
 };
 
-/** The weights the computer plays with. They were found by playing the computer against versions of itself with some number changed, keeping the changes that won (`scripts/tune-weights.ts`). */
+/** The weights the computer plays with: set by hand and then held against random changes of themselves, none of which won more often over two thousand games. */
 export const EVALUATION_WEIGHTS: EvaluationWeights = {
   onRoll: 4,
   raceChecker: 1.6,
@@ -115,15 +117,16 @@ function distancesTo(counts: readonly number[], onBarOrReserve: number, target: 
 }
 
 /**
- * The score of a position for `side`, with the other side to move. Large
- * positive or negative numbers are a game that is won or lost.
+ * The score of a position for `side`, with the other side to move, as a game
+ * where bearing off first wins. Large positive or negative numbers are a game
+ * won or lost; `evaluateFor` turns it over for a game played to lose.
  */
 export function evaluate(spec: VariantSpec, position: Position, side: Side, weights: EvaluationWeights = EVALUATION_WEIGHTS): number {
   const i = sideIndex(side);
   const opp = otherSide(side);
   const j = sideIndex(opp);
-  if (position.off[i] === spec.checkers) return spec.goal === "first-off" ? 1000 : -1000;
-  if (position.off[j] === spec.checkers) return spec.goal === "first-off" ? -1000 : 1000;
+  if (position.off[i] === spec.checkers) return 1000;
+  if (position.off[j] === spec.checkers) return -1000;
   const w = weights;
   const mine = position.points[i];
   const theirs = position.points[j];

@@ -3,7 +3,7 @@
 // panel, the game written out as a record that the page replays against the rules, kept on this device between visits,
 // and spoken in the language the header's chooser picks. The page only chooses a game and hands the settings on:
 // the rules, the drawing, the moves and the computer are the package's own.
-import { replayRecord, PRESETS, STRENGTHS, VARIANT_KEYS } from "./dist/index.js";
+import { replayRecord, STRENGTHS, VARIANT_KEYS } from "./dist/index.js";
 import { SUGOROKU_BOARD_NAMES, SUGOROKU_BOARDS, SUGOROKU_CHECKER_SET_NAMES, SUGOROKU_CHECKER_SETS } from "./dist/draw-entry.js";
 import { mountSugoroku } from "./dist/play-entry.js";
 
@@ -29,7 +29,7 @@ const WORDS = {
     single: "Single game",
     money: "Money",
     pointsOf: (n) => `${n} points`,
-    rules: "Rules",
+    matchTitle: "Match and rules",
     cube: "Doubling cube",
     gammons: "Gammons count",
     jacoby: "Jacoby rule",
@@ -85,7 +85,7 @@ const WORDS = {
     single: "1ゲーム",
     money: "マネー",
     pointsOf: (n) => `${n}ポイント`,
-    rules: "ルール",
+    matchTitle: "マッチとルール",
     cube: "ダブリングキューブ",
     gammons: "ギャモンあり",
     jacoby: "ジャコビールール",
