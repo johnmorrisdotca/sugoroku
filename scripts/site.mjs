@@ -22,7 +22,26 @@ const uses = [
 ];
 const escape = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const seg = (name, extra = "") => `<div class="fam-seg" role="group" data-say-label="${name}" id="${name}" data-testid="${name}"${extra}></div>`;
-const row = (labelKey, name, extra = "") => `<div class="setup fam-row"><span class="fam-label" data-say="${labelKey}"></span>${seg(name, extra)}</div>`;
+/** The line for each option row, in English and Japanese, for the family's Help switch. */
+const HELP = {
+  game: ["Choose backgammon or one of its relatives. The note below says how the game differs.", "バックギャモンか、その仲間のゲームを選びます。違いは下の説明に書かれています。"],
+  players: ["Who plays: two people on this screen, you against the computer as White or as Black, or the computer against itself.", "誰が遊ぶかを選びます（2人で交代、白か黒でコンピューターと対戦、またはコンピューター同士）。"],
+  match: ["Play a single game, a match to a number of points, or a money game.", "1ゲームだけ、指定した点数までの試合、またはマネーゲームで遊びます。"],
+  cube: ["Turn the doubling cube on or off. With it on, either side may double the stakes during a game.", "ダブリングキューブの使用をオンまたはオフにします。オンのとき、ゲーム中にどちらも賭け金を倍にできます。"],
+  gammons: ["On: a gammon, winning before the other side has borne off a checker, is worth double. Off: every win is worth one.", "オン: ギャモン（相手が1つも上がる前に勝つこと）は2倍です。オフ: 勝ちはどれも1倍です。"],
+  jacoby: ["The Jacoby rule, for money games: gammons and backgammons count only once the cube has been turned.", "ジャコビー・ルール（マネーゲーム用）: キューブが使われたあとでなければ、ギャモンとバックギャモンは加点されません。"],
+  beaver: ["On: a player who is doubled may redouble at once, a beaver, and keep the cube.", "オン: ダブルされた側が、すぐに倍返し（ビーバー）して、キューブを手元に残せます。"],
+  strength: ["How well the computer plays: random, greedy, careful or strong.", "コンピューターの強さを選びます（ランダム、欲張り、慎重、強い）。"],
+  boardLook: ["Choose the cloth or the colour of the board.", "盤の布や色を選びます。"],
+  checkersLook: ["Choose the colours of the checkers. High contrast is the easiest to tell apart.", "駒の色を選びます。「高コントラスト」は、いちばん見分けやすい組み合わせです。"],
+  numbers: ["Show or hide the numbers of the points around the board.", "盤のまわりの、ポイントの番号を表示するか隠します。"],
+  home: ["Choose the side of the board where the checkers bear off: right or left.", "駒を上がる側（右か左）を選びます。"],
+  theme: ["Light, dark, or follow your device.", "明るい色、暗い色、または端末の設定に合わせます。"],
+  orientation: ["The shape of the board: automatic, wide or tall.", "盤の形（自動、横長、縦長）を選びます。"],
+  sound: ["Turn the sounds of the dice and the checkers on or off.", "サイコロと駒の音のオンとオフを切り替えます。"],
+};
+const attr = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+const row = (labelKey, name, extra = "") => `<div class="setup fam-row" data-help-en="${attr(HELP[labelKey][0])}" data-help-ja="${attr(HELP[labelKey][1])}"><span class="fam-label" data-say="${labelKey}"></span>${seg(name, extra)}</div>`;
 
 const page = `<!doctype html>
 <html lang="en">
@@ -49,10 +68,10 @@ const page = `<!doctype html>
       <section class="settings" aria-labelledby="match-title">
         <h2 id="match-title" data-say="matchTitle"></h2>
         ${row("match", "points")}
-        <div class="setup fam-row"><span class="fam-label" data-say="cube"></span>${seg("cube")}</div>
-        <div class="setup fam-row"><span class="fam-label" data-say="gammons"></span>${seg("gammons")}</div>
-        <div class="setup fam-row"><span class="fam-label" data-say="jacoby"></span>${seg("jacoby")}</div>
-        <div class="setup fam-row"><span class="fam-label" data-say="beaver"></span>${seg("beaver")}</div>
+        ${row("cube", "cube")}
+        ${row("gammons", "gammons")}
+        ${row("jacoby", "jacoby")}
+        ${row("beaver", "beaver")}
         ${row("strength", "strength")}
       </section>
       <section class="settings" aria-labelledby="look-title">
