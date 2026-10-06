@@ -76,29 +76,3 @@ The Release workflow (`.github/workflows/release.yml`) checks and builds the
 package, attaches the tarball to a GitHub release and publishes it to npm by
 trusted publishing, with provenance and no token. A version already on npm is
 not published again.
-
-## Particular to Sugoroku
-
-Bug reports and ideas go in the [issues](https://github.com/johnmorrisdotca/sugoroku/issues).
-
-### Commands and rules
-
-```sh
-pnpm check          # lint, types and tests
-pnpm test:package   # pack it as npm does, install it in an empty project, import every entry
-pnpm test:demo      # build the demo and play it in real browsers (needs `pnpm exec playwright install chromium webkit` once)
-pnpm docs:make      # rewrite docs/strings-ja.md after changing a word of the board
-```
-
-A change to the rules is tested beside it, and must leave the engine agreeing with trying
-everything (`src/brute.fixture.ts`) on positions of every variant, and every variant's games
-ending (`src/simulate.test.ts`). A variant is a row in `src/variants.ts`; add its source to
-`docs/VARIANTS.md` in the same change, and a test that exercises what is different about it.
-A change to the dice, or to how a record asks for them, changes what a seed makes, and
-games kept by their seed would replay differently: say so in the changelog.
-
-The computer has to stay quick (a move well under a tenth of a second, in
-`src/computer.test.ts`) and has to be written for this package: no code, weights or tables
-from any other program, and nothing under a GPL or LGPL licence. Art and sound only if
-Creative Commons Zero or public domain, verified at the source and credited in
-`sounds/CREDITS.txt`.
