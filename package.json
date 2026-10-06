@@ -1,6 +1,6 @@
 {
   "name": "@johnmorrisdotca/sugoroku",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sugoroku, backgammon and its variants for JavaScript and TypeScript: the rules, the doubling cube, match play, Long Gammon, Nackgammon and more, replayable games as text, a computer player, and an SVG board for any page. Zero dependencies.",
   "keywords": [
     "backgammon",
@@ -89,8 +89,9 @@
     "prepublishOnly": "pnpm check && pnpm build",
     "site": "pnpm build && node scripts/site.mjs",
     "test:demo": "pnpm site && playwright test",
-    "pictures": "pnpm site && node scripts/readme-pictures.mjs",
-    "docs:make": "node scripts/docs.mjs"
+    "docs:make": "node scripts/docs.mjs",
+    "screenshots:readme": "pnpm site && node scripts/readme-pictures.mjs",
+    "test:readme": "pnpm build && node scripts/check-readme-examples.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

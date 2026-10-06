@@ -8,14 +8,29 @@ The full rules, the doubling cube and match play with the Crawford rule, Nackgam
   <a href="https://www.npmjs.com/package/@johnmorrisdotca/sugoroku"><img alt="npm" src="https://img.shields.io/npm/v/@johnmorrisdotca/sugoroku?color=2f5d4a"></a>
   <a href="./LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-2f5d4a"></a>
   <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-0-2f5d4a">
+  <img alt="TypeScript" src="https://img.shields.io/badge/types-TypeScript-3178c6">
 </p>
 
 <p align="center"><a href="https://johnmorrisdotca.github.io/sugoroku/"><strong>Play a game →</strong></a> · <a href="https://johnmorrisdotca.github.io/sugoroku/api.html">API reference</a> · <a href="docs/VARIANTS.md">The variants and their sources</a></p>
 
-<p align="center">
-  <img src="docs/desktop.jpg" alt="A backgammon board on the demo page, in the middle of a match to 3 with the cube turned to 2, the dice shown on the right half, under the demo's header with its language chooser, cloth patches and Help switch, the choices of variant and match length above it and the buttons below" width="620">
-  <img src="docs/phone.jpg" alt="The same board standing up on a phone in dark mode and in Japanese, with the Roll, Double and Undo buttons under it" width="200">
-</p>
+<table align="center">
+<tr>
+<td align="center" valign="top">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hero-desk-dark.webp">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hero-desk-light.webp" alt="The demo on a desk, in English: the page's header with its language chooser and cloth swatches, the game chooser (Backgammon, Race, Anti, Nackgammon, Long Gammon, Hypergammon, Tabula), the player choices, and a backgammon board in the middle of a match to 3 with the doubling cube at 2, black and white checkers on a green board with red and cream points, and the Roll dice, Double and Undo buttons under it." width="720">
+</picture>
+<br><em>A match to 3 against the computer, the cube at 2, on a desk.</em>
+</td>
+<td align="center" valign="top">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hero-phone-dark.webp">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hero-phone-light.webp" alt="The demo on a phone, in Japanese, in the device's light or dark: the board standing up on its end, with the same match in progress and the three buttons under it." width="220">
+</picture>
+<br><em>The same board standing up on a phone, in Japanese.</em>
+</td>
+</tr>
+</table>
 
 Sugoroku is the rules engine for backgammon and the games played on its board: the
 classic game, and the relatives that ItsYourTurn.com and GoldToken.com played under their own
@@ -71,7 +86,82 @@ And in a page, a game to play against the computer, by touch and mouse, with not
 - **English and Japanese** in the board's words and the demo.
 - **No dependencies**, no network requests, and nothing stored outside the page it is in.
 
+### What's in it
+
+Each picture is a board drawn by the package's `drawSugoroku`, taken from [the demo](https://johnmorrisdotca.github.io/sugoroku/) with `pnpm screenshots:readme`, in light and dark: the opening position of six of the seven variants (Anti-Backgammon starts as the classic does). The hero is a seeded match, played up by the package's own computer. The pictures come again.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/backgammon-desk-dark.webp">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/backgammon-desk-light.webp" alt="The classic backgammon board at the start: fifteen black and fifteen white checkers on the points of a green board with red and cream triangles, the bar down the middle, a cube in the middle of the left rail and a tray each side." width="400">
+</picture>
+<br><em><strong>Backgammon</strong>: fifteen each, two dice, bear off first.</em>
+</td>
+<td align="center" valign="top" width="50%">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/nackgammon-desk-dark.webp">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/nackgammon-desk-light.webp" alt="A Nackgammon board at the start: the classic position with four back checkers on each side's 24-point instead of two." width="400">
+</picture>
+<br><em><strong>Nackgammon</strong>: four back checkers each, for a longer game.</em>
+</td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/long-gammon-desk-dark.webp">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/long-gammon-desk-light.webp" alt="A Long Gammon board at the start: all fifteen checkers of each side stacked on one point, the 24-point." width="400">
+</picture>
+<br><em><strong>Long Gammon</strong>: all fifteen start on the 24-point.</em>
+</td>
+<td align="center" valign="top" width="50%">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hypergammon-desk-dark.webp">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hypergammon-desk-light.webp" alt="A Hypergammon board at the start: three checkers each, on the 24, 23 and 22 points." width="400">
+</picture>
+<br><em><strong>Hypergammon</strong>: three checkers each.</em>
+</td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/tabula-desk-dark.webp">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/tabula-desk-light.webp" alt="A Tabula board at the start: fifteen checkers on each side waiting on the bar, and the track empty, in a dark-themed board." width="400">
+</picture>
+<br><em><strong>Tabula</strong>: the Roman game, three dice, both sides one way round.</em>
+</td>
+<td align="center" valign="top" width="50%">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/backgammon-race-desk-dark.webp">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/backgammon-race-desk-light.webp" alt="A Backgammon Race board at the start: all fifteen checkers of both sides on the bar, none yet on the points." width="400">
+</picture>
+<br><em><strong>Backgammon Race</strong>: every checker enters from the bar.</em>
+</td>
+</tr>
+</table>
+
 ## Use it in your project
+
+### Install
+
+```sh
+npm install @johnmorrisdotca/sugoroku
+```
+
+```sh
+pnpm add @johnmorrisdotca/sugoroku
+```
+
+```sh
+yarn add @johnmorrisdotca/sugoroku
+```
+
+A page with no bundler loads the board as a tag from a CDN, naming the major version so that a release that changes what you use is one you choose:
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/@johnmorrisdotca/sugoroku@1/dist/element-define.js"></script>
+```
 
 Sugoroku is three things, each usable without the others: **the rules** (a position, a game, a match, text records, dice and the computer, as plain functions), **the drawing** (SVG text), and **the page** (a mounted board or a tag). The table at the end of [API](#api) says which entry holds which.
 
@@ -79,7 +169,7 @@ Sugoroku is three things, each usable without the others: **the rules** (a posit
 
 A server that wants to be sure what was played takes the record the board keeps and replays it:
 
-```ts
+```ts no-check
 import { replayRecord } from "@johnmorrisdotca/sugoroku";
 
 const replayed = replayRecord(textFromTheBrowser);
@@ -145,7 +235,7 @@ import "@johnmorrisdotca/sugoroku/element/define";
 <sugoroku-board bind:this={board} variant="backgammon" points="5" cube="on" gammons="on" black="strong"></sugoroku-board>
 ```
 
-```ts
+```ts no-check
 // Angular: a standalone component with CUSTOM_ELEMENTS_SCHEMA
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import "@johnmorrisdotca/sugoroku/element/define";
@@ -170,6 +260,205 @@ These recipes are written to the tag's documented attributes and events; they ar
 - **Typed results**, with a doc comment on every export. Every function is pure and returns new values; the recorder and the mounted board are the two things that keep state.
 - **No dependencies.** ES modules, an entry per concern, and `sideEffects` set so that only the define entry has an effect.
 - **Where it runs.** See [Browser support](#browser-support).
+
+The cookbook, with the output of each example, is under [Examples](#examples).
+
+## Examples
+
+Every TypeScript and JavaScript block that can run is type-checked against the built package and run by `pnpm test:readme`, so the output after `// →` is what the code prints. The rules need no page and no network, so most of these run under Node.
+
+### A page with nothing else
+
+Save this as a file and open it: one script and one tag. The board is the whole game, a match against the computer, played by touch or mouse:
+
+```html
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backgammon</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@johnmorrisdotca/sugoroku@1/dist/element-define.js"></script>
+<sugoroku-board variant="nackgammon" points="5" cube gammons black="strong" seed="2026"></sugoroku-board>
+```
+
+### Every play of a roll
+
+`legalPlaysOf(game)` lists every different play of the dice in hand, so a board never has to know a rule; `formatPlay` writes one in standard notation. Here, after the opening throw of a 3 and a 2:
+
+```ts
+import { formatPlay, legalPlaysOf, newGame, openingFrom, rollOpening, seededDice, settingsFor } from "@johnmorrisdotca/sugoroku";
+
+const dice = seededDice(2026);                         // the same dice in every browser and every Node
+let game = newGame(settingsFor("backgammon"));
+game = rollOpening(game, openingFrom(dice));           // a die each: the higher starts
+console.log(game.turn, game.need);                     // → white [ 3, 2 ]
+const plays = legalPlaysOf(game);
+console.log(plays.length);                             // → 17
+console.log(plays.slice(0, 3).map((play) => formatPlay(play.moves)));   // → [ '24/21 24/22', '24/21 13/11', '24/21 8/6' ]
+```
+
+### The computer, at four strengths
+
+The four strengths are written for this package, and none of it is GPL. The same position, the same roll, and what each would play:
+
+```ts
+import { choosePlay, formatPlay, newGame, openingFrom, rollOpening, seededDice, settingsFor, STRENGTHS } from "@johnmorrisdotca/sugoroku";
+
+let game = newGame(settingsFor("backgammon"));
+game = rollOpening(game, openingFrom(seededDice(2026)));
+for (const strength of STRENGTHS) console.log(strength, formatPlay(choosePlay(game, { strength, random: () => 0.5 }).moves));
+// → random 13/10 6/4
+// → greedy 13/10/8
+// → careful 13/10/8
+// → strong 13/10/8
+```
+
+### Does the computer want the cube?
+
+`wantsToDouble` and `chanceOfWinning` are the computer's cube: where the sides are in contact, it doubles at 70 percent. At the start of a game it does not:
+
+```ts
+import { chanceOfWinning, newGame, openingFrom, rollOpening, seededDice, settingsFor, wantsToDouble } from "@johnmorrisdotca/sugoroku";
+
+let game = newGame(settingsFor("backgammon", { points: 3, cube: true }));
+game = rollOpening(game, openingFrom(seededDice(2026)));
+console.log(wantsToDouble(game, { strength: "strong" }));              // → false
+console.log(chanceOfWinning(game, "white").toFixed(2));                // → 0.56
+```
+
+### Write a record, and replay it on a server
+
+A server that wants to be sure what was played takes the record the board keeps and replays it against the rules. `GameRecorder` writes one as a game is played; `replayRecord` checks every move, every double and every score, and the dice against the seed:
+
+```ts
+import { choosePlay, GameRecorder, newGame, openingFrom, replayRecord, rollOpening, seededDice, settingsFor } from "@johnmorrisdotca/sugoroku";
+
+const settings = settingsFor("backgammon", { points: 3, cube: true, gammons: true });
+const throws = openingFrom(seededDice(2026));
+const game = rollOpening(newGame(settings), throws);
+
+const recorder = new GameRecorder(settings, 2026);
+recorder.startGame();
+recorder.opening(throws);
+recorder.turn(game.turn!, game.need, choosePlay(game, { strength: "careful", random: () => 0.5 }).moves);
+const record = recorder.text();
+console.log(record.split("\n").slice(-4, -1).join(" | "));    // → game 1 | open 3 2 | white 32: 13/10/8
+const replayed = replayRecord(record);
+console.log(replayed.ok, replayed.ok && replayed.current?.phase);      // → true before-roll
+```
+
+### Refuse a record that was changed
+
+A move the rules do not allow, or an opening throw that is not the seed's, is found at its line:
+
+```ts
+import { replayRecord } from "@johnmorrisdotca/sugoroku";
+
+const record = `sugoroku 1
+variant backgammon
+points 3
+cube on
+crawford on
+jacoby off
+beaver off
+gammons on
+seed 2026
+game 1
+open 3 2
+white 32: 13/10/8
+`;
+const illegal = replayRecord(record.replace("13/10/8", "24/20 13/11"));
+console.log(illegal.ok, !illegal.ok && illegal.line, !illegal.ok && illegal.reason);
+// → false 12 "24/20 13/11" is not a legal play of 32
+const changed = replayRecord(record.replace("open 3 2", "open 6 1"));
+console.log(changed.ok, !changed.ok && changed.reason);                // → false the opening throw is not the seed's
+```
+
+### Notation, and a position ID
+
+Plays read and write as standard notation (`24/18 13/11`, `bar/22*`, `6/off`), and the standard board's position has the 14-character ID the GNU Backgammon manual gives it:
+
+```ts
+import { formatPlay, newGame, openingFrom, parsePlay, positionId, rollOpening, seededDice, settingsFor, VARIANTS } from "@johnmorrisdotca/sugoroku";
+
+let game = newGame(settingsFor("backgammon"));
+console.log(positionId(game.position, "white"));                                         // → 4HPwATDgc/ABMA
+game = rollOpening(game, openingFrom(seededDice(2026)));
+const play = parsePlay(VARIANTS.backgammon, game.position, game.turn!, [3, 2], "24/21 13/11");
+console.log(play && formatPlay(play));                                          // → 24/21 13/11
+console.log(parsePlay(VARIANTS.backgammon, game.position, game.turn!, [3, 2], "24/20 13/11"));   // → null: not a play of 3 and 2
+```
+
+### The names of the two old sites
+
+The names that ItsYourTurn and GoldToken printed are `PRESETS`, each a variant with its rules:
+
+```ts
+import { PRESETS, presetByName, settingsFor, VARIANT_KEYS, VARIANTS } from "@johnmorrisdotca/sugoroku";
+
+console.log(VARIANT_KEYS.length, PRESETS.length);                       // → 7 22
+const preset = presetByName("Pro Backgammon-9");
+console.log(preset?.key, preset?.variant, preset?.rules.points);        // → backgammon-9 backgammon 9
+console.log(VARIANTS.tabula.dice);                                      // → 3
+console.log(settingsFor("hypergammon", { points: 3, cube: true, gammons: true }).rules.points);   // → 3
+```
+
+### The board as an image
+
+`drawSugoroku` returns SVG text: a server that only checks a game never loads it, and a page can put it anywhere an image goes:
+
+```ts
+import { drawSugoroku } from "@johnmorrisdotca/sugoroku/draw";
+import { newGame, settingsFor } from "@johnmorrisdotca/sugoroku";
+
+const game = newGame(settingsFor("backgammon"));
+const svg = drawSugoroku(game.position, { variant: "backgammon", numbers: true, board: "wood", style: true });
+console.log(svg.startsWith("<svg"), svg.includes("class=\"sugoroku\""));    // → true true
+```
+
+### Mount a board, and listen
+
+`mountSugoroku` is the tag as a function call; it keeps the match, the cube, undo and a record for you, and says what happens as events:
+
+```ts no-run
+import { mountSugoroku } from "@johnmorrisdotca/sugoroku/play";
+
+const element = document.getElementById("board")!;
+const board = mountSugoroku(element, {
+  variant: "nackgammon",
+  rules: { points: 5, cube: true, gammons: true },
+  computer: { black: "strong" },          // either side, or both, or neither
+  seed: 2026,                             // the dice from a seed; left out, random
+  sound: true,
+});
+element.addEventListener("sugoroku-turn", (event) => console.log((event as CustomEvent).detail.notation));
+element.addEventListener("sugoroku-end", () => fetch("/matches", { method: "POST", body: board.record() }));
+```
+
+### Dice from your own server
+
+With `dice: "host"` the board asks the page for its dice instead of rolling, so a server can be the one that throws them:
+
+```ts no-run
+import { mountSugoroku } from "@johnmorrisdotca/sugoroku/play";
+
+const element = document.getElementById("board")!;
+const board = mountSugoroku(element, { variant: "backgammon", dice: "host" });
+element.addEventListener("sugoroku-need-dice", async () => {
+  const { dice } = await (await fetch("/roll")).json();
+  board.roll(dice);                       // for example [3, 1]
+});
+```
+
+### A look of your own
+
+Every colour is a CSS variable on `.sugoroku`, set by the page (the table is under [Theming](#theming)); a named board (`board: "wood"`) and a set of checkers (`checkers: "contrast"`) come with the package:
+
+```css
+sugoroku-board .sugoroku {
+  --sg-felt: #1d4e5f;
+  --sg-frame: #4a2f1b;
+}
+```
 
 ## The variants
 
@@ -319,7 +608,7 @@ sides are still in contact (`careful` and `strong` only; `greedy` takes and neve
 there) the evaluation becomes a chance of winning (`winChance`) and it doubles at 70% and
 takes at 25%. It never beavers, and never doubles at Tabula or in a game played to lose.
 
-```ts
+```ts no-check
 import { choosePlay, computerAction, stepComputer, wantsToDouble } from "@johnmorrisdotca/sugoroku";
 
 choosePlay(game, { strength: "careful" });       // { moves, position }: the rest of the turn, chosen
@@ -329,7 +618,7 @@ stepComputer(game, dice);                        // does it, with dice from a so
 
 ## Drawing
 
-```ts
+```ts no-check
 import { drawSugoroku, SUGOROKU_STYLE } from "@johnmorrisdotca/sugoroku/draw";
 
 const svg = drawSugoroku(game.position, {
@@ -363,7 +652,7 @@ drawing, so it stands alone as an image).
 
 ## Playing in a page
 
-```ts
+```ts no-check
 import { mountSugoroku } from "@johnmorrisdotca/sugoroku/play";
 
 const board = mountSugoroku(element, {
@@ -509,6 +798,19 @@ All of these are held by tests, and the ones with a name are exported.
 
 The look-ahead is held to a time budget, not to a count of moves: a position of hundreds of plays, such as a double, stays well under a tenth of a second.
 
+## Accessibility
+
+Backgammon is played by sight and by touch, so what a person who cannot see the board hears, and what a person who cannot drag can do, matter. What is done, and what is not, in the mounted board and the tag:
+
+- **Tap or drag.** A checker is picked up with a tap and put down with a tap on a point (the places it may go light up), or dragged; no move needs a drag, and nothing needs two fingers or a double tap. A turn may be undone move by move until Done.
+- **The board says what is happening.** A line under the board says whose turn it is, what the dice are, and what is wanted next ("Your roll.", "Roll the dice: the higher die goes first."), and the score and the cube are a line of text above it. The words are English or Japanese by the page's `lang`.
+- **Buttons are big.** The three buttons are one size in the same places whatever they say, and each is at least 48 pixels high.
+- **Not by colour alone.** The two sides differ in lightness (cream and dark checkers), the cube and the dice show numbers, the checker picked up and the points it may go to are marked by a ring and a mark, and every point can carry its number (`numbers: true`).
+- **Motion.** Nothing on the board animates. Under a request for reduced motion the computer answers at once instead of after a pause of 450 milliseconds, and the board is steady in size whatever is on it, so a page does not shift as a game goes on.
+- **Contrast.** There are five boards and four sets of checkers, one of them `contrast`, and every colour is a CSS variable.
+- **Without a pointer.** The engine decides every legal play (`legalPlaysOf`) and writes it in notation (`formatPlay`), so a host can offer the plays as a list or a text box; the board's own points and checkers are not yet reachable by keyboard, and a screen reader hears the board as a drawing with a status line beside it.
+- **Known to fall short.** No keyboard play on the mounted board; the Japanese words have not been read by a native reader ([Languages](#languages)).
+
 ## Browser support
 
 Any browser with ES2020 modules, custom elements, Pointer Events, `ResizeObserver` and CSS `color-mix`: Chrome and Edge 111, Safari 16.2, Firefox 113, all from early 2023. The element draws in the page's own DOM, with no shadow DOM. The demo is played in a real Chromium at a phone's width (with touch) and a desk's, and in WebKit, Safari's engine, at a phone's width; Firefox is not in that run. The package itself (the rules, the formats and the computer) needs no DOM: it runs in Node 22 or later (CI tests 22 and 24). Deno and Bun are not tested. The sounds need `Audio` and are off unless asked for.
@@ -638,12 +940,16 @@ Sugoroku is one of twenty-four packages, each made for the same site, each at
 ## Development
 
 ```sh
-pnpm install
+pnpm install --frozen-lockfile
 pnpm check          # lint, types and every test
 pnpm test:package   # pack, install and import it as somebody who installed it would
 pnpm site           # build the demo into site/, as the Pages workflow publishes it
 pnpm test:demo      # play the demo in Chromium and WebKit
+pnpm test:readme    # every TypeScript and JavaScript example in this README, type-checked and run
+pnpm screenshots:readme   # retake the README's pictures into docs/images (builds the demo first)
 ```
+
+The pictures are taken on the maintainer's Mac and are retaken only when the look changes; they are in `docs/images` and are not in the package that npm installs.
 
 ## Contributing
 
@@ -654,6 +960,8 @@ Please follow the [code of conduct](./CODE_OF_CONDUCT.md). A record or a positio
 ## Changes
 
 See [CHANGELOG.md](./CHANGELOG.md).
+
+The latest release is 1.0.2: the README takes the family's full layout, with pictures of the variants and examples that are run.
 
 ## Licence
 
