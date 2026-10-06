@@ -1,7 +1,7 @@
 {
   "name": "@johnmorrisdotca/sugoroku",
-  "version": "1.0.0",
-  "description": "Sugoroku, backgammon and its variants for JavaScript and TypeScript: the rules, the doubling cube and match play with the Crawford rule, Long Gammon, Nackgammon, Hypergammon, Tabula, Anti-Backgammon and race starts, games as text that a server can replay, a seeded dice sequence, standard move notation, a computer player with four strengths, and the board drawn as SVG and played by touch and mouse in any page. Zero dependencies.",
+  "version": "1.0.1",
+  "description": "Sugoroku, backgammon and its variants for JavaScript and TypeScript: the rules, the doubling cube, match play, Long Gammon, Nackgammon and more, replayable games as text, a computer player, and an SVG board for any page. Zero dependencies.",
   "keywords": [
     "backgammon",
     "nackgammon",
@@ -24,7 +24,7 @@
     "node",
     "itsutsu"
   ],
-  "homepage": "https://github.com/johnmorrisdotca/sugoroku#readme",
+  "homepage": "https://johnmorrisdotca.github.io/sugoroku/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnmorrisdotca/sugoroku.git"
