@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="color-scheme" content="light dark"><title>Sugoroku · backgammon board</title><style>html,body{margin:0;width:100%;height:100%;background:transparent;overflow:hidden}body{display:flex;align-items:center;justify-content:center;padding:8px;box-sizing:border-box}body>*{max-height:100%}</style></head><body><script type="module">
+import "../dist/element-define.js";
+import { VARIANT_KEYS, PRESETS, settingsFor, DEFAULT_RULES, STRENGTHS } from "../dist/index.js";
+import { SUGOROKU_BOARD_NAMES, SUGOROKU_CHECKER_SET_NAMES } from "../dist/colours.js";
+import { readEmbedPosition } from "../dist/element.js";
+const query=new URLSearchParams(location.search),board=document.createElement("sugoroku-board"),isPosition=board.localName==="sugoroku-position";board.setAttribute("size","medium");
+const one=(name,choices)=>{if(choices.includes(query.get(name))&&board.constructor.observedAttributes.includes(name))board.setAttribute(name,query.get(name));};
+one("variant",VARIANT_KEYS);one("board",SUGOROKU_BOARD_NAMES);one("checkers",SUGOROKU_CHECKER_SET_NAMES);one("theme",["auto","light","dark"]);one("size",["small","medium","large"]);one("lang",["en","ja"]);one("home",["left","right"]);one("orientation",["auto","portrait","landscape"]);one("view",isPosition?["white","black"]:["auto","white","black"]);
+const integer=(name,min,max)=>{const value=query.get(name);if(value===null||!/^\d+$/.test(value)||Number(value)<min||Number(value)>max)return null;return Number(value);};const width=integer("width",100,2000);if(width!==null)board.setAttribute("width",String(width));
+const bool=name=>{const value=query.get(name);return value!==null&&["","true","on","1","false","off","no","0"].includes(value.toLowerCase())?value:null;};const numbers=bool("numbers");if(numbers!==null)board.setAttribute("numbers",numbers);
+if(isPosition){one("turn",["white","black"]);const position=query.get("position");if(position!==null&&readEmbedPosition(position,board.getAttribute("variant")??"backgammon",board.getAttribute("turn")??"white")!==null)board.setAttribute("position",position);}
+else{
+ one("preset",PRESETS.map(p=>p.key));one("dice",["button","host"]);one("white",["human",...STRENGTHS]);one("black",["human",...STRENGTHS]);
+ const rules={...DEFAULT_RULES},values=[];const points=integer("points",0,100);if(points!==null){rules.points=points;values.push(["points",String(points)]);}for(const name of["cube","crawford","jacoby","beaver","gammons"]){const value=bool(name);if(value!==null){rules[name]=!["false","off","no","0"].includes(value.toLowerCase());values.push([name,value]);}}
+ try{const preset=PRESETS.find(p=>p.key===board.getAttribute("preset"));settingsFor(preset?.variant??board.getAttribute("variant")??"backgammon",preset?.rules??rules);for(const[name,value]of values)board.setAttribute(name,value);}catch{/* Ignore inconsistent rules. */}
+ for(const name of["controls","drag","auto-end","sound"]){const value=bool(name);if(value!==null)board.setAttribute(name,value);}const delay=integer("computer-delay",0,10000);if(delay!==null)board.setAttribute("computer-delay",String(delay));const seed=query.get("seed");if(seed!==null&&/^[\p{L}\p{N} _.-]{1,100}$/u.test(seed))board.setAttribute("seed",seed);
+}
+const label=query.get("label");if(label!==null&&label.length<=200)board.setAttribute("label",label);if(query.get("lang")==="ja")document.documentElement.lang="ja";
+for(const type of["sugoroku-load","sugoroku-error","sugoroku-change","sugoroku-roll","sugoroku-move","sugoroku-turn","sugoroku-cube","sugoroku-end","sugoroku-need-dice"])board.addEventListener(type,event=>{if(parent!==window)parent.postMessage({type:event.type,detail:JSON.parse(JSON.stringify(event.detail))},"*");});document.body.append(board);
+</script></body></html>

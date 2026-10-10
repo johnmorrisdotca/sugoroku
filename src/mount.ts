@@ -245,7 +245,7 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
   };
   const eventDetail = (side: Side | null, extra: Partial<SugorokuEventDetail> = {}): SugorokuEventDetail => ({ side, game, match, ...extra });
   const emit = (name: string, detail: SugorokuEventDetail, callback?: (detail: SugorokuEventDetail) => void): void => {
-    host.dispatchEvent(new view.CustomEvent(name, { detail, bubbles: true }));
+    host.dispatchEvent(new view.CustomEvent(name, { detail: JSON.parse(JSON.stringify(detail)), bubbles: true, composed: true }));
     callback?.(detail);
   };
   const spec = (): GameState["settings"]["variant"] => game.settings.variant;

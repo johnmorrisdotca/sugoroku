@@ -949,14 +949,14 @@ Sugoroku is one of twenty-eight packages, each made for the same site, each at
 
 **Geography & data**
 
-- [address-plus](https://github.com/johnmorrisdotca/address-plus) (アドレスプラス): parse and format addresses in the United States, Canada and Japan. [Demo](https://johnmorrisdotca.github.io/address-plus/).
+- [address-plus](https://github.com/johnmorrisdotca/address-plus) (アドレスプラス): parse and format addresses in the United States, Canada, Japan, Australia and the United Kingdom. [Demo](https://johnmorrisdotca.github.io/address-plus/).
 - [Chizu](https://github.com/johnmorrisdotca/chizu) (地図): maps of the world and of countries' regions, in English and Japanese, with a quiz and callouts. [Demo](https://johnmorrisdotca.github.io/chizu/).
 - [Hata](https://github.com/johnmorrisdotca/hata) (旗): country and regional flags as SVG, at their true proportions and keyed by ISO code. [Demo](https://johnmorrisdotca.github.io/hata/).
 - [Kuni](https://github.com/johnmorrisdotca/kuni) (国): countries and their regions, with ISO codes and names in English and Japanese. [Demo](https://johnmorrisdotca.github.io/kuni/).
 
 **Developer tools**
 
-- [REST in Pieces](https://github.com/spxis/rest-in-pieces) (レスト・イン・ピーシズ): seeded test data and REST APIs for frontend development, with latency and error drills. [Demo](https://spxis.github.io/rest-in-pieces/).
+- [REST in Pieces](https://github.com/spxis/rest-in-pieces) (レスト・イン・ピーシーズ): seeded test data and REST APIs for frontend development, with latency and error drills. [Demo](https://spxis.github.io/rest-in-pieces/).
 
 
 **This package is Sugoroku.** The demos of all twenty-eight share one header and footer, so each links the rest.
@@ -993,3 +993,10 @@ The latest release is 1.0.2: the README takes the family's full layout, with pic
 MIT, © John Morris. The board is drawn in code. The sounds are from [Casino Audio by
 Kenney](https://kenney.nl/assets/casino-audio) (Creative Commons Zero, public domain), with
 thanks, re-encoded as short WAV clips: see `sounds/CREDITS.txt`.
+
+
+### Embed builder
+
+[Build a playable board or position](https://johnmorrisdotca.github.io/sugoroku/builder.html) and copy its embed code. The board adds `size` (small/medium/large), pixel `width`, spoken `label` and host `options`. Attributes reflect to properties; `game`, `match` and all board methods remain. `beaver` assignment changes the rule while `beaver()` retains its action.
+
+`<sugoroku-position position="4HPwATDgc/ABMA" turn="white" size="small">` shows a GNU position ID or JSON position. Its structured `value`, drawing `options`, custom tags and all host formats are described in [the embed guide](docs/embeds.md).

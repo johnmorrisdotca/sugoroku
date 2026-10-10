@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add the shared embed builder and validated playable/position iframe routes. Preserve playable board methods and structured state while adding reflected attributes, host options and display sizes. Add a native SVG position element for GNU position IDs or JSON data; events now bubble across shadow roots with JSON-safe detail.
+
+
 All notable changes to this project are written here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/).
