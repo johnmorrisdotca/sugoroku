@@ -172,7 +172,17 @@ function create<K extends keyof HTMLElementTagNameMap>(document: Document, tag: 
   return element;
 }
 
-/** Mount a board into `host`. */
+/** Mount a board into `host`.
+ * @param host - The HTMLElement that owns the native interface.
+ * @param options - Native settings and callbacks for this mounted interface.
+ * @returns The native mounted handle, including controls and destroy() cleanup.
+ * @example
+ * ```ts
+ * import { mountSugoroku } from "@johnmorrisdotca/sugoroku/play";
+ * const show = (host: HTMLElement, options: Parameters<typeof mountSugoroku>[1]) => mountSugoroku(host, options);
+ * console.log(typeof show); // function
+ * ```
+ */
 export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions = {}): SugorokuMount {
   ensureSugorokuPlayStyle(host);
   const document = host.ownerDocument;

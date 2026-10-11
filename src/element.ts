@@ -82,11 +82,31 @@ class SugorokuFrame extends ElementBase {
   get label(): string | null { return this.getAttribute("label"); }
   set label(value: string | null) { this.write("label", value); }
 }
-/** The real mounted options, checked alongside builder coverage. */
+/** The real mounted options, checked alongside builder coverage.
+ * @example
+ * ```ts
+ * import { SUGOROKU_EMBED_OPTION_KEYS } from "@johnmorrisdotca/sugoroku/element";
+ * console.log(typeof SUGOROKU_EMBED_OPTION_KEYS); // object
+ * ```
+ */
 export const SUGOROKU_EMBED_OPTION_KEYS = Object.keys({ board: true, checkers: true, colours: true, theme: true, home: true, view: true, numbers: true, orientation: true, variant: true, rules: true, preset: true, seed: true, dice: true, computer: true, computerDelay: true, controls: true, drag: true, autoEnd: true, language: true, names: true, sound: true, match: true, onRoll: true, onMove: true, onTurn: true, onCube: true, onEnd: true } satisfies Record<keyof SugorokuMountOptions, boolean>);
-/** Host mount options, including custom colours, names, a match and callbacks. */
+/** Host mount options, including custom colours, names, a match and callbacks.
+ * @example
+ * ```ts
+ * import type { SugorokuElementOptions } from "@johnmorrisdotca/sugoroku/element";
+ * const options: SugorokuElementOptions = {};
+ * console.log(Object.keys(options).length); // 0
+ * ```
+ */
 export type SugorokuElementOptions = SugorokuMountOptions;
 
+/** Native custom element with reflected setup and presentation.
+ * @example
+ * ```ts
+ * import { SugorokuBoard } from "@johnmorrisdotca/sugoroku/element";
+ * console.log(SugorokuBoard.observedAttributes.includes("lang")); // true
+ * ```
+ */
 export class SugorokuBoard extends SugorokuFrame {
   static observedAttributes = [...GAME_ATTRIBUTES, "white", "black", "board", "checkers", "theme", "home", "view", "numbers", "orientation", "lang", "size", "width", "label"];
 
@@ -315,7 +335,17 @@ export class SugorokuBoard extends SugorokuFrame {
   }
 }
 
-/** Defines the default playable board, or a subclass under a custom tag. Server-safe and idempotent. */
+/** Defines the default playable board, or a subclass under a custom tag. Server-safe and idempotent.
+ * @param tagName - The custom tag name; omitted to use the package default.
+ * @param registry - The custom-element registry; omitted outside a browser.
+ * @returns Nothing; existing definitions and server imports remain safe.
+ * @example
+ * ```ts
+ * import { defineBoard } from "@johnmorrisdotca/sugoroku/element";
+ * defineBoard();
+ * console.log(typeof defineBoard); // function
+ * ```
+ */
 export function defineBoard(tagName = "sugoroku-board", registry: CustomElementRegistry | undefined = typeof customElements === "undefined" ? undefined : customElements): void { if (registry !== undefined && registry.get(tagName) === undefined) registry.define(tagName, tagName === "sugoroku-board" ? SugorokuBoard : class extends SugorokuBoard {}); }
 /**
  * Reads a GNU position ID or bounded JSON position; null means invalid counts or input.
@@ -345,13 +375,38 @@ export function readEmbedPosition(text: string | null, variant: VariantKey = "ba
     return { points: [[...data.points[0]], [...data.points[1]]], bar: [data.bar[0], data.bar[1]], off: [data.off[0], data.off[1]], reserve: [data.reserve[0], data.reserve[1]] };
   } catch { return null; }
 }
-/** Host data and all native SVG drawing choices for a position. */
+/** Host data and all native SVG drawing choices for a position.
+ * @example
+ * ```ts
+ * import type { SugorokuPositionOptions } from "@johnmorrisdotca/sugoroku/element";
+ * const options: SugorokuPositionOptions = {};
+ * console.log(Object.keys(options).length); // 0
+ * ```
+ */
 export type SugorokuPositionOptions = SugorokuDrawOptions & { position?: Position; onChange?: (position: Position) => void };
-/** Native draw keys, checked by the shared builder. */
+/** Native draw keys, checked by the shared builder.
+ * @example
+ * ```ts
+ * import { SUGOROKU_DRAW_OPTION_KEYS } from "@johnmorrisdotca/sugoroku/element";
+ * console.log(typeof SUGOROKU_DRAW_OPTION_KEYS); // object
+ * ```
+ */
 export const SUGOROKU_DRAW_OPTION_KEYS = Object.keys({ variant: true, view: true, home: true, orientation: true, numbers: true, board: true, checkers: true, colours: true, theme: true, dice: true, cube: true, highlight: true, label: true, style: true } satisfies Record<keyof SugorokuDrawOptions, boolean>);
-/** All host position options, checked by the builder. */
+/** All host position options, checked by the builder.
+ * @example
+ * ```ts
+ * import { SUGOROKU_POSITION_OPTION_KEYS } from "@johnmorrisdotca/sugoroku/element";
+ * console.log(typeof SUGOROKU_POSITION_OPTION_KEYS); // object
+ * ```
+ */
 export const SUGOROKU_POSITION_OPTION_KEYS = Object.keys({ position: true, onChange: true, variant: true, view: true, home: true, orientation: true, numbers: true, board: true, checkers: true, colours: true, theme: true, dice: true, cube: true, highlight: true, label: true, style: true } satisfies Record<keyof SugorokuPositionOptions, boolean>);
-/** A read-only backgammon position, drawn by the native SVG writer. */
+/** A read-only backgammon position, drawn by the native SVG writer.
+ * @example
+ * ```ts
+ * import { SugorokuPosition } from "@johnmorrisdotca/sugoroku/element";
+ * console.log(SugorokuPosition.observedAttributes.includes("lang")); // true
+ * ```
+ */
 export class SugorokuPosition extends SugorokuFrame {
   static observedAttributes = ["position", "variant", "turn", "board", "checkers", "theme", "home", "view", "numbers", "orientation", "lang", "size", "width", "label"];
   #value: Position | null = null;
@@ -413,5 +468,15 @@ export class SugorokuPosition extends SugorokuFrame {
     }
   }
 }
-/** Defines a static position, or a subclass under a host's tag. Safe on a server. */
+/** Defines a static position, or a subclass under a host's tag. Safe on a server.
+ * @param tagName - The custom tag name; omitted to use the package default.
+ * @param registry - The custom-element registry; omitted outside a browser.
+ * @returns Nothing; existing definitions and server imports remain safe.
+ * @example
+ * ```ts
+ * import { definePosition } from "@johnmorrisdotca/sugoroku/element";
+ * definePosition();
+ * console.log(typeof definePosition); // function
+ * ```
+ */
 export function definePosition(tagName = "sugoroku-position", registry: CustomElementRegistry | undefined = typeof customElements === "undefined" ? undefined : customElements): void { if (registry !== undefined && registry.get(tagName) === undefined) registry.define(tagName, tagName === "sugoroku-position" ? SugorokuPosition : class extends SugorokuPosition {}); }
