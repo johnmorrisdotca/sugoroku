@@ -6,13 +6,38 @@ import type { VariantSpec } from "./variants.ts";
 /**
  * A WHOLE TURN: the moves a side makes with a roll, in the order it makes them,
  * and the position they leave.
+ *
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { Play } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const value: Play = play;
+ * console.log(value);
+ * ```
  */
 export type Play = {
   readonly moves: readonly Move[];
   readonly position: Position;
 };
 
-/** The dice a roll gives to play, highest first: a double of a game that plays doubles four times is four of them. */
+/** The dice a roll gives to play, highest first: a double of a game that plays doubles four times is four of them.
+ *
+ * @param spec - The native variant specification.
+ * @param roll - The valid dice as thrown, in throw order.
+ * @returns The dice a roll gives to play, highest first: a double of a game that plays doubles four times is four of them.
+ * @example
+ * ```ts
+ * import { diceToPlay, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * console.log(diceToPlay(spec,[3,3]));
+ * ```
+ */
 export function diceToPlay(spec: VariantSpec, roll: readonly number[]): number[] {
   const first = roll[0];
   if (spec.doubles === "four" && roll.length === 2 && first !== undefined && roll[1] === first) return [first, first, first, first];
@@ -34,6 +59,21 @@ const without = (dice: readonly number[], index: number): number[] => dice.filte
  * it must play the higher: with two dice, if only one can be played, it is the
  * larger one when it can. Returned highest first, from the dice as
  * `diceToPlay` gives them.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param dice - Dice values as thrown, or a reproducible source specified by the signature.
+ * @returns WHICH DICE MUST BE PLAYED. A side must play as many of its dice as it can; where it cannot play them all and could play either of two (or more) sets, it must play the higher: with two dice, if only one can be played, it is the larger one when it can. Returned highest first, from the dice as `diceToPlay` gives them.
+ * @example
+ * ```ts
+ * import { diceMustPlay, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(diceMustPlay(spec,position,"white",[3,1]));
+ * ```
  */
 export function diceMustPlay(spec: VariantSpec, position: Position, side: Side, dice: readonly number[]): number[] {
   const memo = new Map<string, number[]>();
@@ -61,7 +101,24 @@ export function diceMustPlay(spec: VariantSpec, position: Position, side: Side, 
   return best(position, dice);
 }
 
-/** Whether every die of `need` (highest first) can be played from `position`, in some order. */
+/** Whether every die of `need` (highest first) can be played from `position`, in some order.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param need - The dice remaining to play.
+ * @param failed - Optional failed-position cache for the recursive legal-play search.
+ * @returns Whether every die of `need` (highest first) can be played from `position`, in some order.
+ * @example
+ * ```ts
+ * import { canPlayAll, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(canPlayAll(spec,position,"white",[3,1]));
+ * ```
+ */
 export function canPlayAll(spec: VariantSpec, position: Position, side: Side, need: readonly number[], failed: Set<string> = new Set()): boolean {
   const go = (at: Position, left: readonly number[]): boolean => {
     if (left.length === 0) return true;
@@ -86,6 +143,21 @@ export function canPlayAll(spec: VariantSpec, position: Position, side: Side, ne
  * (highest first) to play from `position`: every move that leaves the rest
  * of `need` playable. Where one checker could be borne off by either of two
  * dice, both moves are offered.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param need - The dice remaining to play.
+ * @returns The moves that may be made next, by a side that still has the dice `need` (highest first) to play from `position`: every move that leaves the rest of `need` playable. Where one checker could be borne off by either of two dice, both moves are offered.
+ * @example
+ * ```ts
+ * import { nextMoves, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(nextMoves(spec,position,"white",[3,1]));
+ * ```
  */
 export function nextMoves(spec: VariantSpec, position: Position, side: Side, need: readonly number[]): Move[] {
   const moves: Move[] = [];
@@ -105,6 +177,21 @@ export function nextMoves(spec: VariantSpec, position: Position, side: Side, nee
  * Every different turn a side may make with a roll: one for each position
  * that playing the roll as the rules require can leave, with one way of
  * getting there. A side that cannot move has the one play of no moves.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param roll - The valid dice as thrown, in throw order.
+ * @returns Every different turn a side may make with a roll: one for each position that playing the roll as the rules require can leave, with one way of getting there. A side that cannot move has the one play of no moves.
+ * @example
+ * ```ts
+ * import { legalPlays, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(legalPlays(spec,position,"white",[3,1]).length);
+ * ```
  */
 export function legalPlays(spec: VariantSpec, position: Position, side: Side, roll: readonly number[]): Play[] {
   const need = diceMustPlay(spec, position, side, diceToPlay(spec, roll));
@@ -136,7 +223,25 @@ export function legalPlays(spec: VariantSpec, position: Position, side: Side, ro
   return [...found.values()];
 }
 
-/** The position after a list of moves, made one after another. */
+/** The position after a list of moves, made one after another.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param moves - Legal checker moves in their played order.
+ * @returns The position after a list of moves, made one after another.
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, playMoves, rollOpening, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * console.log(playMoves(spec,position,"white",play.moves).bar);
+ * ```
+ */
 export function playMoves(spec: VariantSpec, position: Position, side: Side, moves: readonly Move[]): Position {
   return moves.reduce((at, move) => applyMove(spec, at, side, move), position);
 }

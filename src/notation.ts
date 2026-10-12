@@ -15,12 +15,39 @@ import type { VariantSpec } from "./variants.ts";
 
 const point = (n: number): string => (n === BAR ? "bar" : n === 0 ? "off" : String(n));
 
-/** One move as text: `24/18`, `bar/22*`, `6/off`. */
+/** One move as text: `24/18`, `bar/22*`, `6/off`.
+ *
+ * @param move - A native legal move, including die and hit status.
+ * @returns One move as text: `24/18`, `bar/22*`, `6/off`.
+ * @example
+ * ```ts
+ * import { formatMove, legalPlaysOf, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const move = play.moves[0];
+ * console.log(formatMove(move));
+ * ```
+ */
 export function formatMove(move: Move): string {
   return `${point(move.from)}/${point(move.to)}${move.hit ? "*" : ""}`;
 }
 
-/** The text of a whole turn: moves of one checker joined, equal moves counted, the farthest-back checker first. A turn of no moves is `-`. */
+/** The text of a whole turn: moves of one checker joined, equal moves counted, the farthest-back checker first. A turn of no moves is `-`.
+ *
+ * @param moves - Legal checker moves in their played order.
+ * @returns The text of a whole turn: moves of one checker joined, equal moves counted, the farthest-back checker first. A turn of no moves is `-`.
+ * @example
+ * ```ts
+ * import { formatPlay, legalPlaysOf, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * console.log(formatPlay(play.moves));
+ * ```
+ */
 export function formatPlay(moves: readonly Move[]): string {
   if (moves.length === 0) return "-";
   // Paths of one checker: each move goes on the end of a path that stops where it starts, or begins a path.
@@ -46,13 +73,31 @@ export function formatPlay(moves: readonly Move[]): string {
   return counted.join(" ");
 }
 
-/** A step of a written play: one checker, one die's distance (or off), as written. */
+/** A step of a written play: one checker, one die's distance (or off), as written.
+ *
+ * @example
+ * ```ts
+ * import type { Hop } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: Hop = {from:8,to:5};
+ * console.log(value);
+ * ```
+ */
 export type Hop = { readonly from: number; readonly to: number };
 
 /**
  * The hops a written play names, in the order written: a chain of three points
  * is two hops, and `13/11(2)` is two. Returns null for text that is not a play. `-`, `pass`,
  * and the empty text are the play of no moves.
+ *
+ * @param text - Native move notation, position text or full record specified by the signature.
+ * @returns The hops a written play names, in the order written: a chain of three points is two hops, and `13/11(2)` is two. Returns null for text that is not a play. `-`, `pass`, and the empty text are the play of no moves.
+ * @example
+ * ```ts
+ * import { parseHops } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(parseHops("8/5 6/5"));
+ * ```
  */
 export function parseHops(text: string): Hop[] | null {
   const trimmed = text.trim().toLowerCase();
@@ -81,6 +126,24 @@ export function parseHops(text: string): Hop[] | null {
  * in some order, each one legal when it is made, until the roll is played as
  * the rules require. A checker that plays both dice may be written as one move,
  * `24/14` for a 6 and a 4, as well as through the point it passes.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param roll - The valid dice as thrown, in throw order.
+ * @param text - Native move notation, position text or full record specified by the signature.
+ * @returns The moves a written play makes with a roll, or null if it is not a legal play of that roll. Checks every rule: it is found by making each named move in some order, each one legal when it is made, until the roll is played as the rules require. A checker that plays both dice may be written as one move, `24/14` for a 6 and a 4, as well as through the point it passes.
+ * @example
+ * ```ts
+ * import { formatPlay, legalPlaysOf, newGame, parsePlay, rollOpening, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * console.log(parsePlay(spec,position,"white",[3,1],formatPlay(play.moves)));
+ * ```
  */
 export function parsePlay(spec: VariantSpec, position: Position, side: Side, roll: readonly number[], text: string): Move[] | null {
   const hops = parseHops(text);
@@ -126,12 +189,37 @@ const formatCounts = (counts: readonly number[]): string => {
  * enter and those borne off, `[white, black]` each.
  *
  *     white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5 bar=0,0 reserve=0,0 off=0,0
+ *
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @returns A position as text, for any variant: each side's checkers as `point:count` in that side's own numbering, highest point first, then the bar, those yet to enter and those borne off, `[white, black]` each.
+ * @example
+ * ```ts
+ * import { formatPosition, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(formatPosition(position));
+ * ```
  */
 export function formatPosition(position: Position): string {
   return `white=${formatCounts(position.points[0])} black=${formatCounts(position.points[1])} bar=${position.bar.join(",")} reserve=${position.reserve.join(",")} off=${position.off.join(",")}`;
 }
 
-/** The position that text of `formatPosition`'s kind stands for, or null if it is not one. `bar`, `reserve` and `off` may be left out. */
+/** The position that text of `formatPosition`'s kind stands for, or null if it is not one. `bar`, `reserve` and `off` may be left out.
+ *
+ * @param text - Native move notation, position text or full record specified by the signature.
+ * @returns The position that text of `formatPosition`'s kind stands for, or null if it is not one. `bar`, `reserve` and `off` may be left out.
+ * @example
+ * ```ts
+ * import { formatPosition, parsePosition, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(parsePosition(formatPosition(position))?.bar);
+ * ```
+ */
 export function parsePosition(text: string): Position | null {
   const fields = new Map<string, string>();
   for (const token of text.trim().split(/\s+/)) {

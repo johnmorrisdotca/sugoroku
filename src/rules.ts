@@ -3,6 +3,16 @@ import { isVariantKey, variantSpec, type VariantKey, type VariantSpec } from "./
 /**
  * HOW A GAME IS SCORED AND STAKED, beside the variant's board. A variant says
  * where the checkers stand and how they move; these say what a win is worth.
+ *
+ * @example
+ * ```ts
+ * import { settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { Rules } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const value: Rules = settings.rules;
+ * console.log(value);
+ * ```
  */
 export type Rules = {
   /**
@@ -22,10 +32,30 @@ export type Rules = {
   gammons: boolean;
 };
 
-/** The rules a variant is played with when nothing else is asked: a single game with no cube and no gammons. */
+/** The rules a variant is played with when nothing else is asked: a single game with no cube and no gammons.
+ *
+ * @example
+ * ```ts
+ * import { DEFAULT_RULES } from "@johnmorrisdotca/sugoroku";
+ * console.log(DEFAULT_RULES);
+ * ```
+ */
 export const DEFAULT_RULES: Rules = { points: 1, cube: false, crawford: true, jacoby: false, beaver: false, gammons: false };
 
-/** What goes wrong with a set of rules, as sentences; empty when they are fine. */
+/** What goes wrong with a set of rules, as sentences; empty when they are fine.
+ *
+ * @param rules - The complete or partial native rules specified by the signature.
+ * @param variant - The variant key or resolved specification.
+ * @returns What goes wrong with a set of rules, as sentences; empty when they are fine.
+ * @example
+ * ```ts
+ * import { rulesProblems, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * console.log(rulesProblems(settings.rules,spec));
+ * ```
+ */
 export function rulesProblems(rules: Rules, variant?: VariantSpec): string[] {
   const problems: string[] = [];
   if (!Number.isInteger(rules.points) || rules.points < 0) problems.push("points must be 0 (money play) or a whole number of points");
@@ -37,7 +67,20 @@ export function rulesProblems(rules: Rules, variant?: VariantSpec): string[] {
   return problems;
 }
 
-/** The rules with anything left out filled from `DEFAULT_RULES`. Throws if the result is not a set of rules that can be played. */
+/** The rules with anything left out filled from `DEFAULT_RULES`. Throws if the result is not a set of rules that can be played.
+ *
+ * @param rules - The complete or partial native rules specified by the signature.
+ * @param variant - The variant key or resolved specification.
+ * @returns The rules with anything left out filled from `DEFAULT_RULES`. Throws if the result is not a set of rules that can be played.
+ * @example
+ * ```ts
+ * import { resolveRules, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * console.log(resolveRules({points:5,cube:true},spec));
+ * ```
+ */
 export function resolveRules(rules: Partial<Rules> = {}, variant?: VariantSpec): Rules {
   const resolved = { ...DEFAULT_RULES, ...rules };
   const problems = rulesProblems(resolved, variant);
@@ -45,12 +88,31 @@ export function resolveRules(rules: Partial<Rules> = {}, variant?: VariantSpec):
   return resolved;
 }
 
-/** Whether the cube is in play in a game of a match, given whether this is the Crawford game. */
+/** Whether the cube is in play in a game of a match, given whether this is the Crawford game.
+ *
+ * @param rules - The complete or partial native rules specified by the signature.
+ * @param crawfordGame - Whether this is the match’s cube-free Crawford game.
+ * @returns Whether the cube is in play in a game of a match, given whether this is the Crawford game.
+ * @example
+ * ```ts
+ * import { cubeInPlay, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * console.log(cubeInPlay(settings.rules,false));
+ * ```
+ */
 export function cubeInPlay(rules: Rules, crawfordGame: boolean): boolean {
   return rules.cube && rules.points !== 1 && !crawfordGame;
 }
 
-/** The most the cube can show. */
+/** The most the cube can show.
+ *
+ * @example
+ * ```ts
+ * import { CUBE_LIMIT } from "@johnmorrisdotca/sugoroku";
+ * console.log(CUBE_LIMIT);
+ * ```
+ */
 export const CUBE_LIMIT = 64;
 
 /**
@@ -58,6 +120,15 @@ export const CUBE_LIMIT = 64;
  * these games were played on (ItsYourTurn.com and GoldToken.com) each lead to
  * one of these through `presetByName`, and `docs/VARIANTS.md` says how each
  * was read.
+ *
+ * @example
+ * ```ts
+ * import type { Preset } from "@johnmorrisdotca/sugoroku";
+ * import { PRESETS } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: Preset = PRESETS[0];
+ * console.log(value);
+ * ```
  */
 export type Preset = {
   /** In kebab case. */
@@ -71,7 +142,14 @@ export type Preset = {
 const MATCH = (points: number): Rules => ({ points, cube: true, crawford: true, jacoby: false, beaver: false, gammons: true });
 const SINGLE: Rules = DEFAULT_RULES;
 
-/** Every named way of playing, in the order of `docs/VARIANTS.md`. */
+/** Every named way of playing, in the order of `docs/VARIANTS.md`.
+ *
+ * @example
+ * ```ts
+ * import { PRESETS } from "@johnmorrisdotca/sugoroku";
+ * console.log(PRESETS);
+ * ```
+ */
 export const PRESETS: readonly Preset[] = [
   { key: "backgammon", variant: "backgammon", rules: SINGLE, names: ["Backgammon", "Backgammon Level 2", "Backgammon Level 3", "Casual Backgammon"] },
   { key: "backgammon-3", variant: "backgammon", rules: MATCH(3), names: ["Backgammon (3 Point)"] },
@@ -97,24 +175,66 @@ export const PRESETS: readonly Preset[] = [
   { key: "tabula", variant: "tabula", rules: SINGLE, names: ["Tabula"] },
 ];
 
-/** The preset a site's printed name leads to, or undefined. Case and spacing around the name do not matter. */
+/** The preset a site's printed name leads to, or undefined. Case and spacing around the name do not matter.
+ *
+ * @param name - The colour property, preset name or sound identifier specified by this signature.
+ * @returns The matching preset, or undefined for an unknown name.
+ * @example
+ * ```ts
+ * import { presetByName } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(presetByName("backgammon")?.key);
+ * ```
+ */
 export function presetByName(name: string): Preset | undefined {
   const wanted = name.trim().toLowerCase();
   return PRESETS.find((preset) => preset.names.some((one) => one.toLowerCase() === wanted));
 }
 
-/** The preset with this key, or undefined. */
+/** The preset with this key, or undefined.
+ *
+ * @param key - The native variant, preset or localized-label key specified by the signature.
+ * @returns The matching preset, or undefined for an unknown key.
+ * @example
+ * ```ts
+ * import { PRESETS, presetByKey } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(presetByKey(PRESETS[0].key)?.names);
+ * ```
+ */
 export function presetByKey(key: string): Preset | undefined {
   return PRESETS.find((preset) => preset.key === key);
 }
 
-/** The settings of a game: the variant's row and the rules. What every game and match is made from. */
+/** The settings of a game: the variant's row and the rules. What every game and match is made from.
+ *
+ * @example
+ * ```ts
+ * import { settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { Settings } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const value: Settings = settings;
+ * console.log(value);
+ * ```
+ */
 export type Settings = {
   variant: VariantSpec;
   rules: Rules;
 };
 
-/** Settings from a variant key (or a row) and rules, left-out rules filled in. */
+/** Settings from a variant key (or a row) and rules, left-out rules filled in.
+ *
+ * @param variant - The variant key or resolved specification.
+ * @param rules - The complete or partial native rules specified by the signature.
+ * @returns Settings from a variant key (or a row) and rules, left-out rules filled in.
+ * @example
+ * ```ts
+ * import { settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(settingsFor("nackgammon",{points:5}).variant.key);
+ * ```
+ */
 export function settingsFor(variant: VariantKey | VariantSpec, rules: Partial<Rules> = {}): Settings {
   if (typeof variant === "string" && !isVariantKey(variant)) throw new Error(`${variant} is not a variant`);
   const spec = typeof variant === "string" ? variantSpec(variant) : variant;

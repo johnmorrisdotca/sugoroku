@@ -1,30 +1,78 @@
 /**
  * THE VARIANTS, AS ROWS OF SETTINGS. Nothing in the engine branches on a
  * variant's name: it reads the row. A new game on the same board is a new row.
+ *
+ * @example
+ * ```ts
+ * import type { VariantKey } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: VariantKey = "tabula";
+ * console.log(value);
+ * ```
  */
 export type VariantKey = "backgammon" | "backgammon-race" | "anti-backgammon" | "nackgammon" | "long-gammon" | "hypergammon" | "tabula";
 
-/** How the sides' tracks lie on the board. */
+/** How the sides' tracks lie on the board.
+ *
+ * @example
+ * ```ts
+ * import type { Direction } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: Direction = "opposed";
+ * console.log(value);
+ * ```
+ */
 export type Direction =
   /** Opposite ways round, as in backgammon: one side's 24-point is the other's 1-point. */
   | "opposed"
   /** The same way round, from the same start, as in Tabula: both sides' own point 24 is the one place. */
   | "same";
 
-/** How a game is opened. */
+/** How a game is opened.
+ *
+ * @example
+ * ```ts
+ * import type { Opening } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: Opening = "roll-off";
+ * console.log(value);
+ * ```
+ */
 export type Opening =
   /** Each side throws one die; the higher plays both dice as the first roll of the game, as in backgammon. */
   | "roll-off"
   /** Each side throws one die; the higher goes first and then rolls a roll of their own. */
   | "die-each";
 
-/** What it takes to win. */
+/** What it takes to win.
+ *
+ * @example
+ * ```ts
+ * import type { Goal } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: Goal = "first-off";
+ * console.log(value);
+ * ```
+ */
 export type Goal =
   /** Bear off every checker first. */
   | "first-off"
   /** Be last to bear off: whoever bears off every checker first loses (Anti-Backgammon). */
   | "last-off";
 
+/** A native variant’s checker counts, starting layout, dice, directions, opening and winning goal.
+ *
+ * @example
+ * ```ts
+ * import { settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { VariantSpec } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const value: VariantSpec = spec;
+ * console.log(value);
+ * ```
+ */
 export type VariantSpec = {
   readonly key: VariantKey;
   /** Checkers each side has. */
@@ -70,6 +118,12 @@ const BASE = {
 /**
  * Every variant. Where each comes from, and where the sources disagree or say
  * nothing, is in `docs/VARIANTS.md`.
+ *
+ * @example
+ * ```ts
+ * import { VARIANTS } from "@johnmorrisdotca/sugoroku";
+ * console.log(VARIANTS);
+ * ```
  */
 export const VARIANTS: Readonly<Record<VariantKey, VariantSpec>> = {
   /** The classic game. */
@@ -107,27 +161,78 @@ export const VARIANTS: Readonly<Record<VariantKey, VariantSpec>> = {
   tabula: { ...BASE, key: "tabula", layout: [], dice: 3, doubles: "none", direction: "same", opening: "die-each", holdBelow: 12 },
 };
 
-/** The variants' keys, in the order the demo lists them. */
+/** The variants' keys, in the order the demo lists them.
+ *
+ * @example
+ * ```ts
+ * import { VARIANT_KEYS } from "@johnmorrisdotca/sugoroku";
+ * console.log(VARIANT_KEYS);
+ * ```
+ */
 export const VARIANT_KEYS: readonly VariantKey[] = ["backgammon", "backgammon-race", "anti-backgammon", "nackgammon", "long-gammon", "hypergammon", "tabula"];
 
-/** Whether `key` names a variant. */
+/** Whether `key` names a variant.
+ *
+ * @param key - The native variant, preset or localized-label key specified by the signature.
+ * @returns Whether `key` names a variant.
+ * @example
+ * ```ts
+ * import { isVariantKey } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(isVariantKey("tabula"));
+ * ```
+ */
 export function isVariantKey(key: unknown): key is VariantKey {
   return typeof key === "string" && (VARIANT_KEYS as readonly string[]).includes(key);
 }
 
-/** The row for a variant. */
+/** The row for a variant.
+ *
+ * @param key - The native variant, preset or localized-label key specified by the signature.
+ * @returns The row for a variant.
+ * @example
+ * ```ts
+ * import { variantSpec } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(variantSpec("tabula").dice);
+ * ```
+ */
 export function variantSpec(key: VariantKey): VariantSpec {
   return VARIANTS[key];
 }
 
-/** Which points a side's checkers start on, as an array indexed by own point 1 to 24 (index 0 is point 1). */
+/** Which points a side's checkers start on, as an array indexed by own point 1 to 24 (index 0 is point 1).
+ *
+ * @param spec - The native variant specification.
+ * @returns Which points a side's checkers start on, as an array indexed by own point 1 to 24 (index 0 is point 1).
+ * @example
+ * ```ts
+ * import { settingsFor, startCounts } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * console.log(startCounts(spec));
+ * ```
+ */
 export function startCounts(spec: VariantSpec): number[] {
   const counts = new Array<number>(24).fill(0);
   for (const [point, count] of spec.layout) counts[point - 1] = count;
   return counts;
 }
 
-/** How many checkers each side begins off the board, to be entered with the dice. */
+/** How many checkers each side begins off the board, to be entered with the dice.
+ *
+ * @param spec - The native variant specification.
+ * @returns How many checkers each side begins off the board, to be entered with the dice.
+ * @example
+ * ```ts
+ * import { settingsFor, startReserve } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * console.log(startReserve(spec));
+ * ```
+ */
 export function startReserve(spec: VariantSpec): number {
   return spec.checkers - spec.layout.reduce((sum, [, count]) => sum + count, 0);
 }

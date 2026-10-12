@@ -7,6 +7,19 @@ import type { VariantSpec } from "./variants.ts";
  * point `from` (or the `BAR`, 25, for a checker entering from the bar or from
  * off the board at the start of a race) to its own point `to` (0 for borne
  * off). A move that lands on a lone checker of the other side hits it.
+ *
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { Move } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const move = play.moves[0];
+ * const value: Move = move;
+ * console.log(value);
+ * ```
  */
 export type Move = {
   readonly from: number;
@@ -38,6 +51,21 @@ function rearPoint(position: Position, side: Side): number {
  * board (in a race) whenever it likes; and a side whose checkers are all
  * home may bear off, by the exact die, or by a larger one from the highest
  * point it has a checker on.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param die - One valid die value, from 1 to 6.
+ * @returns Every move of one die that `side` may make from `position`, one for each point a checker can start from. A side with a checker on the bar must enter it first; a side that has not borne off may start a checker off the board (in a race) whenever it likes; and a side whose checkers are all home may bear off, by the exact die, or by a larger one from the highest point it has a checker on.
+ * @example
+ * ```ts
+ * import { movesOfDie, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(movesOfDie(spec,position,"white",3));
+ * ```
  */
 export function movesOfDie(spec: VariantSpec, position: Position, side: Side, die: number): Move[] {
   const i = sideIndex(side);
@@ -61,7 +89,26 @@ export function movesOfDie(spec: VariantSpec, position: Position, side: Side, di
   return moves;
 }
 
-/** The position after a move. Does not check that the move is legal. */
+/** The position after a move. Does not check that the move is legal.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param move - A native legal move, including die and hit status.
+ * @returns The position after a move. Does not check that the move is legal.
+ * @example
+ * ```ts
+ * import { applyMove, legalPlaysOf, newGame, rollOpening, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const move = play.moves[0];
+ * console.log(applyMove(spec,position,"white",move).bar);
+ * ```
+ */
 export function applyMove(spec: VariantSpec, position: Position, side: Side, move: Move): Position {
   const i = sideIndex(side);
   const j = sideIndex(otherSide(side));

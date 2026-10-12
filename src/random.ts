@@ -1,7 +1,27 @@
-/** A source of random numbers from 0 up to but not including 1. */
+/** A source of random numbers from 0 up to but not including 1.
+ *
+ * @example
+ * ```ts
+ * import type { Random } from "@johnmorrisdotca/sugoroku";
+ * import { seededRandom } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: Random = seededRandom(42);
+ * console.log(value);
+ * ```
+ */
 export type Random = () => number;
 
-/** A whole number from a seed given as a number or as text: the same seed is always the same number, in every browser and every Node. */
+/** A whole number from a seed given as a number or as text: the same seed is always the same number, in every browser and every Node.
+ *
+ * @param seed - A reproducible numeric or text seed.
+ * @returns A whole number from a seed given as a number or as text: the same seed is always the same number, in every browser and every Node.
+ * @example
+ * ```ts
+ * import { hashSeed } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(hashSeed("sample"));
+ * ```
+ */
 export function hashSeed(seed: number | string): number {
   if (typeof seed === "number") return seed >>> 0;
   let hash = 2166136261;
@@ -12,7 +32,17 @@ export function hashSeed(seed: number | string): number {
   return hash >>> 0;
 }
 
-/** The mulberry32 stream: the same seed makes the same numbers everywhere. */
+/** The mulberry32 stream: the same seed makes the same numbers everywhere.
+ *
+ * @param seed - A reproducible numeric or text seed.
+ * @returns The mulberry32 stream: the same seed makes the same numbers everywhere.
+ * @example
+ * ```ts
+ * import { seededRandom } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(seededRandom(42)());
+ * ```
+ */
 export function seededRandom(seed: number | string): Random {
   let state = hashSeed(seed);
   return () => {

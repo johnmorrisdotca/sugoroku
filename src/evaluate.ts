@@ -55,7 +55,17 @@ function rollsThatHit(distances: readonly number[]): number {
   return n;
 }
 
-/** The numbers the evaluation is made of, each a number of pips. */
+/** The numbers the evaluation is made of, each a number of pips.
+ *
+ * @example
+ * ```ts
+ * import type { EvaluationWeights } from "@johnmorrisdotca/sugoroku";
+ * import { EVALUATION_WEIGHTS } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: EvaluationWeights = EVALUATION_WEIGHTS;
+ * console.log(value);
+ * ```
+ */
 export type EvaluationWeights = {
   /** What it is worth to have the roll, which the side that does not have it must give up. */
   onRoll: number;
@@ -87,7 +97,14 @@ export type EvaluationWeights = {
   barOther: number;
 };
 
-/** The weights the computer plays with: set by hand and then held against random changes of themselves, none of which won more often over two thousand games. */
+/** The weights the computer plays with: set by hand and then held against random changes of themselves, none of which won more often over two thousand games.
+ *
+ * @example
+ * ```ts
+ * import { EVALUATION_WEIGHTS } from "@johnmorrisdotca/sugoroku";
+ * console.log(EVALUATION_WEIGHTS);
+ * ```
+ */
 export const EVALUATION_WEIGHTS: EvaluationWeights = {
   onRoll: 4,
   raceChecker: 1.6,
@@ -120,6 +137,21 @@ function distancesTo(counts: readonly number[], onBarOrReserve: number, target: 
  * The score of a position for `side`, with the other side to move, as a game
  * where bearing off first wins. Large positive or negative numbers are a game
  * won or lost; `evaluateFor` turns it over for a game played to lose.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param weights - Optional weights for the native position evaluation.
+ * @returns The score of a position for `side`, with the other side to move, as a game where bearing off first wins. Large positive or negative numbers are a game won or lost; `evaluateFor` turns it over for a game played to lose.
+ * @example
+ * ```ts
+ * import { evaluate, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(evaluate(spec,position,"white"));
+ * ```
  */
 export function evaluate(spec: VariantSpec, position: Position, side: Side, weights: EvaluationWeights = EVALUATION_WEIGHTS): number {
   const i = sideIndex(side);
@@ -180,13 +212,39 @@ export function evaluate(spec: VariantSpec, position: Position, side: Side, weig
   return score;
 }
 
-/** The score as `side` plays to win or to lose: a game played to lose is judged the other way up. */
+/** The score as `side` plays to win or to lose: a game played to lose is judged the other way up.
+ *
+ * @param spec - The native variant specification.
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param weights - Optional weights for the native position evaluation.
+ * @returns The score as `side` plays to win or to lose: a game played to lose is judged the other way up.
+ * @example
+ * ```ts
+ * import { evaluateFor, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(evaluateFor(spec,position,"white"));
+ * ```
+ */
 export function evaluateFor(spec: VariantSpec, position: Position, side: Side, weights: EvaluationWeights = EVALUATION_WEIGHTS): number {
   const score = evaluate(spec, position, side, weights);
   return spec.goal === "first-off" ? score : -score;
 }
 
-/** A chance of winning, 0 to 1, that a score in pips stands for: the logistic curve, which a lead of 25 pips in a position of this kind takes to about three in four. */
+/** A chance of winning, 0 to 1, that a score in pips stands for: the logistic curve, which a lead of 25 pips in a position of this kind takes to about three in four.
+ *
+ * @param score - The evaluation difference to map to a win chance.
+ * @returns A chance of winning, 0 to 1, that a score in pips stands for: the logistic curve, which a lead of 25 pips in a position of this kind takes to about three in four.
+ * @example
+ * ```ts
+ * import { winChance } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(winChance(0));
+ * ```
+ */
 export function winChance(score: number): number {
   return 1 / (1 + Math.exp(-score / 22));
 }
@@ -197,6 +255,20 @@ export function winChance(score: number): number {
  * 1-point, 1 for each beyond the first on the 2-point and beyond three on the
  * 3-point, and 1 for each empty point among the 4, 5 and 6, and then the side
  * on roll adds a seventh (rounded down). For races only.
+ *
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param side - The side being examined: white or black.
+ * @param onRoll - The side to roll, or whether this evaluated side is on roll, specified by the signature.
+ * @returns The Keith count of a side, a pip count corrected for how badly the checkers are placed for bearing off: plus 2 for each checker beyond the first on the 1-point, 1 for each beyond the first on the 2-point and beyond three on the 3-point, and 1 for each empty point among the 4, 5 and 6, and then the side on roll adds a seventh (rounded down). For races only.
+ * @example
+ * ```ts
+ * import { keithCount, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(keithCount(position,"white",true));
+ * ```
  */
 export function keithCount(position: Position, side: Side, onRoll: boolean): number {
   const points = position.points[sideIndex(side)];

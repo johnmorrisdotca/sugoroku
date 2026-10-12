@@ -22,7 +22,21 @@ import { otherSide, sideIndex, type Side } from "./side.ts";
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-/** The ID of a position with `onRoll` to move, or null if it cannot be written in this form. */
+/** The ID of a position with `onRoll` to move, or null if it cannot be written in this form.
+ *
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param onRoll - The side to roll, or whether this evaluated side is on roll, specified by the signature.
+ * @returns The ID of a position with `onRoll` to move, or null if it cannot be written in this form.
+ * @example
+ * ```ts
+ * import { positionId, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(positionId(position,"white"));
+ * ```
+ */
 export function positionId(position: Position, onRoll: Side): string | null {
   if (position.reserve[0] > 0 || position.reserve[1] > 0) return null;
   const bits: number[] = [];
@@ -60,6 +74,20 @@ export function positionId(position: Position, onRoll: Side): string | null {
  * not an ID. The ID does not say how many checkers each side began with: pass
  * the variant's (15 for the standard board), and what is not on the board is
  * counted as borne off.
+ *
+ * @param id - A GNU-compatible position ID.
+ * @param onRoll - The side to roll, or whether this evaluated side is on roll, specified by the signature.
+ * @param checkers - The checker count expected for each side.
+ * @returns The position an ID stands for, with `onRoll` to move, or null if the text is not an ID. The ID does not say how many checkers each side began with: pass the variant's (15 for the standard board), and what is not on the board is counted as borne off.
+ * @example
+ * ```ts
+ * import { positionFromId, positionId, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(positionFromId(positionId(position,"white")!,"white")?.bar);
+ * ```
  */
 export function positionFromId(id: string, onRoll: Side, checkers = 15): Position | null {
   if (!/^[A-Za-z0-9+/]{14}$/.test(id)) return null;

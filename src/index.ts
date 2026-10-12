@@ -1,3 +1,5 @@
+/** Pure backgammon and variant rules, legal turns, cube and match scoring, dice, records and computer choices. */
+
 export * from "./side.ts";
 export * from "./variants.ts";
 export * from "./rules.ts";

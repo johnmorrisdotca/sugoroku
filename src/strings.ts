@@ -6,9 +6,25 @@
  *
  * `{name}` in a line is a value filled in. The Japanese is a first draft that no
  * native reader has yet checked.
+ *
+ * @example
+ * ```ts
+ * import type { SugorokuLanguage } from "@johnmorrisdotca/sugoroku/play";
+ *
+ * const value: SugorokuLanguage = "ja";
+ * console.log(value);
+ * ```
  */
 export type SugorokuLanguage = "en" | "ja";
 
+/** The native English and Japanese labels, announcements and interpolation templates.
+ *
+ * @example
+ * ```ts
+ * import { SUGOROKU_STRINGS } from "@johnmorrisdotca/sugoroku/play";
+ * console.log(SUGOROKU_STRINGS);
+ * ```
+ */
 export const SUGOROKU_STRINGS: Record<SugorokuLanguage, Record<string, string>> = {
   en: {
     variant_backgammon: "Backgammon",
@@ -130,13 +146,37 @@ export const SUGOROKU_STRINGS: Record<SugorokuLanguage, Record<string, string>> 
   },
 };
 
-/** A line in a language with its `{name}`s filled in. A name left unfilled stays as written, so a missing value is visible. */
+/** A line in a language with its `{name}`s filled in. A name left unfilled stays as written, so a missing value is visible.
+ *
+ * @param language - The English or Japanese display language.
+ * @param key - The native variant, preset or localized-label key specified by the signature.
+ * @param values - Replacement strings or numbers for brace-delimited placeholders.
+ * @returns A line in a language with its `{name}`s filled in. A name left unfilled stays as written, so a missing value is visible.
+ * @example
+ * ```ts
+ * import { sugorokuSay } from "@johnmorrisdotca/sugoroku/play";
+ *
+ * console.log(sugorokuSay("en","roll"));
+ * ```
+ */
 export function sugorokuSay(language: SugorokuLanguage, key: string, values: Record<string, string | number> = {}): string {
   const line = SUGOROKU_STRINGS[language][key] ?? SUGOROKU_STRINGS.en[key] ?? key;
   return line.replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole));
 }
 
-/** The language an element or its page is in: its own `lang`, or the nearest above, and English unless that begins with `ja`. */
+/** The language an element or its page is in: its own `lang`, or the nearest above, and English unless that begins with `ja`.
+ *
+ * @param element - The host element whose inherited language is read; null selects the fallback.
+ * @returns The language an element or its page is in: its own `lang`, or the nearest above, and English unless that begins with `ja`.
+ * @example
+ * ```ts no-run
+ * import { sugorokuLanguageOf } from "@johnmorrisdotca/sugoroku/play";
+ *
+ * const host = document.createElement("div");
+ * host.lang="ja";
+ * console.log(sugorokuLanguageOf(host));
+ * ```
+ */
 export function sugorokuLanguageOf(element: Element | null): SugorokuLanguage {
   const tag = element?.closest("[lang]")?.getAttribute("lang") ?? element?.ownerDocument?.documentElement.getAttribute("lang") ?? "en";
   return tag.toLowerCase().startsWith("ja") ? "ja" : "en";

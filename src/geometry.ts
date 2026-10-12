@@ -9,7 +9,16 @@ import type { Side } from "./side.ts";
  * whatever the position, the dice and the cube: a board never changes shape.
  */
 
-/** Whether the board lies across the page or stands up in it. */
+/** Whether the board lies across the page or stands up in it.
+ *
+ * @example
+ * ```ts
+ * import type { Orientation } from "@johnmorrisdotca/sugoroku/draw";
+ *
+ * const value: Orientation = "landscape";
+ * console.log(value);
+ * ```
+ */
 export type Orientation = "landscape" | "portrait";
 
 export const PAD = 14;
@@ -29,6 +38,16 @@ export const CHECKER = 44;
 export const STACK_STEP = 40;
 export const DIE = 46;
 
+/** The cube, viewing side, home direction and orientation used to calculate board geometry.
+ *
+ * @example
+ * ```ts
+ * import type { BoardOptions } from "@johnmorrisdotca/sugoroku/draw";
+ *
+ * const value: BoardOptions = {cube:true,view:"white",home:"right",orientation:"landscape"};
+ * console.log(value);
+ * ```
+ */
 export type BoardOptions = {
   /** Whether the board has a rail for the doubling cube. */
   cube: boolean;
@@ -39,7 +58,16 @@ export type BoardOptions = {
   orientation: Orientation;
 };
 
-/** A box: where something is, in landscape units before any turning. */
+/** A box: where something is, in landscape units before any turning.
+ *
+ * @example
+ * ```ts
+ * import type { Box } from "@johnmorrisdotca/sugoroku/draw";
+ *
+ * const value: Box = {x:0,y:0,w:100,h:100};
+ * console.log(value);
+ * ```
+ */
 export type Box = { x: number; y: number; w: number; h: number };
 
 /** The width and height of the board drawn lying down. */
@@ -48,7 +76,17 @@ export function landscapeSize(cube: boolean): { width: number; height: number } 
   return { width: PAD + rail + 2 * HALF_WIDTH + BAR_WIDTH + TRAY_GAP + TRAY_WIDTH + PAD, height: PAD + STRIP + 2 * POINT_LENGTH + MIDDLE + STRIP + PAD };
 }
 
-/** The width and height the board is drawn in, which is the other way about when it stands up. */
+/** The width and height the board is drawn in, which is the other way about when it stands up.
+ *
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns The width and height the board is drawn in, which is the other way about when it stands up.
+ * @example
+ * ```ts
+ * import { boardSize } from "@johnmorrisdotca/sugoroku/draw";
+ *
+ * console.log(boardSize({cube:true,orientation:"landscape"}));
+ * ```
+ */
 export function boardSize(options: Pick<BoardOptions, "cube" | "orientation">): { width: number; height: number } {
   const { width, height } = landscapeSize(options.cube);
   return options.orientation === "portrait" ? { width: height, height: width } : { width, height };
@@ -57,6 +95,15 @@ export function boardSize(options: Pick<BoardOptions, "cube" | "orientation">): 
 /**
  * The layout of a board, a function of its options: where each point, the bar,
  * each tray, the rail and the dice sit, all in landscape units.
+ *
+ * @param options - Cube rail, viewing side, home direction and board orientation.
+ * @example
+ * ```ts
+ * import { BoardLayout } from "@johnmorrisdotca/sugoroku/draw";
+ *
+ * const layout = new BoardLayout({cube:true,view:"white",home:"right",orientation:"landscape"});
+ * console.log(layout);
+ * ```
  */
 export class BoardLayout {
   readonly width: number;

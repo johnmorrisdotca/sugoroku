@@ -19,7 +19,16 @@ import { VARIANTS, type VariantKey, type VariantSpec } from "./variants.ts";
  * `data-checker` on each checker. Nothing in the drawing can be selected.
  */
 
-/** What to draw with. */
+/** What to draw with.
+ *
+ * @example
+ * ```ts
+ * import type { SugorokuDrawOptions } from "@johnmorrisdotca/sugoroku/draw";
+ *
+ * const value: SugorokuDrawOptions = {variant:"backgammon",view:"white",numbers:true};
+ * console.log(value);
+ * ```
+ */
 export type SugorokuDrawOptions = {
   /** The variant, for how its sides' points line up. Default `backgammon`. */
   variant?: VariantKey | VariantSpec;
@@ -54,13 +63,30 @@ export type SugorokuDrawOptions = {
 const escape = (text: string): string => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const n = (value: number): string => String(Math.round(value * 100) / 100);
 
-/** How many checkers are drawn on a stack before the last one carries the count. */
+/** How many checkers are drawn on a stack before the last one carries the count.
+ *
+ * @example
+ * ```ts
+ * import { MOST_DRAWN } from "@johnmorrisdotca/sugoroku/draw";
+ * console.log(MOST_DRAWN);
+ * ```
+ */
 export const MOST_DRAWN = 5;
 
 /** The pips of each die face, as places on a three by three grid, 0 to 8 reading across and down. */
 const PIPS: readonly (readonly number[])[] = [[], [4], [0, 8], [0, 4, 8], [0, 2, 6, 8], [0, 2, 4, 6, 8], [0, 2, 3, 5, 6, 8]];
 
-/** The inline custom properties of a drawing: the named board and checkers, then any colour given. */
+/** The inline custom properties of a drawing: the named board and checkers, then any colour given.
+ *
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns The inline custom properties of a drawing: the named board and checkers, then any colour given.
+ * @example
+ * ```ts
+ * import { colourStyle } from "@johnmorrisdotca/sugoroku/draw";
+ *
+ * console.log(colourStyle({board:"green",checkers:"contrast"}));
+ * ```
+ */
 export function colourStyle(options: Pick<SugorokuDrawOptions, "board" | "checkers" | "colours">): string {
   const colours: Partial<SugorokuColours> = { ...(options.board === undefined ? {} : SUGOROKU_BOARDS[options.board]), ...(options.checkers === undefined ? {} : SUGOROKU_CHECKER_SETS[options.checkers]), ...options.colours };
   return SUGOROKU_COLOUR_NAMES.filter((name) => colours[name] !== undefined).map((name) => `${colourProperty(name)}:${escape(String(colours[name]))}`).join(";");
@@ -79,6 +105,20 @@ function describe(position: Position): string {
 /**
  * The board as SVG text for `position`. The variant says how the sides' points
  * line up; pass the same one the game is played with.
+ *
+ * @param position - The native checker counts, bar, reserve and borne-off counts.
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns The board as SVG text for `position`. The variant says how the sides' points line up; pass the same one the game is played with.
+ * @example
+ * ```ts
+ * import { settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ * import { drawSugoroku } from "@johnmorrisdotca/sugoroku/draw";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * console.log(drawSugoroku(position,{variant:"backgammon",label:"Starting board"}).startsWith("<svg"));
+ * ```
  */
 export function drawSugoroku(position: Position, options: SugorokuDrawOptions = {}): string {
   const spec = typeof options.variant === "object" ? options.variant : VARIANTS[options.variant ?? "backgammon"];

@@ -4,7 +4,19 @@ import { diceMustPlay, diceToPlay, legalPlays, nextMoves, playMoves, type Play }
 import { CUBE_LIMIT, cubeInPlay, type Settings } from "./rules.ts";
 import { otherSide, sideIndex, type Side } from "./side.ts";
 
-/** Where a game has got to. */
+/** Where a game has got to.
+ *
+ * @example
+ * ```ts
+ * import { newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { Phase } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const value: Phase = game.phase;
+ * console.log(value);
+ * ```
+ */
 export type Phase =
   /** Nobody has the move yet: the sides are throwing a die each to see who starts. */
   | "opening"
@@ -19,10 +31,28 @@ export type Phase =
   /** The game is decided: see `result`. */
   | "over";
 
-/** The doubling cube: what it shows, and who may turn it (null while it stands in the middle, for either). */
+/** The doubling cube: what it shows, and who may turn it (null while it stands in the middle, for either).
+ *
+ * @example
+ * ```ts
+ * import type { Cube } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: Cube = {value:1,owner:null};
+ * console.log(value);
+ * ```
+ */
 export type Cube = { readonly value: number; readonly owner: Side | null };
 
-/** How a game came to its end. */
+/** How a game came to its end.
+ *
+ * @example
+ * ```ts
+ * import type { HowItEnded } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: HowItEnded = "bear-off";
+ * console.log(value);
+ * ```
+ */
 export type HowItEnded =
   /** Somebody bore off every checker. */
   | "bear-off"
@@ -33,9 +63,32 @@ export type HowItEnded =
   /** Neither side won. */
   | "draw";
 
-/** What kind of win it was, which is how many times the cube's value it scores. */
+/** What kind of win it was, which is how many times the cube's value it scores.
+ *
+ * @example
+ * ```ts
+ * import type { WinKind } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: WinKind = "gammon";
+ * console.log(value);
+ * ```
+ */
 export type WinKind = "single" | "gammon" | "backgammon";
 
+/** The decided winner, ending, win kind, cube multiplier and points.
+ *
+ * @example
+ * ```ts
+ * import { concede, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { GameResult } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const result = concede(game,"black","single").result!;
+ * const value: GameResult = result;
+ * console.log(value);
+ * ```
+ */
 export type GameResult = {
   /** The side that won, or null for a draw. */
   readonly winner: Side | null;
@@ -49,6 +102,19 @@ export type GameResult = {
   readonly points: number;
 };
 
+/** The immutable game phase, board, dice, remaining moves, cube and optional result.
+ *
+ * @example
+ * ```ts
+ * import { newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { GameState } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const value: GameState = game;
+ * console.log(value);
+ * ```
+ */
 export type GameState = {
   readonly settings: Settings;
   /** Whether this is the Crawford game of a match: no cube. */
@@ -79,7 +145,16 @@ export type GameState = {
   readonly result: GameResult | null;
 };
 
-/** Options for a new game. */
+/** Options for a new game.
+ *
+ * @example
+ * ```ts
+ * import type { NewGameOptions } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: NewGameOptions = {crawford:false,score:[0,0]};
+ * console.log(value);
+ * ```
+ */
 export type NewGameOptions = {
   /** Whether it is the Crawford game of a match: played without the cube. */
   crawford?: boolean;
@@ -87,7 +162,19 @@ export type NewGameOptions = {
   score?: readonly [number, number];
 };
 
-/** A new game, waiting for the opening throw. */
+/** A new game, waiting for the opening throw.
+ *
+ * @param settings - The resolved variant and complete rules.
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns A new game, waiting for the opening throw.
+ * @example
+ * ```ts
+ * import { newGame, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * console.log(newGame(settings).phase);
+ * ```
+ */
 export function newGame(settings: Settings, options: NewGameOptions = {}): GameState {
   const position = startPosition(settings.variant);
   return {
@@ -134,6 +221,17 @@ function startPlaying(game: GameState, side: Side, dice: readonly number[]): Gam
  * A tie changes nothing but `opening`, and the sides throw again. In a game
  * opened with a roll-off the starter plays the two dice as the first roll;
  * otherwise the starter then rolls as usual.
+ *
+ * @param game - The current immutable native game state.
+ * @param throws - The opening die for white, then black.
+ * @returns The opening throw: one die for white and one for black. The higher starts. A tie changes nothing but `opening`, and the sides throw again. In a game opened with a roll-off the starter plays the two dice as the first roll; otherwise the starter then rolls as usual.
+ * @example
+ * ```ts
+ * import { newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * console.log(rollOpening(newGame(settings),[3,1]).turn);
+ * ```
  */
 export function rollOpening(game: GameState, throws: readonly [number, number]): GameState {
   if (game.phase !== "opening") fail("The opening throw has been made.");
@@ -146,7 +244,22 @@ export function rollOpening(game: GameState, throws: readonly [number, number]):
   return { ...game, opening, turn: starter, phase: "before-roll" };
 }
 
-/** Roll the dice for the side on turn, which must not be waiting on an answer to a double. */
+/** Roll the dice for the side on turn, which must not be waiting on an answer to a double.
+ *
+ * @param game - The current immutable native game state.
+ * @param dice - Dice values as thrown, or a reproducible source specified by the signature.
+ * @returns Roll the dice for the side on turn, which must not be waiting on an answer to a double.
+ * @example
+ * ```ts
+ * import { endTurn, legalPlaysOf, newGame, playTurn, rollDice, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = playTurn(game,play.moves);
+ * console.log(rollDice(beforeRoll,[6,2]).dice);
+ * ```
+ */
 export function rollDice(game: GameState, dice: readonly number[]): GameState {
   const side = onTurn(game);
   if (game.phase !== "before-roll") fail("Dice are rolled at the start of a turn.");
@@ -154,19 +267,56 @@ export function rollDice(game: GameState, dice: readonly number[]): GameState {
   return startPlaying(game, side, dice);
 }
 
-/** The moves the side on turn may make next. Empty when the turn is played out, or nothing can be played. */
+/** The moves the side on turn may make next. Empty when the turn is played out, or nothing can be played.
+ *
+ * @param game - The current immutable native game state.
+ * @returns The moves the side on turn may make next. Empty when the turn is played out, or nothing can be played.
+ * @example
+ * ```ts
+ * import { legalMoves, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(legalMoves(game));
+ * ```
+ */
 export function legalMoves(game: GameState): Move[] {
   if (game.phase !== "playing" || game.turn === null) return [];
   return nextMoves(game.settings.variant, game.position, game.turn, game.need);
 }
 
-/** Every different way the side on turn may play out the rest of its turn: for the dice it has yet to play, from where the position stands now. */
+/** Every different way the side on turn may play out the rest of its turn: for the dice it has yet to play, from where the position stands now.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Every different way the side on turn may play out the rest of its turn: for the dice it has yet to play, from where the position stands now.
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(legalPlaysOf(game).length);
+ * ```
+ */
 export function legalPlaysOf(game: GameState): Play[] {
   if (game.phase !== "playing" || game.turn === null) return [];
   return legalPlays(game.settings.variant, game.position, game.turn, game.need);
 }
 
-/** Whether the turn is played out and the side on turn has only to end it. */
+/** Whether the turn is played out and the side on turn has only to end it.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Whether the turn is played out and the side on turn has only to end it.
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, playTurn, rollOpening, settingsFor, turnIsPlayed } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * console.log(turnIsPlayed(playTurn(game,play.moves)));
+ * ```
+ */
 export function turnIsPlayed(game: GameState): boolean {
   return game.phase === "playing" && game.need.length === 0;
 }
@@ -175,6 +325,20 @@ export function turnIsPlayed(game: GameState): boolean {
  * Make one move for the side on turn, given as the checker's own point it
  * leaves and the one it goes to. The move must be one of `legalMoves`. Where
  * a checker could be borne off by either of two dice, the smaller is used.
+ *
+ * @param game - The current immutable native game state.
+ * @param step - A requested source and destination from the current legal moves.
+ * @returns Make one move for the side on turn, given as the checker's own point it leaves and the one it goes to. The move must be one of `legalMoves`. Where a checker could be borne off by either of two dice, the smaller is used.
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, playMove, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const move = play.moves[0];
+ * console.log(playMove(game,move).moves.length);
+ * ```
  */
 export function playMove(game: GameState, step: { from: number; to: number }): GameState {
   const side = onTurn(game);
@@ -189,7 +353,21 @@ export function playMove(game: GameState, step: { from: number; to: number }): G
   return winner === null ? moved : finish(moved, bearOffResult(moved, winner));
 }
 
-/** Take back the last move made this turn. Does nothing if none has been made. */
+/** Take back the last move made this turn. Does nothing if none has been made.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Take back the last move made this turn. Does nothing if none has been made.
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, playMove, rollOpening, settingsFor, undoMove } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const move = play.moves[0];
+ * console.log(undoMove(playMove(game,move)).moves.length);
+ * ```
+ */
 export function undoMove(game: GameState): GameState {
   if (game.phase !== "playing" || game.moves.length === 0 || game.turn === null) return game;
   const kept = game.moves.slice(0, -1);
@@ -199,20 +377,62 @@ export function undoMove(game: GameState): GameState {
   return { ...game, position: playMoves(game.settings.variant, game.turnStart, side, kept), moves: kept, need };
 }
 
-/** Take back every move of the turn. */
+/** Take back every move of the turn.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Take back every move of the turn.
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, playMove, restartTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const move = play.moves[0];
+ * console.log(restartTurn(playMove(game,move)).moves.length);
+ * ```
+ */
 export function restartTurn(game: GameState): GameState {
   if (game.phase !== "playing" || game.moves.length === 0) return game;
   return { ...game, position: game.turnStart, moves: [], need: game.plan };
 }
 
-/** Make a whole play (the moves of `legalPlays`) for the side on turn and end the turn. */
+/** Make a whole play (the moves of `legalPlays`) for the side on turn and end the turn.
+ *
+ * @param game - The current immutable native game state.
+ * @param moves - Legal checker moves in their played order.
+ * @returns Make a whole play (the moves of `legalPlays`) for the side on turn and end the turn.
+ * @example
+ * ```ts
+ * import { legalPlaysOf, newGame, playTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * console.log(playTurn(game,play.moves).need);
+ * ```
+ */
 export function playTurn(game: GameState, moves: readonly Move[]): GameState {
   let at = game;
   for (const move of moves) at = playMove(at, move);
   return at.phase === "over" ? at : endTurn(at);
 }
 
-/** End the side on turn's turn, once everything it had to play has been played. The other side is to move. */
+/** End the side on turn's turn, once everything it had to play has been played. The other side is to move.
+ *
+ * @param game - The current immutable native game state.
+ * @returns End the side on turn's turn, once everything it had to play has been played. The other side is to move.
+ * @example
+ * ```ts
+ * import { endTurn, legalPlaysOf, newGame, playMove, playTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = endTurn(play.moves.reduce((state,step)=>playMove(state,step),game));
+ * console.log(beforeRoll.phase);
+ * ```
+ */
 export function endTurn(game: GameState): GameState {
   const side = onTurn(game);
   if (game.phase !== "playing") fail("There is no turn to end.");
@@ -245,14 +465,40 @@ function inTheirHome(game: GameState, loser: Side): boolean {
   return false;
 }
 
-/** The kind of win a game that `winner` has won by bearing off is: single, gammon or backgammon, before the rules say what they count for. */
+/** The kind of win a game that `winner` has won by bearing off is: single, gammon or backgammon, before the rules say what they count for.
+ *
+ * @param game - The current immutable native game state.
+ * @param winner - The side whose win kind is evaluated.
+ * @returns The kind of win a game that `winner` has won by bearing off is: single, gammon or backgammon, before the rules say what they count for.
+ * @example
+ * ```ts
+ * import { newGame, rollOpening, settingsFor, winKind } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(winKind(game,"white"));
+ * ```
+ */
 export function winKind(game: GameState, winner: Side): WinKind {
   const loser = otherSide(winner);
   if (game.position.off[sideIndex(loser)] > 0) return "single";
   return inTheirHome(game, loser) ? "backgammon" : "gammon";
 }
 
-/** What a win of `kind` is worth, after the rules: a single win when gammons do not count, or when the Jacoby rule holds them back because the cube was never turned. */
+/** What a win of `kind` is worth, after the rules: a single win when gammons do not count, or when the Jacoby rule holds them back because the cube was never turned.
+ *
+ * @param game - The current immutable native game state.
+ * @param kind - The native single, gammon or backgammon result.
+ * @returns What a win of `kind` is worth, after the rules: a single win when gammons do not count, or when the Jacoby rule holds them back because the cube was never turned.
+ * @example
+ * ```ts
+ * import { multiplierOf, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(multiplierOf(game,"gammon"));
+ * ```
+ */
 export function multiplierOf(game: GameState, kind: WinKind): number {
   const { rules } = game.settings;
   if (!rules.gammons) return 1;
@@ -270,7 +516,21 @@ function bearOffResult(game: GameState, finished: Side): GameResult {
   return resultOf(game, finished, "bear-off", winKind(game, finished), game.cube.value);
 }
 
-/** Whether the side on turn may offer a double now. */
+/** Whether the side on turn may offer a double now.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Whether the side on turn may offer a double now.
+ * @example
+ * ```ts
+ * import { canDouble, endTurn, legalPlaysOf, newGame, playTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = playTurn(game,play.moves);
+ * console.log(canDouble(beforeRoll));
+ * ```
+ */
 export function canDouble(game: GameState): boolean {
   if (game.phase !== "before-roll" || game.turn === null) return false;
   if (!cubeInPlay(game.settings.rules, game.crawford)) return false;
@@ -279,14 +539,42 @@ export function canDouble(game: GameState): boolean {
   return !cubeIsDead(game);
 }
 
-/** The cube is dead when turning it could not matter: it already shows enough for either side to win the match with a win. Never in money play. */
+/** The cube is dead when turning it could not matter: it already shows enough for either side to win the match with a win. Never in money play.
+ *
+ * @param game - The current immutable native game state.
+ * @returns The cube is dead when turning it could not matter: it already shows enough for either side to win the match with a win. Never in money play.
+ * @example
+ * ```ts
+ * import { cubeIsDead, endTurn, legalPlaysOf, newGame, playTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = playTurn(game,play.moves);
+ * console.log(cubeIsDead(beforeRoll));
+ * ```
+ */
 export function cubeIsDead(game: GameState): boolean {
   const { points } = game.settings.rules;
   if (points === 0) return false;
   return game.cube.value >= points - game.score[0] && game.cube.value >= points - game.score[1];
 }
 
-/** Offer a double: the other side must now take it or drop it. */
+/** Offer a double: the other side must now take it or drop it.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Offer a double: the other side must now take it or drop it.
+ * @example
+ * ```ts
+ * import { endTurn, legalPlaysOf, newGame, offerDouble, playTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = playTurn(game,play.moves);
+ * console.log(offerDouble(beforeRoll).phase);
+ * ```
+ */
 export function offerDouble(game: GameState): GameState {
   if (!canDouble(game)) fail("A double cannot be offered now.");
   return { ...game, phase: "double-offered", offeredBy: game.turn };
@@ -300,6 +588,20 @@ function responder(game: GameState): Side {
  * Take the double that was offered. The cube turns and goes to the side that
  * took it, and the side on turn rolls. (A beaver taken turns it twice, and
  * leaves it with the side that beavered.)
+ *
+ * @param game - The current immutable native game state.
+ * @returns Take the double that was offered. The cube turns and goes to the side that took it, and the side on turn rolls. (A beaver taken turns it twice, and leaves it with the side that beavered.)
+ * @example
+ * ```ts
+ * import { endTurn, legalPlaysOf, newGame, offerDouble, playTurn, rollOpening, settingsFor, takeDouble } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = playTurn(game,play.moves);
+ * const offered = offerDouble(beforeRoll);
+ * console.log(takeDouble(offered).cube);
+ * ```
  */
 export function takeDouble(game: GameState): GameState {
   const taker = responder(game);
@@ -313,6 +615,21 @@ export function takeDouble(game: GameState): GameState {
  * Drop the double that was offered: the side that drops it loses the game, at
  * the cube's value before the double, or for a beaver at its value once the
  * double was taken.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Drop the double that was offered: the side that drops it loses the game, at the cube's value before the double, or for a beaver at its value once the double was taken.
+ * @example
+ * ```ts
+ * import { concede, dropDouble, endTurn, legalPlaysOf, newGame, offerDouble, playTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = playTurn(game,play.moves);
+ * const offered = offerDouble(beforeRoll);
+ * const result = concede(game,"black","single").result!;
+ * console.log(dropDouble(offered).result);
+ * ```
  */
 export function dropDouble(game: GameState): GameState {
   const dropper = responder(game);
@@ -321,12 +638,40 @@ export function dropDouble(game: GameState): GameState {
   return finish(game, { winner, how: "drop", kind: "single", multiplier: 1, cube: value, points: value });
 }
 
-/** Whether the side that was doubled may beaver: redouble at once and keep the cube. Only where the rules allow it. */
+/** Whether the side that was doubled may beaver: redouble at once and keep the cube. Only where the rules allow it.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Whether the side that was doubled may beaver: redouble at once and keep the cube. Only where the rules allow it.
+ * @example
+ * ```ts
+ * import { canBeaver, endTurn, legalPlaysOf, newGame, offerDouble, playTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const moneySettings = settingsFor("backgammon",{points:0,cube:true,beaver:true});
+ * const moneyGame = rollOpening(newGame(moneySettings),[3,1]);
+ * const moneyBefore = playTurn(moneyGame,legalPlaysOf(moneyGame)[0].moves);
+ * const moneyOffered = offerDouble(moneyBefore);
+ * console.log(canBeaver(moneyOffered));
+ * ```
+ */
 export function canBeaver(game: GameState): boolean {
   return game.phase === "double-offered" && game.settings.rules.beaver && game.cube.value * 4 <= CUBE_LIMIT;
 }
 
-/** Beaver: the side that was doubled redoubles and keeps the cube; the side that doubled must now take it or drop it. */
+/** Beaver: the side that was doubled redoubles and keeps the cube; the side that doubled must now take it or drop it.
+ *
+ * @param game - The current immutable native game state.
+ * @returns Beaver: the side that was doubled redoubles and keeps the cube; the side that doubled must now take it or drop it.
+ * @example
+ * ```ts
+ * import { beaverDouble, endTurn, legalPlaysOf, newGame, offerDouble, playTurn, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const moneySettings = settingsFor("backgammon",{points:0,cube:true,beaver:true});
+ * const moneyGame = rollOpening(newGame(moneySettings),[3,1]);
+ * const moneyBefore = playTurn(moneyGame,legalPlaysOf(moneyGame)[0].moves);
+ * const moneyOffered = offerDouble(moneyBefore);
+ * console.log(beaverDouble(moneyOffered).phase);
+ * ```
+ */
 export function beaverDouble(game: GameState): GameState {
   if (!canBeaver(game)) fail("A beaver cannot be played now.");
   return { ...game, phase: "beaver-offered", offeredBy: responder(game) };
@@ -337,6 +682,18 @@ export function beaverDouble(game: GameState): GameState {
  * position could come to: a single game once it has borne a checker off; a
  * gammon if nothing of the other side's can still hit it; otherwise a
  * backgammon where it may have a checker caught in the other side's home board.
+ *
+ * @param game - The current immutable native game state.
+ * @param side - The side being examined: white or black.
+ * @returns What a side gives up if it gives up the game now, which is the worst the position could come to: a single game once it has borne a checker off; a gammon if nothing of the other side's can still hit it; otherwise a backgammon where it may have a checker caught in the other side's home board.
+ * @example
+ * ```ts
+ * import { concedeKind, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(concedeKind(game,"black"));
+ * ```
  */
 export function concedeKind(game: GameState, side: Side): WinKind {
   const winner = otherSide(side);
@@ -359,7 +716,22 @@ function gameCanStillHit(game: GameState, by: Side, target: Side): boolean {
   return true;
 }
 
-/** Give up the game: `side` loses. `kind` is what it is giving up, from `concedeKind`'s worst down to a single game. */
+/** Give up the game: `side` loses. `kind` is what it is giving up, from `concedeKind`'s worst down to a single game.
+ *
+ * @param game - The current immutable native game state.
+ * @param side - The side being examined: white or black.
+ * @param kind - The native single, gammon or backgammon result.
+ * @returns Give up the game: `side` loses. `kind` is what it is giving up, from `concedeKind`'s worst down to a single game.
+ * @example
+ * ```ts
+ * import { concede, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const result = concede(game,"black","single").result!;
+ * console.log(concede(game,"black","single").result);
+ * ```
+ */
 export function concede(game: GameState, side: Side, kind: WinKind = concedeKind(game, side)): GameState {
   if (game.phase === "over") fail("The game is over.");
   const worst = concedeKind(game, side);
@@ -368,7 +740,20 @@ export function concede(game: GameState, side: Side, kind: WinKind = concedeKind
   return finish(game, resultOf(game, otherSide(side), "concede", kind, game.cube.value));
 }
 
-/** The game drawn by agreement. */
+/** The game drawn by agreement.
+ *
+ * @param game - The current immutable native game state.
+ * @returns The game drawn by agreement.
+ * @example
+ * ```ts
+ * import { agreeDraw, concede, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const result = concede(game,"black","single").result!;
+ * console.log(agreeDraw(game).result);
+ * ```
+ */
 export function agreeDraw(game: GameState): GameState {
   if (game.phase === "over") fail("The game is over.");
   return finish(game, { winner: null, how: "draw", kind: "single", multiplier: 1, cube: game.cube.value, points: 0 });

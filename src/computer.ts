@@ -24,15 +24,41 @@ import type { VariantSpec } from "./variants.ts";
  * take when the doubler's is 2 or more above the taker's. In a position where the sides are still in
  * contact (`careful` and `strong` only), the evaluation is turned into a
  * chance of winning (`winChance`) and a side doubles at 70% and takes at 25%.
+ *
+ * @example
+ * ```ts
+ * import type { Strength } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: Strength = "greedy";
+ * console.log(value);
+ * ```
  */
 export type Strength = "random" | "greedy" | "careful" | "strong";
 
-/** The strengths, weakest first. */
+/** The strengths, weakest first.
+ *
+ * @example
+ * ```ts
+ * import { STRENGTHS } from "@johnmorrisdotca/sugoroku";
+ * console.log(STRENGTHS);
+ * ```
+ */
 export const STRENGTHS: readonly Strength[] = ["random", "greedy", "careful", "strong"];
 
 /** How many of its best plays each strength looks ahead on. 0 is none. */
 const LOOKAHEAD: Readonly<Record<Strength, number>> = { random: 0, greedy: 0, careful: 4, strong: 10 };
 
+/** Strength, tie-breaking randomness, lookahead time budget and evaluation weights for computer decisions.
+ *
+ * @example
+ * ```ts
+ * import type { ComputerOptions } from "@johnmorrisdotca/sugoroku";
+ * import { seededRandom } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: ComputerOptions = {strength:"greedy",random:seededRandom(42)};
+ * console.log(value);
+ * ```
+ */
 export type ComputerOptions = {
   /** The strength. Default `strong`. */
   strength?: Strength;
@@ -95,7 +121,20 @@ function lookedAhead(spec: VariantSpec, position: Position, side: Side, weights:
 
 const now = (): number => (typeof performance === "undefined" ? Date.now() : performance.now());
 
-/** The play the computer makes for the rest of the turn of the side on turn, from the plays the rules leave it. */
+/** The play the computer makes for the rest of the turn of the side on turn, from the plays the rules leave it.
+ *
+ * @param game - The current immutable native game state.
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns The play the computer makes for the rest of the turn of the side on turn, from the plays the rules leave it.
+ * @example
+ * ```ts
+ * import { choosePlay, newGame, rollOpening, seededRandom, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(choosePlay(game,{strength:"greedy",random:seededRandom(42)}).moves);
+ * ```
+ */
 export function choosePlay(game: GameState, options: ComputerOptions = {}): Play {
   const strength = options.strength ?? "strong";
   const random = options.random ?? Math.random;
@@ -133,7 +172,20 @@ function pickFromTies(order: readonly { play: Play; score: number }[], random: R
   return (tied[Math.floor(random() * tied.length)] as { play: Play }).play;
 }
 
-/** The chance, 0 to 1, that `side` wins from here, by the evaluation, or by the Keith count's rule of thumb in a race (as 0.5 plus a share of the count's lead). */
+/** The chance, 0 to 1, that `side` wins from here, by the evaluation, or by the Keith count's rule of thumb in a race (as 0.5 plus a share of the count's lead).
+ *
+ * @param game - The current immutable native game state.
+ * @param side - The side being examined: white or black.
+ * @returns The chance, 0 to 1, that `side` wins from here, by the evaluation, or by the Keith count's rule of thumb in a race (as 0.5 plus a share of the count's lead).
+ * @example
+ * ```ts
+ * import { chanceOfWinning, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(chanceOfWinning(game,"white"));
+ * ```
+ */
 export function chanceOfWinning(game: GameState, side: Side): number {
   const spec = game.settings.variant;
   return winChance(evaluateFor(spec, game.position, side));
@@ -147,7 +199,22 @@ function raceCube(game: GameState, doubler: Side, redouble: boolean): { double: 
   return { double: lead <= (redouble ? 3 : 4), take: lead >= 2 };
 }
 
-/** Whether the computer, to move before it rolls, should offer a double. */
+/** Whether the computer, to move before it rolls, should offer a double.
+ *
+ * @param game - The current immutable native game state.
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns Whether the computer, to move before it rolls, should offer a double.
+ * @example
+ * ```ts
+ * import { endTurn, legalPlaysOf, newGame, playTurn, rollOpening, settingsFor, wantsToDouble } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = playTurn(game,play.moves);
+ * console.log(wantsToDouble(beforeRoll,{strength:"greedy"}));
+ * ```
+ */
 export function wantsToDouble(game: GameState, options: ComputerOptions = {}): boolean {
   const strength = options.strength ?? "strong";
   if (strength === "random" || !canDouble(game)) return false;
@@ -164,7 +231,23 @@ export function wantsToDouble(game: GameState, options: ComputerOptions = {}): b
   return chanceOfWinning(game, side) >= 0.7;
 }
 
-/** Whether the computer, doubled, should take. */
+/** Whether the computer, doubled, should take.
+ *
+ * @param game - The current immutable native game state.
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns Whether the computer, doubled, should take.
+ * @example
+ * ```ts
+ * import { endTurn, legalPlaysOf, newGame, offerDouble, playTurn, rollOpening, settingsFor, wantsToTake } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const beforeRoll = playTurn(game,play.moves);
+ * const offered = offerDouble(beforeRoll);
+ * console.log(wantsToTake(offered,{strength:"greedy"}));
+ * ```
+ */
 export function wantsToTake(game: GameState, options: ComputerOptions = {}): boolean {
   const strength = options.strength ?? "strong";
   if (strength === "random") return true;
@@ -180,7 +263,16 @@ export function wantsToTake(game: GameState, options: ComputerOptions = {}): boo
   return chanceOfWinning(game, taker) >= 0.25;
 }
 
-/** What the computer does next in a game, for the side it plays. */
+/** What the computer does next in a game, for the side it plays.
+ *
+ * @example
+ * ```ts
+ * import type { ComputerAction } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: ComputerAction = {kind:"roll"};
+ * console.log(value);
+ * ```
+ */
 export type ComputerAction =
   | { kind: "throw" }
   | { kind: "double" }
@@ -190,7 +282,20 @@ export type ComputerAction =
   | { kind: "take" }
   | { kind: "drop" };
 
-/** What the side that has to act in a game would do, if the computer were playing it. Nothing is done: the game is not changed. Null when the game is over. */
+/** What the side that has to act in a game would do, if the computer were playing it. Nothing is done: the game is not changed. Null when the game is over.
+ *
+ * @param game - The current immutable native game state.
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns The phase-appropriate computer action, or null when the game is over.
+ * @example
+ * ```ts
+ * import { computerAction, newGame, rollOpening, seededRandom, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(computerAction(game,{strength:"greedy",random:seededRandom(42)}));
+ * ```
+ */
 export function computerAction(game: GameState, options: ComputerOptions = {}): ComputerAction | null {
   switch (game.phase) {
     case "opening":
@@ -211,6 +316,19 @@ export function computerAction(game: GameState, options: ComputerOptions = {}): 
  * Carry out one step of what the computer would do, with dice from `dice`.
  * Returns the game after it, and what was done, so a caller can write it down
  * or show it. Which side plays is up to the caller: this plays for whichever side is to act.
+ *
+ * @param game - The current immutable native game state.
+ * @param dice - Dice values as thrown, or a reproducible source specified by the signature.
+ * @param options - Native drawing, geometry, mounting or computer choices specified by the signature.
+ * @returns The next state and selected computer action, or null when no action remains.
+ * @example
+ * ```ts
+ * import { newGame, rollOpening, seededDice, seededRandom, settingsFor, stepComputer } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(stepComputer(game,seededDice(42),{strength:"greedy",random:seededRandom(42)})?.game.phase);
+ * ```
  */
 export function stepComputer(game: GameState, dice: DiceSource, options: ComputerOptions = {}): { game: GameState; action: ComputerAction } | null {
   const action = computerAction(game, options);
@@ -235,7 +353,19 @@ export function stepComputer(game: GameState, dice: DiceSource, options: Compute
   }
 }
 
-/** Whether a side is the one the computer would act for at this moment of a game: the side on turn, or the side that must answer a double. */
+/** Whether a side is the one the computer would act for at this moment of a game: the side on turn, or the side that must answer a double.
+ *
+ * @param game - The current immutable native game state.
+ * @returns The side to make the next decision, or null during opening or after the game ends.
+ * @example
+ * ```ts
+ * import { newGame, rollOpening, settingsFor, sideToAct } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * console.log(sideToAct(game));
+ * ```
+ */
 export function sideToAct(game: GameState): Side | null {
   if (game.phase === "over" || game.phase === "opening") return null;
   if (game.phase === "double-offered" || game.phase === "beaver-offered") return game.offeredBy === null ? null : otherSide(game.offeredBy);

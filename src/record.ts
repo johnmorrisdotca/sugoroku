@@ -40,15 +40,43 @@ import type { Position } from "./board.ts";
  * the result the replay arrives at.
  */
 
-/** The record format's version, the number after `sugoroku` on the first line. */
+/** The record format's version, the number after `sugoroku` on the first line.
+ *
+ * @example
+ * ```ts
+ * import { RECORD_VERSION } from "@johnmorrisdotca/sugoroku";
+ * console.log(RECORD_VERSION);
+ * ```
+ */
 export const RECORD_VERSION = 1;
 
-/** A seed in a record: all digits means a number, anything else is text. */
+/** A seed in a record: all digits means a number, anything else is text.
+ *
+ * @example
+ * ```ts
+ * import type { RecordSeed } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: RecordSeed = "sample";
+ * console.log(value);
+ * ```
+ */
 export type RecordSeed = number | string;
 
 const onOff = (value: boolean): string => (value ? "on" : "off");
 
-/** The header lines of a record: its version, the variant, the rules and the seed. */
+/** The header lines of a record: its version, the variant, the rules and the seed.
+ *
+ * @param settings - The resolved variant and complete rules.
+ * @param seed - A reproducible numeric or text seed.
+ * @returns The header lines of a record: its version, the variant, the rules and the seed.
+ * @example
+ * ```ts
+ * import { formatRecordHeader, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * console.log(formatRecordHeader(settings,42));
+ * ```
+ */
 export function formatRecordHeader(settings: Settings, seed?: RecordSeed): string[] {
   if (typeof seed === "string" && /^\d+$/.test(seed)) throw new Error("A seed of digits is a number: pass it as a number.");
   const { rules, variant } = settings;
@@ -57,13 +85,51 @@ export function formatRecordHeader(settings: Settings, seed?: RecordSeed): strin
   return lines;
 }
 
-/** One line of a game: the opening throw. */
+/** One line of a game: the opening throw.
+ *
+ * @param throws - The opening die for white, then black.
+ * @returns One line of a game: the opening throw.
+ * @example
+ * ```ts
+ * import { formatOpening } from "@johnmorrisdotca/sugoroku";
+ *
+ * console.log(formatOpening([3,1]));
+ * ```
+ */
 export const formatOpening = (throws: readonly [number, number]): string => `open ${throws[0]} ${throws[1]}`;
 
-/** One line of a game: a turn, with its dice and its play. */
+/** One line of a game: a turn, with its dice and its play.
+ *
+ * @param side - The side being examined: white or black.
+ * @param dice - Dice values as thrown, or a reproducible source specified by the signature.
+ * @param moves - Legal checker moves in their played order.
+ * @returns One line of a game: a turn, with its dice and its play.
+ * @example
+ * ```ts
+ * import { formatTurn, legalPlaysOf, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * console.log(formatTurn("white",[3,1],play.moves));
+ * ```
+ */
 export const formatTurn = (side: Side, dice: readonly number[], moves: readonly Move[]): string => `${side} ${dice.join("")}: ${formatPlay(moves)}`;
 
-/** The line that closes a game, with what it came to. */
+/** The line that closes a game, with what it came to.
+ *
+ * @param result - The completed native game result to add to a match.
+ * @returns The line that closes a game, with what it came to.
+ * @example
+ * ```ts
+ * import { concede, formatResult, newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const result = concede(game,"black","single").result!;
+ * console.log(formatResult(result));
+ * ```
+ */
 export function formatResult(result: GameResult): string {
   return `result ${result.winner ?? "none"} ${result.how} ${result.kind} ${result.points}`;
 }
@@ -72,6 +138,22 @@ export function formatResult(result: GameResult): string {
  * A record written as a game is played. Call its methods as the game goes, in
  * the order things happen, and `text()` is the record so far; a game not yet
  * finished is a record that replays to a game still in play.
+ *
+ * @param settings - The resolved variant and complete rules to record.
+ * @param seed - Optional seed whose exact dice sequence replay must verify.
+ * @example
+ * ```ts
+ * import { GameRecorder, legalPlaysOf, newGame, rollOpening, settingsFor, startGame } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const record = new GameRecorder(settings);
+ * record.startGame();
+ * record.opening([3,1]);
+ * record.turn("white",[3,1],play.moves);
+ * console.log(record.text());
+ * ```
  */
 export class GameRecorder {
   readonly #lines: string[];
@@ -129,7 +211,22 @@ export class GameRecorder {
   }
 }
 
-/** One game of a replayed record, finished. */
+/** One game of a replayed record, finished.
+ *
+ * @example
+ * ```ts
+ * import { concede, newGame, rollOpening, settingsFor, startPosition } from "@johnmorrisdotca/sugoroku";
+ * import type { ReplayedGame } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const spec = settings.variant;
+ * const position = startPosition(spec);
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const result = concede(game,"black","single").result!;
+ * const value: ReplayedGame = {result,turns:[1,0],position};
+ * console.log(value);
+ * ```
+ */
 export type ReplayedGame = {
   readonly result: GameResult;
   /** The turns each side took. */
@@ -138,6 +235,26 @@ export type ReplayedGame = {
   readonly position: Position;
 };
 
+/** A successfully validated record, its settings, completed games and optional current game.
+ *
+ * @example
+ * ```ts
+ * import { GameRecorder, legalPlaysOf, newGame, replayRecord, rollOpening, settingsFor, startGame } from "@johnmorrisdotca/sugoroku";
+ * import type { ReplayOk } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const record = new GameRecorder(settings);
+ * record.startGame();
+ * record.opening([3,1]);
+ * record.turn("white",[3,1],play.moves);
+ * const replay = replayRecord(record.text());
+ * if(!replay.ok) throw new Error(replay.reason);
+ * const value: ReplayOk = replay;
+ * console.log(value);
+ * ```
+ */
 export type ReplayOk = {
   readonly ok: true;
   readonly settings: Settings;
@@ -150,6 +267,16 @@ export type ReplayOk = {
   readonly current: GameState | null;
 };
 
+/** A refused record with its one-based line number and reason.
+ *
+ * @example
+ * ```ts
+ * import type { ReplayError } from "@johnmorrisdotca/sugoroku";
+ *
+ * const value: ReplayError = {ok:false,line:1,reason:"Unknown record version"};
+ * console.log(value);
+ * ```
+ */
 export type ReplayError = {
   readonly ok: false;
   /** The line the record went wrong on, counting from 1. */
@@ -193,6 +320,22 @@ const SIDE = /^(white|black)\s+(.*)$/;
  * match's score are worked out, not read: a `result` line is only checked. Where
  * the record has a seed, the dice are checked to be the seed's. Gives the games
  * and the match, or the first line that goes wrong, and why.
+ *
+ * @param text - Native move notation, position text or full record specified by the signature.
+ * @returns Replay a record against the rules. Every move is checked to be legal when it was made, every double to have been allowed, and each game's result and the match's score are worked out, not read: a `result` line is only checked. Where the record has a seed, the dice are checked to be the seed's. Gives the games and the match, or the first line that goes wrong, and why.
+ * @example
+ * ```ts
+ * import { GameRecorder, legalPlaysOf, newGame, replayRecord, rollOpening, settingsFor, startGame } from "@johnmorrisdotca/sugoroku";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const play = legalPlaysOf(game)[0];
+ * const record = new GameRecorder(settings);
+ * record.startGame();
+ * record.opening([3,1]);
+ * record.turn("white",[3,1],play.moves);
+ * console.log(replayRecord(record.text()).ok);
+ * ```
  */
 export function replayRecord(text: string): ReplayOk | ReplayError {
   const lines = text.split(/\r?\n/);

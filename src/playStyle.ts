@@ -11,6 +11,12 @@ import { SUGOROKU_STYLE } from "./style.ts";
  * (set from the drawing's own proportions), the line of words keeps room for
  * two lines, and the buttons are three of one size in the same places whatever
  * they say. Nothing the player touches can be selected.
+ *
+ * @example
+ * ```ts
+ * import { SUGOROKU_PLAY_STYLE } from "@johnmorrisdotca/sugoroku/play";
+ * console.log(SUGOROKU_PLAY_STYLE.length);
+ * ```
  */
 export const SUGOROKU_PLAY_STYLE = `${SUGOROKU_STYLE}
 .sugoroku-play {

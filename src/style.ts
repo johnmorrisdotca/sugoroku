@@ -8,6 +8,12 @@
  * Put it in the page once. Every colour is a custom property on `.sugoroku`,
  * so a page's own style needs only to set the ones it wants different; the
  * felt follows `--felt` where a page defines one.
+ *
+ * @example
+ * ```ts
+ * import { SUGOROKU_STYLE } from "@johnmorrisdotca/sugoroku/draw";
+ * console.log(SUGOROKU_STYLE.length);
+ * ```
  */
 export const SUGOROKU_STYLE = `
 .sugoroku {

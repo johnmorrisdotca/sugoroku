@@ -52,7 +52,16 @@ import type { VariantKey } from "./variants.ts";
  * `drawSugoroku`'s and the opponent is `computer.ts`'s: all usable alone.
  */
 
-/** How the board looks, apart from the game. */
+/** How the board looks, apart from the game.
+ *
+ * @example
+ * ```ts
+ * import type { SugorokuLook } from "@johnmorrisdotca/sugoroku/play";
+ *
+ * const value: SugorokuLook = {board:"green",checkers:"contrast",numbers:true};
+ * console.log(value);
+ * ```
+ */
 export type SugorokuLook = {
   board?: SugorokuBoardName;
   checkers?: SugorokuCheckerSetName;
@@ -68,7 +77,20 @@ export type SugorokuLook = {
   orientation?: Orientation | "auto";
 };
 
-/** What every event of the board carries. */
+/** What every event of the board carries.
+ *
+ * @example
+ * ```ts
+ * import { newGame, newMatch, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { SugorokuEventDetail } from "@johnmorrisdotca/sugoroku/play";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const match = newMatch(settings);
+ * const value: SugorokuEventDetail = {side:"white",game,match,dice:[3,1]};
+ * console.log(value);
+ * ```
+ */
 export type SugorokuEventDetail = {
   /** The side it is about; null for the opening throw. */
   side: Side | null;
@@ -88,6 +110,16 @@ export type SugorokuEventDetail = {
   record?: string;
 };
 
+/** Native variant, rules, seed, computer, display, control, sound and event-callback choices.
+ *
+ * @example
+ * ```ts
+ * import type { SugorokuMountOptions } from "@johnmorrisdotca/sugoroku/play";
+ *
+ * const value: SugorokuMountOptions = {variant:"backgammon",seed:42,computer:{black:"greedy"}};
+ * console.log(value);
+ * ```
+ */
 export type SugorokuMountOptions = SugorokuLook & {
   /** The variant. Default `backgammon`. */
   variant?: VariantKey;
@@ -124,6 +156,23 @@ export type SugorokuMountOptions = SugorokuLook & {
   onEnd?: (detail: SugorokuEventDetail) => void;
 };
 
+/** The mounted native board, current game/match/record, actions and cleanup handle.
+ *
+ * @example
+ * ```ts no-run
+ * import { newGame, rollOpening, settingsFor } from "@johnmorrisdotca/sugoroku";
+ * import type { SugorokuMount } from "@johnmorrisdotca/sugoroku/play";
+ * import { mountSugoroku } from "@johnmorrisdotca/sugoroku/play";
+ *
+ * const settings = settingsFor("backgammon",{points:5,cube:true});
+ * const game = rollOpening(newGame(settings),[3,1]);
+ * const host = document.createElement("div");
+ * document.body.append(host);
+ * const board: SugorokuMount = mountSugoroku(host,{variant:"backgammon",seed:42,computer:{white:null,black:null}});
+ * console.log(board.game().phase);
+ * board.destroy();
+ * ```
+ */
 export type SugorokuMount = {
   readonly host: HTMLElement;
   /** The game as it stands. */
@@ -154,7 +203,19 @@ export type SugorokuMount = {
   destroy: () => void;
 };
 
-/** Put the style in the page once: in the document's head, or in the shadow root the host is in. */
+/** Put the style in the page once: in the document's head, or in the shadow root the host is in.
+ *
+ * @param host - The DOM element receiving the native board or scoped styles.
+ * @returns Nothing; the native scoped board styles are installed for the host.
+ * @example
+ * ```ts no-run
+ * import { ensureSugorokuPlayStyle } from "@johnmorrisdotca/sugoroku/play";
+ *
+ * const host = document.createElement("div");
+ * ensureSugorokuPlayStyle(host);
+ * console.log(host.tagName);
+ * ```
+ */
 export function ensureSugorokuPlayStyle(host: Element): void {
   const root = host.getRootNode();
   const target: ParentNode = typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot ? root : host.ownerDocument.head;
