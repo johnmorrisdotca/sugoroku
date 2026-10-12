@@ -10,6 +10,7 @@ import { mountSugoroku } from "./dist/play-entry.js";
 // The page's own words, in the two languages it speaks. Set as text, never as HTML.
 const WORDS = {
   en: {
+    pageDocs: "Docs",
     pageApi: "API reference",
     pitch: "Backgammon and its relatives: Nackgammon, Long Gammon, Hypergammon, Tabula and more, with the doubling cube and matches to any number of points. Tap a checker and then a point, or drag it, against the computer or a friend.",
     name: "Sugoroku (双六) is the Japanese name for backgammon.",
@@ -66,6 +67,7 @@ const WORDS = {
     foot: "The rules are held to a brute-force check on thousands of positions and to games of every variant played to their end. Your choices stay on this device.",
   },
   ja: {
+    pageDocs: "ドキュメント",
     pageApi: "API（英語）",
     pitch: "バックギャモンとその仲間（ナックギャモン、ロングギャモン、ハイパーギャモン、タブラなど）を、ダブリングキューブと好きなポイント数のマッチで遊べます。駒をタップして行き先をタップするか、ドラッグして動かします。相手はコンピューターでも友だちでも。",
     name: "双六（すごろく）は、バックギャモンの日本での古い呼び名です。",
@@ -167,7 +169,7 @@ const seed = params.get("seed") === null ? undefined : /^\d+$/.test(params.get("
 const delay = params.has("delay") ? Number(params.get("delay")) : undefined;
 let mount = null;
 
-const language = familyLanguage({ id: "sugoroku", words: WORDS, onChange: () => render() });
+const language = familyLanguage({ id: "sugoroku", words: WORDS, onChange: () => { docsLink(); render(); } });
 const say = (key, ...args) => {
   const word = WORDS[language.lang][key];
   return typeof word === "function" ? word(...args) : word;
@@ -326,3 +328,6 @@ document.getElementById("new-match").addEventListener("click", () => {
 render();
 put();
 host.dataset.ready = "true";
+
+function docsLink(){document.querySelector('[data-say="pageDocs"]')?.setAttribute("href",language.lang==="ja"?"docs/ja/index.html":"docs/index.html");}
+docsLink();

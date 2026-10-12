@@ -1,28 +1,29 @@
 {
   "name": "@johnmorrisdotca/sugoroku",
   "version": "1.0.2",
-  "description": "Sugoroku, backgammon and its variants for JavaScript and TypeScript: the rules, the doubling cube, match play, Long Gammon, Nackgammon and more, replayable games as text, a computer player, and an SVG board for any page. Zero dependencies.",
+  "description": "Sugoroku 双六 — Backgammon and its variants: native rules, doubling cube, match play, Long Gammon, Nackgammon, Hypergammon and Tabula, replayable records, computer players and an SVG board. TypeScript, zero dependencies.",
   "keywords": [
     "backgammon",
-    "nackgammon",
-    "long-gammon",
-    "hypergammon",
-    "tabula",
-    "tables-games",
     "board-game",
-    "dice",
-    "doubling-cube",
-    "match-play",
-    "game-engine",
-    "computer-player",
-    "svg",
-    "seeded-random",
-    "typescript",
-    "javascript",
-    "zero-dependencies",
     "browser",
+    "computer-player",
+    "dice",
+    "dice-game",
+    "doubling-cube",
+    "game-engine",
+    "hypergammon",
+    "itsutsu",
+    "javascript",
+    "long-gammon",
+    "match-play",
+    "nackgammon",
     "node",
-    "itsutsu"
+    "seeded-random",
+    "svg",
+    "tables-games",
+    "tabula",
+    "typescript",
+    "zero-dependencies"
   ],
   "homepage": "https://johnmorrisdotca.github.io/sugoroku/",
   "repository": {
@@ -88,10 +89,13 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "prepublishOnly": "pnpm check && pnpm build",
     "site": "pnpm build && node scripts/site.mjs",
-    "test:demo": "pnpm site && playwright test",
+    "test:demo": "pnpm site && node scripts/docs-site.mjs build && playwright test",
     "docs:make": "node scripts/docs.mjs",
     "screenshots:readme": "pnpm site && node scripts/readme-pictures.mjs",
-    "test:readme": "pnpm build && node scripts/check-readme-examples.mjs"
+    "test:readme": "pnpm build && node scripts/check-readme-examples.mjs",
+    "docs:site": "pnpm build && node scripts/docs-site.mjs build",
+    "docs:check": "pnpm build && node scripts/docs-site.mjs check",
+    "size": "node scripts/docs-site.mjs size"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
@@ -99,7 +103,10 @@
     "eslint": "^9.0.0",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.0.0",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "pagefind": "^1.5.2",
+    "marked": "^18.0.0",
+    "esbuild": "^0.28.0"
   },
   "packageManager": "pnpm@10.11.0"
 }

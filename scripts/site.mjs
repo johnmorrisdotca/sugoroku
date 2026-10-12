@@ -48,9 +48,9 @@ const page = `<!doctype html>
   <head>
     ${familyHead({
       id,
-      title: "Sugoroku · backgammon and its relatives",
+      title: "Sugoroku 双六 — Backgammon and its variants",
       description: "Play backgammon and its variants (Nackgammon, Long Gammon, Hypergammon, Tabula and more) with the doubling cube and matches to any number of points, against the computer or a friend. Free and open source, in English and Japanese.",
-      ogTitle: "Sugoroku backgammon",
+      ogTitle: "Sugoroku 双六 — Backgammon and its variants",
       ogDescription: "Backgammon, Nackgammon, Long Gammon, Hypergammon and Tabula, with the doubling cube, against the computer.",
     })}
     <link rel="icon" href="${ICON}" />
@@ -59,7 +59,7 @@ const page = `<!doctype html>
   </head>
   <body>
     <main>
-      ${familyHeader({ id, links: [{ href: "api.html", say: "pageApi" }] })}
+      ${familyHeader({ id, links: [{ href: "docs/index.html", say: "pageDocs" }, { href: "api.html", say: "pageApi" }] })}
       ${row("game", "variants")}
       <p class="note" id="variant-note" data-testid="variant-note" aria-live="polite"></p>
       ${row("players", "players")}
@@ -124,7 +124,7 @@ writeFileSync("site/api.html", apiPage({ id, name: "Sugoroku", icon: ICON }));
 console.log("site/ is ready: serve it, or let the Pages workflow publish it.");
 
 writeFileSync("site/family-embed-builder.js", `export const FAMILY_EMBED_BUILDER_WORDS = ${JSON.stringify(FAMILY_EMBED_BUILDER_WORDS)};\nexport ${familyEmbedBuilder.toString()};\n`);
-const builderParts = { builderHead: familyHead({ id, title: "Sugoroku · build a backgammon embed", description: "Choose a playable backgammon board or an article's position and copy its embed code." }), builderHeader: familyHeader({ id, links: [{ href: "./", say: "toGallery" }] }), unreviewed: familyUnreviewed({ id }), footer: familyFooter({ id }), script: `<script>${FAMILY_SCRIPT}</script>` };
+const builderParts = { builderHead: familyHead({ id, title: "Sugoroku · build a backgammon embed", description: "Choose a playable backgammon board or an article's position and copy its embed code." }), builderHeader: familyHeader({ id, links: [{ href: "./", say: "toGallery" }, { href: "docs/index.html", say: "pageDocs" }, { href: "api.html", say: "pageApi" }] }), unreviewed: familyUnreviewed({ id }), footer: familyFooter({ id }), script: `<script>${FAMILY_SCRIPT}</script>` };
 writeFileSync("site/builder.html", readFileSync("demo/builder.html", "utf8").replace(/<!-- family:([A-Za-z]+) -->/g, (_match, key) => builderParts[key]));
 cpSync("demo/embed", "site/embed", { recursive: true });
 for (const file of ["builder.js", "builder.css"]) cpSync(`demo/${file}`, `site/${file}`);

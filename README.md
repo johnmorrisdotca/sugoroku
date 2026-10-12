@@ -1,4 +1,4 @@
-<h1 align="center">Sugoroku <sub>双六</sub></h1>
+<h1 align="center">Sugoroku <sub>双六</sub> — Backgammon and its variants</h1>
 
 <p align="center"><strong>Backgammon and its variants for JavaScript and TypeScript.</strong><br>
 The full rules, the doubling cube and match play with the Crawford rule, Nackgammon, Long Gammon, Hypergammon, Tabula, Anti-Backgammon and a race that starts from the bar, games written as text that a server can replay move by move, a seeded dice sequence, standard move notation, position IDs, a computer player in four strengths, and the board drawn as SVG and played by touch and mouse in any page with one call or one tag. No dependencies.</p>
@@ -9,16 +9,18 @@ The full rules, the doubling cube and match play with the Crawford rule, Nackgam
   <a href="./LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-2f5d4a"></a>
   <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-0-2f5d4a">
   <img alt="TypeScript" src="https://img.shields.io/badge/types-TypeScript-3178c6">
+  <a href="https://johnmorrisdotca.github.io/sugoroku/docs/api/main/index.html"><img alt="11.5 kB minified and gzipped" src="https://img.shields.io/badge/min%2Bgzip-11.5%20kB-2f5d4a"></a>
+  <a href="https://www.npmjs.com/package/@johnmorrisdotca/sugoroku#provenance"><img alt="Published with npm provenance" src="https://img.shields.io/badge/npm-provenance-2f5d4a"></a>
 </p>
 
-<p align="center"><a href="https://johnmorrisdotca.github.io/sugoroku/"><strong>Play a game →</strong></a> · <a href="https://johnmorrisdotca.github.io/sugoroku/api.html">API reference</a> · <a href="docs/VARIANTS.md">The variants and their sources</a></p>
+<p align="center"><a href="https://johnmorrisdotca.github.io/sugoroku/"><strong>Play a game →</strong></a> · <a href="https://johnmorrisdotca.github.io/sugoroku/docs/">Documentation</a> · <a href="https://johnmorrisdotca.github.io/sugoroku/docs/guides/getting-started.html">Getting started</a> · <a href="https://johnmorrisdotca.github.io/sugoroku/api.html">API reference</a> · <a href="docs/VARIANTS.md">The variants and their sources</a></p>
 
 <table align="center">
 <tr>
 <td align="center" valign="top">
 <picture>
 <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hero-desk-dark.webp">
-<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hero-desk-light.webp" alt="The demo on a desk, in English: the page's header with its language chooser and cloth swatches, the game chooser (Backgammon, Race, Anti, Nackgammon, Long Gammon, Hypergammon, Tabula), the player choices, and a backgammon board in the middle of a match to 3 with the doubling cube at 2, black and white checkers on a green board with red and cream points, and the Roll dice, Double and Undo buttons under it." width="720">
+<img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/hero-desk-light.webp" alt="The demo on a desk, in English: the page's header with its language chooser, Docs link and cloth swatches, the game chooser (Backgammon, Race, Anti, Nackgammon, Long Gammon, Hypergammon, Tabula), the player choices, and a backgammon board in the middle of a match to 3 with the doubling cube at 2, black and white checkers on a green board with red and cream points, and the Roll dice, Double and Undo buttons under it." width="720">
 </picture>
 <br><em>A match to 3 against the computer, the cube at 2, on a desk.</em>
 </td>
@@ -142,6 +144,17 @@ Each picture is a board drawn by the package's `drawSugoroku`, taken from [the d
 </table>
 
 ## Use it in your project
+
+### Install under another name
+
+```sh
+npm install backgammon@npm:@johnmorrisdotca/sugoroku
+```
+
+```ts no-check
+import { settingsFor } from "backgammon";
+console.log(settingsFor("backgammon").variant);
+```
 
 ### Install
 
@@ -696,6 +709,8 @@ page's `lang`.
 
 ## API
 
+The [documentation](https://johnmorrisdotca.github.io/sugoroku/docs/) provides paired guides, local search and checked examples. The [API index](https://johnmorrisdotca.github.io/sugoroku/api.html) retains export anchors.
+
 | Export | What it does |
 | --- | --- |
 | `otherSide(side)`, `sideIndex(side)`, `SIDES` | the two sides, `white` and `black`, and where a side's counts are kept |
@@ -836,50 +851,7 @@ Left out on purpose: play over a network, which needs a server (a record is plai
 
 ## Architecture
 
-The rules, the formats and the computer are plain functions over plain data with no DOM. The
-drawing and the playable board are separate entries.
-
-```text
-src/
-├── index.ts          the main entry: everything but the drawing and the page
-├── side.ts           the two sides, white and black
-├── variants.ts       every variant as a row of settings
-├── rules.ts          the rules a name adds (match, cube, Crawford, Jacoby, gammons), and the named presets
-├── board.ts          a position as plain data: counts, pips, the start, which point is which
-├── moves.ts          every move of one die, and what a move does
-├── plays.ts          whole turns: the dice that must be played, every different play, what may be played next
-├── game.ts           a game in play: the opening, a roll, a move, undo, the cube, giving up, the result
-├── match.ts          a match: the score, the Crawford game, the end
-├── random.ts         the seeded random numbers
-├── dice.ts           seeded dice, and dice from the device
-├── notation.ts       moves and positions as text, and reading a written play back
-├── positionId.ts     position IDs for the standard board
-├── record.ts         games as text: written as they are played, and replayed against the rules
-├── evaluate.ts       how good a position is: pips, blots, points, primes, anchors, the Keith count
-├── computer.ts       the computer's play and cube, in four strengths
-├── colours.ts        the colours a board is made of, and the named boards and checkers
-├── geometry.ts       where everything is on the drawn board, lying down or standing up
-├── style.ts          the style that makes the drawing a board, and keeps it from being selected
-├── draw.ts           the board as SVG text
-├── draw-entry.ts     the "/draw" entry: everything that draws
-├── strings.ts        the words, in English and Japanese
-├── sound.ts          the optional sounds
-├── playStyle.ts      the style of the playable board
-├── mount.ts          a board to play in any element: touch, mouse, buttons, computer, events, record
-├── play-entry.ts     the "/play" entry
-├── element.ts        the <sugoroku-board> class
-├── element-define.ts defines the tag on the page
-└── version.ts        the package's version
-```
-
-Tests sit beside the code they test (`*.test.ts`). The rules are held to `brute.fixture.ts`,
-which tries every order of the dice and every move on thousands of positions of every
-variant; `simulate.test.ts` plays thousands of games to their end, at random and by the
-computer, and checks that every checker is accounted for and the pips move by what was
-played; and a game written down must replay to the same result. `scripts/` builds the demo
-and checks the package as npm packs it; `demo/` is the playable page and `e2e/` plays it in
-real browsers (Chromium and WebKit, at a phone's width and a desk's). The sounds are in
-`sounds/`; `docs/VARIANTS.md` says how each variant was read.
+The board, move, turn, game and match layers, record validation and drawing are explained in the [architecture guide](docs/guides/architecture.md), which preserves the complete source tree.
 
 ## The name
 

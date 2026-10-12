@@ -6,6 +6,8 @@ All notable changes to this project are written here. The format follows
 
 ## [Unreleased]
 
+- Add the bilingual documentation site, checked public examples, paired guides, local search and machine-readable pages.
+
 - Add the shared embed builder and validated playable/position iframe routes. Preserve playable board methods and structured state while adding reflected attributes, host options and display sizes. Add a native SVG position element for GNU position IDs or JSON data; events now bubble across shadow roots with JSON-safe detail.
 
 
