@@ -1,6 +1,6 @@
 {
   "name": "@johnmorrisdotca/sugoroku",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Sugoroku 双六 — Backgammon and its variants: native rules, doubling cube, match play, Long Gammon, Nackgammon, Hypergammon and Tabula, replayable records, computer players and an SVG board. TypeScript, zero dependencies.",
   "keywords": [
     "backgammon",

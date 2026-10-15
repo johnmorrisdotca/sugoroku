@@ -7,7 +7,7 @@ description: "Preserve native numbering, records and embed precedence."
 
 ## Version 1 and record version
 
-The current public major is 1; [the changelog](../../CHANGELOG.md) records actual releases. The docs rollout changes comments and navigation without changing SDK behavior. The record's format version is independent; never rewrite it to the package version. To preserve a saved game, retain its variant, complete rules, action order and the seed only when dice followed that seed.
+The current public major is 1; [the changelog](../../CHANGELOG.md) records actual releases. The record's format version is independent; never rewrite it to the package version. To preserve a saved game, retain its variant, complete rules, action order and the seed only when dice followed that seed.
 
 Native embeds now expose reflected choices, display widths and spoken labels while preserving getters and actions. Presets take precedence over variant/rule attributes; host callbacks and presentation updates preserve play. Static positions remain diagrams. [The existing embed contract](../embeds.md) explains the beaver reflected-property/action compatibility and custom tags.
 

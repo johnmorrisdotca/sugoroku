@@ -11,7 +11,7 @@ import { mountSugoroku } from "./dist/play-entry.js";
 const WORDS = {
   en: {
     pageDocs: "Docs",
-    pageApi: "API reference",
+    pageApi: "API",
     pitch: "Backgammon and its relatives: Nackgammon, Long Gammon, Hypergammon, Tabula and more, with the doubling cube and matches to any number of points. Tap a checker and then a point, or drag it, against the computer or a friend.",
     name: "Sugoroku (双六) is the Japanese name for backgammon.",
     nameLink: "About the name",
