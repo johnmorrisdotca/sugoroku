@@ -4,7 +4,15 @@
 import { cpSync, readFileSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 
 import { API_CSS, apiPage } from "./api.mjs";
-import { FAMILY_SCRIPT, FAMILY_EMBED_BUILDER_WORDS, familyEmbedBuilder, familyFooter, familyHead, familyHeader, familyUnreviewed } from "./family-template.mjs";
+import {
+  FAMILY_SCRIPT,
+  FAMILY_EMBED_BUILDER_WORDS,
+  familyEmbedBuilder,
+  familyFooter,
+  familyHead,
+  familyHeader,
+  familyUnreviewed,
+} from "./family-template.mjs";
 
 const id = "sugoroku";
 const ICON =
@@ -21,27 +29,62 @@ const uses = [
   `formatPlay(moves)  // "24/18 13/11" and "bar/22*", standard notation`,
 ];
 const escape = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const seg = (name, extra = "") => `<div class="fam-seg" role="group" data-say-label="${name}" id="${name}" data-testid="${name}"${extra}></div>`;
+const seg = (name, extra = "") =>
+  `<div class="fam-seg" role="group" data-say-label="${name}" id="${name}" data-testid="${name}"${extra}></div>`;
 /** The line for each option row, in English and Japanese, for the family's Help switch. */
 const HELP = {
-  game: ["Choose backgammon or one of its relatives. The note below says how the game differs.", "バックギャモンか、その仲間のゲームを選びます。違いは下の説明に書かれています。"],
-  players: ["Who plays: two people on this screen, you against the computer as White or as Black, or the computer against itself.", "誰が遊ぶかを選びます（2人で交代、白か黒でコンピューターと対戦、またはコンピューター同士）。"],
-  match: ["Play a single game, a match to a number of points, or a money game.", "1ゲームだけ、指定した点数までの試合、またはマネーゲームで遊びます。"],
-  cube: ["Turn the doubling cube on or off. With it on, either side may double the stakes during a game.", "ダブリングキューブの使用をオンまたはオフにします。オンのとき、ゲーム中にどちらも賭け金を倍にできます。"],
-  gammons: ["On: a gammon, winning before the other side has borne off a checker, is worth double. Off: every win is worth one.", "オン: ギャモン（相手が1つも上がる前に勝つこと）は2倍です。オフ: 勝ちはどれも1倍です。"],
-  jacoby: ["The Jacoby rule, for money games: gammons and backgammons count only once the cube has been turned.", "ジャコビー・ルール（マネーゲーム用）: キューブが使われたあとでなければ、ギャモンとバックギャモンは加点されません。"],
-  beaver: ["On: a player who is doubled may redouble at once, a beaver, and keep the cube.", "オン: ダブルされた側が、すぐに倍返し（ビーバー）して、キューブを手元に残せます。"],
-  strength: ["How well the computer plays: random, greedy, careful or strong.", "コンピューターの強さを選びます（ランダム、欲張り、慎重、強い）。"],
+  game: [
+    "Choose backgammon or one of its relatives. The note below says how the game differs.",
+    "バックギャモンか、その仲間のゲームを選びます。違いは下の説明に書かれています。",
+  ],
+  players: [
+    "Who plays: two people on this screen, you against the computer as White or as Black, or the computer against itself.",
+    "誰が遊ぶかを選びます（2人で交代、白か黒でコンピューターと対戦、またはコンピューター同士）。",
+  ],
+  match: [
+    "Play a single game, a match to a number of points, or a money game.",
+    "1ゲームだけ、指定した点数までの試合、またはマネーゲームで遊びます。",
+  ],
+  cube: [
+    "Turn the doubling cube on or off. With it on, either side may double the stakes during a game.",
+    "ダブリングキューブの使用をオンまたはオフにします。オンのとき、ゲーム中にどちらも賭け金を倍にできます。",
+  ],
+  gammons: [
+    "On: a gammon, winning before the other side has borne off a checker, is worth double. Off: every win is worth one.",
+    "オン: ギャモン（相手が1つも上がる前に勝つこと）は2倍です。オフ: 勝ちはどれも1倍です。",
+  ],
+  jacoby: [
+    "The Jacoby rule, for money games: gammons and backgammons count only once the cube has been turned.",
+    "ジャコビー・ルール（マネーゲーム用）: キューブが使われたあとでなければ、ギャモンとバックギャモンは加点されません。",
+  ],
+  beaver: [
+    "On: a player who is doubled may redouble at once, a beaver, and keep the cube.",
+    "オン: ダブルされた側が、すぐに倍返し（ビーバー）して、キューブを手元に残せます。",
+  ],
+  strength: [
+    "How well the computer plays: random, greedy, careful or strong.",
+    "コンピューターの強さを選びます（ランダム、欲張り、慎重、強い）。",
+  ],
   boardLook: ["Choose the cloth or the colour of the board.", "盤の布や色を選びます。"],
-  checkersLook: ["Choose the colours of the checkers. High contrast is the easiest to tell apart.", "駒の色を選びます。「高コントラスト」は、いちばん見分けやすい組み合わせです。"],
-  numbers: ["Show or hide the numbers of the points around the board.", "盤のまわりの、ポイントの番号を表示するか隠します。"],
-  home: ["Choose the side of the board where the checkers bear off: right or left.", "駒を上がる側（右か左）を選びます。"],
+  checkersLook: [
+    "Choose the colours of the checkers. High contrast is the easiest to tell apart.",
+    "駒の色を選びます。「高コントラスト」は、いちばん見分けやすい組み合わせです。",
+  ],
+  numbers: [
+    "Show or hide the numbers of the points around the board.",
+    "盤のまわりの、ポイントの番号を表示するか隠します。",
+  ],
+  home: [
+    "Choose the side of the board where the checkers bear off: right or left.",
+    "駒を上がる側（右か左）を選びます。",
+  ],
   theme: ["Light, dark, or follow your device.", "明るい色、暗い色、または端末の設定に合わせます。"],
   orientation: ["The shape of the board: automatic, wide or tall.", "盤の形（自動、横長、縦長）を選びます。"],
   sound: ["Turn the sounds of the dice and the checkers on or off.", "サイコロと駒の音のオンとオフを切り替えます。"],
 };
 const attr = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
-const row = (labelKey, name, extra = "") => `<div class="setup fam-row" data-help-en="${attr(HELP[labelKey][0])}" data-help-ja="${attr(HELP[labelKey][1])}"><span class="fam-label" data-say="${labelKey}"></span>${seg(name, extra)}</div>`;
+const row = (labelKey, name, extra = "") =>
+  `<div class="setup fam-row" data-help-en="${attr(HELP[labelKey][0])}" data-help-ja="${attr(HELP[labelKey][1])}"><span class="fam-label" data-say="${labelKey}"></span>${seg(name, extra)}</div>`;
 
 const page = `<!doctype html>
 <html lang="en">
@@ -49,9 +92,11 @@ const page = `<!doctype html>
     ${familyHead({
       id,
       title: "Sugoroku 双六 — Backgammon and its variants",
-      description: "Play backgammon and its variants (Nackgammon, Long Gammon, Hypergammon, Tabula and more) with the doubling cube and matches to any number of points, against the computer or a friend. Free and open source, in English and Japanese.",
+      description:
+        "Play backgammon and its variants (Nackgammon, Long Gammon, Hypergammon, Tabula and more) with the doubling cube and matches to any number of points, against the computer or a friend. Free and open source, in English and Japanese.",
       ogTitle: "Sugoroku 双六 — Backgammon and its variants",
-      ogDescription: "Backgammon, Nackgammon, Long Gammon, Hypergammon and Tabula, with the doubling cube, against the computer.",
+      ogDescription:
+        "Backgammon, Nackgammon, Long Gammon, Hypergammon and Tabula, with the doubling cube, against the computer.",
     })}
     <link rel="icon" href="${ICON}" />
     <link rel="stylesheet" href="family.css" />
@@ -59,7 +104,13 @@ const page = `<!doctype html>
   </head>
   <body>
     <main>
-      ${familyHeader({ id, links: [{ href: "docs/index.html", say: "pageDocs" }, { href: "api.html", say: "pageApi" }] })}
+      ${familyHeader({
+        id,
+        links: [
+          { href: "docs/index.html", say: "pageDocs" },
+          { href: "api.html", say: "pageApi" },
+        ],
+      })}
       ${row("game", "variants")}
       <p class="note" id="variant-note" data-testid="variant-note" aria-live="polite"></p>
       ${row("players", "players")}
@@ -123,8 +174,31 @@ writeFileSync("site/api.css", API_CSS);
 writeFileSync("site/api.html", apiPage({ id, name: "Sugoroku", icon: ICON }));
 console.log("site/ is ready: serve it, or let the Pages workflow publish it.");
 
-writeFileSync("site/family-embed-builder.js", `export const FAMILY_EMBED_BUILDER_WORDS = ${JSON.stringify(FAMILY_EMBED_BUILDER_WORDS)};\nexport ${familyEmbedBuilder.toString()};\n`);
-const builderParts = { builderHead: familyHead({ id, title: "Sugoroku · build a backgammon embed", description: "Choose a playable backgammon board or an article's position and copy its embed code." }), builderHeader: familyHeader({ id, links: [{ href: "./", say: "toGallery" }, { href: "docs/index.html", say: "pageDocs" }, { href: "api.html", say: "pageApi" }] }), unreviewed: familyUnreviewed({ id }), footer: familyFooter({ id }), script: `<script>${FAMILY_SCRIPT}</script>` };
-writeFileSync("site/builder.html", readFileSync("demo/builder.html", "utf8").replace(/<!-- family:([A-Za-z]+) -->/g, (_match, key) => builderParts[key]));
+writeFileSync(
+  "site/family-embed-builder.js",
+  `export const FAMILY_EMBED_BUILDER_WORDS = ${JSON.stringify(FAMILY_EMBED_BUILDER_WORDS)};\nexport ${familyEmbedBuilder.toString()};\n`,
+);
+const builderParts = {
+  builderHead: familyHead({
+    id,
+    title: "Sugoroku · build a backgammon embed",
+    description: "Choose a playable backgammon board or an article's position and copy its embed code.",
+  }),
+  builderHeader: familyHeader({
+    id,
+    links: [
+      { href: "./", say: "toGallery" },
+      { href: "docs/index.html", say: "pageDocs" },
+      { href: "api.html", say: "pageApi" },
+    ],
+  }),
+  unreviewed: familyUnreviewed({ id }),
+  footer: familyFooter({ id }),
+  script: `<script>${FAMILY_SCRIPT}</script>`,
+};
+writeFileSync(
+  "site/builder.html",
+  readFileSync("demo/builder.html", "utf8").replace(/<!-- family:([A-Za-z]+) -->/g, (_match, key) => builderParts[key]),
+);
 cpSync("demo/embed", "site/embed", { recursive: true });
 for (const file of ["builder.js", "builder.css"]) cpSync(`demo/${file}`, `site/${file}`);

@@ -53,20 +53,27 @@ export function formatPlay(moves: readonly Move[]): string {
   // Paths of one checker: each move goes on the end of a path that stops where it starts, or begins a path.
   const paths: Move[][] = [];
   for (const move of moves) {
-    const open = paths.find((path) => (path[path.length - 1] as Move).to === move.from && move.from !== BAR && move.from !== 0);
+    const open = paths.find(
+      (path) => (path[path.length - 1] as Move).to === move.from && move.from !== BAR && move.from !== 0,
+    );
     if (open !== undefined) open.push(move);
     else paths.push([move]);
   }
   const texts = paths.map((path) => {
     const first = path[0] as Move;
     const steps = path.map((move) => `${point(move.to)}${move.hit ? "*" : ""}`);
-    return { start: first.from, end: (path[path.length - 1] as Move).to, text: `${point(first.from)}/${steps.join("/")}` };
+    return {
+      start: first.from,
+      end: (path[path.length - 1] as Move).to,
+      text: `${point(first.from)}/${steps.join("/")}`,
+    };
   });
   texts.sort((a, b) => b.start - a.start || a.end - b.end || (a.text < b.text ? -1 : a.text > b.text ? 1 : 0));
   const counted: string[] = [];
   for (let i = 0; i < texts.length; ) {
     let n = 1;
-    while (i + n < texts.length && (texts[i + n] as { text: string }).text === (texts[i] as { text: string }).text) n += 1;
+    while (i + n < texts.length && (texts[i + n] as { text: string }).text === (texts[i] as { text: string }).text)
+      n += 1;
     counted.push(n > 1 ? `${(texts[i] as { text: string }).text}(${n})` : (texts[i] as { text: string }).text);
     i += n;
   }
@@ -115,7 +122,9 @@ export function parseHops(text: string): Hop[] | null {
       if (Number.isNaN(n) || n > BAR || (n > POINTS && n !== BAR)) return null;
       numbers.push(n);
     }
-    for (let k = 0; k < times; k += 1) for (let i = 0; i + 1 < numbers.length; i += 1) hops.push({ from: numbers[i] as number, to: numbers[i + 1] as number });
+    for (let k = 0; k < times; k += 1)
+      for (let i = 0; i + 1 < numbers.length; i += 1)
+        hops.push({ from: numbers[i] as number, to: numbers[i + 1] as number });
   }
   return hops;
 }
@@ -145,7 +154,13 @@ export function parseHops(text: string): Hop[] | null {
  * console.log(parsePlay(spec,position,"white",[3,1],formatPlay(play.moves)));
  * ```
  */
-export function parsePlay(spec: VariantSpec, position: Position, side: Side, roll: readonly number[], text: string): Move[] | null {
+export function parsePlay(
+  spec: VariantSpec,
+  position: Position,
+  side: Side,
+  roll: readonly number[],
+  text: string,
+): Move[] | null {
   const hops = parseHops(text);
   if (hops === null) return null;
   const need = diceMustPlay(spec, position, side, diceToPlay(spec, roll));

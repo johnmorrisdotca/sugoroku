@@ -263,7 +263,8 @@ export function rollOpening(game: GameState, throws: readonly [number, number]):
 export function rollDice(game: GameState, dice: readonly number[]): GameState {
   const side = onTurn(game);
   if (game.phase !== "before-roll") fail("Dice are rolled at the start of a turn.");
-  if (dice.length !== game.settings.variant.dice || !dice.every(validDie)) fail(`A roll is ${game.settings.variant.dice} dice, each 1 to 6.`);
+  if (dice.length !== game.settings.variant.dice || !dice.every(validDie))
+    fail(`A roll is ${game.settings.variant.dice} dice, each 1 to 6.`);
   return startPlaying(game, side, dice);
 }
 
@@ -439,9 +440,20 @@ export function endTurn(game: GameState): GameState {
   if (game.need.length > 0) fail("The turn is not played out yet.");
   const turns: [number, number] = [game.turns[0], game.turns[1]];
   turns[sideIndex(side)] += 1;
-  const next: GameState = { ...game, turn: otherSide(side), phase: "before-roll", dice: null, need: [], plan: [], moves: [], turnStart: game.position, turns };
+  const next: GameState = {
+    ...game,
+    turn: otherSide(side),
+    phase: "before-roll",
+    dice: null,
+    need: [],
+    plan: [],
+    moves: [],
+    turnStart: game.position,
+    turns,
+  };
   const limit = game.settings.variant.drawAfter;
-  if (limit > 0 && turns[0] >= limit && turns[1] >= limit) return finish(next, { winner: null, how: "draw", kind: "single", multiplier: 1, cube: game.cube.value, points: 0 });
+  if (limit > 0 && turns[0] >= limit && turns[1] >= limit)
+    return finish(next, { winner: null, how: "draw", kind: "single", multiplier: 1, cube: game.cube.value, points: 0 });
   return next;
 }
 
@@ -512,7 +524,8 @@ function resultOf(game: GameState, winner: Side, how: HowItEnded, kind: WinKind,
 }
 
 function bearOffResult(game: GameState, finished: Side): GameResult {
-  if (game.settings.variant.goal === "last-off") return resultOf(game, otherSide(finished), "bear-off", "single", game.cube.value);
+  if (game.settings.variant.goal === "last-off")
+    return resultOf(game, otherSide(finished), "bear-off", "single", game.cube.value);
   return resultOf(game, finished, "bear-off", winKind(game, finished), game.cube.value);
 }
 
@@ -606,8 +619,10 @@ function responder(game: GameState): Side {
 export function takeDouble(game: GameState): GameState {
   const taker = responder(game);
   const offeredBy = game.offeredBy as Side;
-  if (game.phase === "double-offered") return { ...game, phase: "before-roll", cube: { value: game.cube.value * 2, owner: taker }, offeredBy: null };
-  if (game.phase === "beaver-offered") return { ...game, phase: "before-roll", cube: { value: game.cube.value * 4, owner: offeredBy }, offeredBy: null };
+  if (game.phase === "double-offered")
+    return { ...game, phase: "before-roll", cube: { value: game.cube.value * 2, owner: taker }, offeredBy: null };
+  if (game.phase === "beaver-offered")
+    return { ...game, phase: "before-roll", cube: { value: game.cube.value * 4, owner: offeredBy }, offeredBy: null };
   return fail("No double has been offered.");
 }
 
@@ -634,7 +649,12 @@ export function takeDouble(game: GameState): GameState {
 export function dropDouble(game: GameState): GameState {
   const dropper = responder(game);
   const winner = otherSide(dropper);
-  const value = game.phase === "beaver-offered" ? game.cube.value * 2 : game.phase === "double-offered" ? game.cube.value : fail("No double has been offered.");
+  const value =
+    game.phase === "beaver-offered"
+      ? game.cube.value * 2
+      : game.phase === "double-offered"
+        ? game.cube.value
+        : fail("No double has been offered.");
   return finish(game, { winner, how: "drop", kind: "single", multiplier: 1, cube: value, points: value });
 }
 
@@ -708,9 +728,17 @@ function gameCanStillHit(game: GameState, by: Side, target: Side): boolean {
   if (p.bar[sideIndex(target)] > 0 || p.reserve[sideIndex(target)] > 0) return true;
   // The target's rearmost checker, in the board's own points as `by` numbers them, against `by`'s rearmost.
   let targetRear = 0;
-  for (let n = POINTS; n >= 1; n -= 1) if ((p.points[sideIndex(target)][n - 1] ?? 0) > 0) { targetRear = n; break; }
+  for (let n = POINTS; n >= 1; n -= 1)
+    if ((p.points[sideIndex(target)][n - 1] ?? 0) > 0) {
+      targetRear = n;
+      break;
+    }
   let byRear = 0;
-  for (let n = POINTS; n >= 1; n -= 1) if ((p.points[sideIndex(by)][n - 1] ?? 0) > 0) { byRear = n; break; }
+  for (let n = POINTS; n >= 1; n -= 1)
+    if ((p.points[sideIndex(by)][n - 1] ?? 0) > 0) {
+      byRear = n;
+      break;
+    }
   if (targetRear === 0 || byRear === 0) return false;
   if (spec.direction === "opposed") return byRear > mirrorPoint(spec, targetRear);
   return true;

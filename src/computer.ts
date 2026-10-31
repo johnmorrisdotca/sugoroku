@@ -1,7 +1,18 @@
 import { inContact, type Position } from "./board.ts";
 import type { DiceSource } from "./dice.ts";
 import { rollFrom } from "./dice.ts";
-import { canDouble, endTurn, legalPlaysOf, offerDouble, playTurn, rollDice, rollOpening, takeDouble, dropDouble, type GameState } from "./game.ts";
+import {
+  canDouble,
+  endTurn,
+  legalPlaysOf,
+  offerDouble,
+  playTurn,
+  rollDice,
+  rollOpening,
+  takeDouble,
+  dropDouble,
+  type GameState,
+} from "./game.ts";
 import { EVALUATION_WEIGHTS, evaluateFor, keithCount, winChance, type EvaluationWeights } from "./evaluate.ts";
 import { legalPlays, type Play } from "./plays.ts";
 import type { Random } from "./random.ts";
@@ -84,13 +95,22 @@ const ROLLS: readonly (readonly [number, number, number])[] = (() => {
 /** The rolls of three dice that matter, and their weights, for a game that rolls three: all 56 combinations by how many ways each can be thrown. */
 const ROLLS_OF_THREE: readonly (readonly [number, number, number, number])[] = (() => {
   const rolls: [number, number, number, number][] = [];
-  for (let a = 1; a <= 6; a += 1) for (let b = a; b <= 6; b += 1) for (let c = b; c <= 6; c += 1) rolls.push([a, b, c, a === b && b === c ? 1 : a === b || b === c ? 3 : 6]);
+  for (let a = 1; a <= 6; a += 1)
+    for (let b = a; b <= 6; b += 1)
+      for (let c = b; c <= 6; c += 1) rolls.push([a, b, c, a === b && b === c ? 1 : a === b || b === c ? 3 : 6]);
   return rolls;
 })();
 
 /** The plays best first by what they leave, each with its score. */
-function ranked(spec: VariantSpec, plays: readonly Play[], side: Side, weights: EvaluationWeights): { play: Play; score: number }[] {
-  return plays.map((play) => ({ play, score: evaluateFor(spec, play.position, side, weights) })).sort((a, b) => b.score - a.score);
+function ranked(
+  spec: VariantSpec,
+  plays: readonly Play[],
+  side: Side,
+  weights: EvaluationWeights,
+): { play: Play; score: number }[] {
+  return plays
+    .map((play) => ({ play, score: evaluateFor(spec, play.position, side, weights) }))
+    .sort((a, b) => b.score - a.score);
 }
 
 /** The value, for `side`, of a position that the other side is about to move from: the average over its rolls of what its best reply leaves. */
@@ -100,7 +120,10 @@ function lookedAhead(spec: VariantSpec, position: Position, side: Side, weights:
   let weight = 0;
   const rolls: readonly (readonly number[])[] = spec.dice === 2 ? ROLLS : ROLLS_OF_THREE;
   for (const roll of rolls) {
-    const dice = spec.dice === 2 ? [roll[0] as number, roll[1] as number] : [roll[0] as number, roll[1] as number, roll[2] as number];
+    const dice =
+      spec.dice === 2
+        ? [roll[0] as number, roll[1] as number]
+        : [roll[0] as number, roll[1] as number, roll[2] as number];
     const chance = roll[spec.dice] as number;
     const replies = legalPlays(spec, position, opp, dice);
     // The other side picks the reply it likes best; we judge what that leaves us.
@@ -225,7 +248,10 @@ export function wantsToDouble(game: GameState, options: ComputerOptions = {}): b
   if (!inContact(spec, game.position)) {
     const race = raceCube(game, side, holds);
     // Not when the race is so lopsided that the other side must drop and the gammon is the only prize: keep it simple and double.
-    return race.double && keithCount(game.position, side, true) < keithCount(game.position, otherSide(side), false) + (holds ? 4 : 5);
+    return (
+      race.double &&
+      keithCount(game.position, side, true) < keithCount(game.position, otherSide(side), false) + (holds ? 4 : 5)
+    );
   }
   if (strength === "greedy") return false;
   return chanceOfWinning(game, side) >= 0.7;
@@ -330,7 +356,11 @@ export function computerAction(game: GameState, options: ComputerOptions = {}): 
  * console.log(stepComputer(game,seededDice(42),{strength:"greedy",random:seededRandom(42)})?.game.phase);
  * ```
  */
-export function stepComputer(game: GameState, dice: DiceSource, options: ComputerOptions = {}): { game: GameState; action: ComputerAction } | null {
+export function stepComputer(
+  game: GameState,
+  dice: DiceSource,
+  options: ComputerOptions = {},
+): { game: GameState; action: ComputerAction } | null {
   const action = computerAction(game, options);
   if (action === null) return null;
   switch (action.kind) {
@@ -368,7 +398,7 @@ export function stepComputer(game: GameState, dice: DiceSource, options: Compute
  */
 export function sideToAct(game: GameState): Side | null {
   if (game.phase === "over" || game.phase === "opening") return null;
-  if (game.phase === "double-offered" || game.phase === "beaver-offered") return game.offeredBy === null ? null : otherSide(game.offeredBy);
+  if (game.phase === "double-offered" || game.phase === "beaver-offered")
+    return game.offeredBy === null ? null : otherSide(game.offeredBy);
   return game.turn;
 }
-

@@ -1,5 +1,18 @@
 import { seededDice, type DiceSource } from "./dice.ts";
-import { agreeDraw, beaverDouble, concede, dropDouble, offerDouble, playTurn, rollDice, rollOpening, takeDouble, type GameResult, type GameState, type WinKind } from "./game.ts";
+import {
+  agreeDraw,
+  beaverDouble,
+  concede,
+  dropDouble,
+  offerDouble,
+  playTurn,
+  rollDice,
+  rollOpening,
+  takeDouble,
+  type GameResult,
+  type GameState,
+  type WinKind,
+} from "./game.ts";
 import { finishGame, newMatch, startGame, type Match } from "./match.ts";
 import { formatPlay, parsePlay } from "./notation.ts";
 import type { Move } from "./moves.ts";
@@ -78,9 +91,19 @@ const onOff = (value: boolean): string => (value ? "on" : "off");
  * ```
  */
 export function formatRecordHeader(settings: Settings, seed?: RecordSeed): string[] {
-  if (typeof seed === "string" && /^\d+$/.test(seed)) throw new Error("A seed of digits is a number: pass it as a number.");
+  if (typeof seed === "string" && /^\d+$/.test(seed))
+    throw new Error("A seed of digits is a number: pass it as a number.");
   const { rules, variant } = settings;
-  const lines = [`sugoroku ${RECORD_VERSION}`, `variant ${variant.key}`, `points ${rules.points}`, `cube ${onOff(rules.cube)}`, `crawford ${onOff(rules.crawford)}`, `jacoby ${onOff(rules.jacoby)}`, `beaver ${onOff(rules.beaver)}`, `gammons ${onOff(rules.gammons)}`];
+  const lines = [
+    `sugoroku ${RECORD_VERSION}`,
+    `variant ${variant.key}`,
+    `points ${rules.points}`,
+    `cube ${onOff(rules.cube)}`,
+    `crawford ${onOff(rules.crawford)}`,
+    `jacoby ${onOff(rules.jacoby)}`,
+    `beaver ${onOff(rules.beaver)}`,
+    `gammons ${onOff(rules.gammons)}`,
+  ];
   if (seed !== undefined) lines.push(`seed ${seed}`);
   return lines;
 }
@@ -114,7 +137,8 @@ export const formatOpening = (throws: readonly [number, number]): string => `ope
  * console.log(formatTurn("white",[3,1],play.moves));
  * ```
  */
-export const formatTurn = (side: Side, dice: readonly number[], moves: readonly Move[]): string => `${side} ${dice.join("")}: ${formatPlay(moves)}`;
+export const formatTurn = (side: Side, dice: readonly number[], moves: readonly Move[]): string =>
+  `${side} ${dice.join("")}: ${formatPlay(moves)}`;
 
 /** The line that closes a game, with what it came to.
  *
@@ -290,7 +314,8 @@ const fail = (message: string): never => {
   throw new RecordError(message);
 };
 
-const flag = (value: string): boolean => (value === "on" ? true : value === "off" ? false : fail(`"${value}" is not on or off`));
+const flag = (value: string): boolean =>
+  value === "on" ? true : value === "off" ? false : fail(`"${value}" is not on or off`);
 
 function parseSettings(entries: Map<string, string>): Settings {
   const named = entries.get("variant") ?? fail("the record names no variant");
@@ -363,7 +388,8 @@ export function replayRecord(text: string): ReplayOk | ReplayError {
     lineNumber = at + 1;
     const settings = parseSettings(entries);
     const seedText = entries.get("seed");
-    const seed: RecordSeed | null = seedText === undefined ? null : /^\d+$/.test(seedText) ? Number(seedText) : seedText;
+    const seed: RecordSeed | null =
+      seedText === undefined ? null : /^\d+$/.test(seedText) ? Number(seedText) : seedText;
     const source: DiceSource | null = seed === null ? null : seededDice(seed);
 
     let match = newMatch(settings);
@@ -439,14 +465,15 @@ export function replayRecord(text: string): ReplayOk | ReplayError {
       } else {
         const turn = /^(\d{2,3}):\s*(.*)$/.exec(rest);
         if (turn === null) fail(`"${line}" is not something a game says`);
-        const dice = [...(turn as RegExpExecArray)[1] as string].map(Number);
+        const dice = [...((turn as RegExpExecArray)[1] as string)].map(Number);
         const play = (turn as RegExpExecArray)[2] as string;
         if (answering) fail("a double is waiting to be answered");
         if (current.turn !== side) fail(`it is ${current.turn ?? "nobody"}'s turn, not ${side}'s`);
         let rolled = current;
         if (current.phase === "before-roll") {
           if (dice.length !== settings.variant.dice) fail(`a roll is ${settings.variant.dice} dice`);
-          if (source !== null && nextDice(dice.length).join("") !== dice.join("")) fail("these dice are not the seed's");
+          if (source !== null && nextDice(dice.length).join("") !== dice.join(""))
+            fail("these dice are not the seed's");
           rolled = rollDice(current, dice);
         } else if ([...(current.dice ?? [])].sort().join("") !== [...dice].sort().join("")) {
           fail("the first turn plays the opening throw");

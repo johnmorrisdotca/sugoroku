@@ -94,7 +94,11 @@ export function positionFromId(id: string, onRoll: Side, checkers = 15): Positio
   const sextets = [...id].map((char) => ALPHABET.indexOf(char));
   const bytes: number[] = [];
   for (let g = 0; g < 14; g += 4) {
-    const group = ((sextets[g] as number) << 18) | ((sextets[g + 1] as number) << 12) | ((sextets[g + 2] ?? 0) << 6) | (sextets[g + 3] ?? 0);
+    const group =
+      ((sextets[g] as number) << 18) |
+      ((sextets[g + 1] as number) << 12) |
+      ((sextets[g + 2] ?? 0) << 6) |
+      (sextets[g + 3] ?? 0);
     bytes.push((group >> 16) & 255);
     if (g + 2 < 14) bytes.push((group >> 8) & 255);
     if (g + 3 < 14) bytes.push(group & 255);

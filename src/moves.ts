@@ -72,7 +72,8 @@ export function movesOfDie(spec: VariantSpec, position: Position, side: Side, di
   const moves: Move[] = [];
   const enter = POINTS + 1 - die;
   if (position.bar[i] > 0 || position.reserve[i] > 0) {
-    if (openPoint(spec, position, side, enter)) moves.push({ from: BAR, to: enter, die, hit: opponentAt(spec, position, side, enter) === 1 });
+    if (openPoint(spec, position, side, enter))
+      moves.push({ from: BAR, to: enter, die, hit: opponentAt(spec, position, side, enter) === 1 });
     if (position.bar[i] > 0) return moves;
   }
   const home = allHome(position, side);
@@ -81,7 +82,8 @@ export function movesOfDie(spec: VariantSpec, position: Position, side: Side, di
     if (countAt(position, side, from) === 0) continue;
     const to = from - die;
     if (to >= 1) {
-      if (openPoint(spec, position, side, to)) moves.push({ from, to, die, hit: opponentAt(spec, position, side, to) === 1 });
+      if (openPoint(spec, position, side, to))
+        moves.push({ from, to, die, hit: opponentAt(spec, position, side, to) === 1 });
     } else if (home && (to === 0 || from === rear)) {
       moves.push({ from, to: 0, die, hit: false });
     }

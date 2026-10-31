@@ -9,7 +9,8 @@ describe("the words", () => {
     const en = Object.keys(SUGOROKU_STRINGS.en).sort();
     expect(Object.keys(SUGOROKU_STRINGS.ja).sort()).toEqual(en);
     const slots = (line: string): string[] => [...line.matchAll(/\{(\w+)\}/g)].map((m) => m[1] as string).sort();
-    for (const key of en) expect(slots(SUGOROKU_STRINGS.ja[key] as string), key).toEqual(slots(SUGOROKU_STRINGS.en[key] as string));
+    for (const key of en)
+      expect(slots(SUGOROKU_STRINGS.ja[key] as string), key).toEqual(slots(SUGOROKU_STRINGS.en[key] as string));
   });
 
   it("fill in values, leave a missing one visible, and fall back to English for a line a language lacks", () => {

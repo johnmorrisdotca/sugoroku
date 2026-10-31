@@ -17,7 +17,9 @@ describe("position IDs", () => {
   });
 
   it("round-trip any position of the standard board, with checkers on the bar and borne off", () => {
-    const position = parsePosition("white=24:1,13:3,8:2,6:2,5:1,3:1 black=20:2,11:3,9:1,2:4,1:1 bar=1,2 off=4,2") as never;
+    const position = parsePosition(
+      "white=24:1,13:3,8:2,6:2,5:1,3:1 black=20:2,11:3,9:1,2:4,1:1 bar=1,2 off=4,2",
+    ) as never;
     for (const side of ["white", "black"] as const) {
       const id = positionId(position, side) as string;
       expect(id).toMatch(/^[A-Za-z0-9+/]{14}$/);

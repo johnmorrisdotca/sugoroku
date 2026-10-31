@@ -20,7 +20,8 @@ function conserved(position: Position, checkers: number): boolean {
   return SIDES.every((side) => checkersOf(position, side) === checkers);
 }
 
-const rulesFor = (key: VariantKey, money: boolean) => (key === "anti-backgammon" || key === "tabula" ? {} : money ? { points: 3, cube: true, gammons: true } : {});
+const rulesFor = (key: VariantKey, money: boolean) =>
+  key === "anti-backgammon" || key === "tabula" ? {} : money ? { points: 3, cube: true, gammons: true } : {};
 
 describe("random games of every variant", () => {
   it("all end, with every checker accounted for after every turn, and the pips moving by what was played", () => {

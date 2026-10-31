@@ -15,9 +15,15 @@ const TWO = "?players=two&seed=3&delay=0&points=1&variant=backgammon";
 /** Tap a checker and then the point it goes to. */
 async function tapMove(page, game, move) {
   const spec = game.settings.variant;
-  const from = move.from === 25 ? page.locator('[data-testid="board"] svg .sg-bar-hit[data-bar="' + game.turn + '"]') : pointAt(page, at("board"), boardPoint(spec, game.turn, move.from));
+  const from =
+    move.from === 25
+      ? page.locator('[data-testid="board"] svg .sg-bar-hit[data-bar="' + game.turn + '"]')
+      : pointAt(page, at("board"), boardPoint(spec, game.turn, move.from));
   await tap(page, from);
-  const to = move.to === 0 ? page.locator('[data-testid="board"] svg .sg-tray[data-tray="' + game.turn + '"]') : pointAt(page, at("board"), boardPoint(spec, game.turn, move.to));
+  const to =
+    move.to === 0
+      ? page.locator('[data-testid="board"] svg .sg-tray[data-tray="' + game.turn + '"]')
+      : pointAt(page, at("board"), boardPoint(spec, game.turn, move.to));
   await tap(page, to);
 }
 
@@ -29,7 +35,9 @@ async function start(page) {
   }
 }
 
-test("a first visit draws the standard board, steady, with no sideways scroll and nothing to complain of", async ({ page }) => {
+test("a first visit draws the standard board, steady, with no sideways scroll and nothing to complain of", async ({
+  page,
+}) => {
   const errors = await open(page, TWO);
   expect(await page.locator(`${at("board")} svg g.sg-point`).count()).toBe(24);
   expect(await page.locator(`${at("board")} svg .sg-checker`).count()).toBe(2 + 5 + 3 + 5 + 2 + 5 + 3 + 5);
@@ -55,7 +63,9 @@ test("the opening roll starts the game, and a tap on a checker lights up where i
   await expect(page.locator(at("board"))).toHaveAttribute("data-selected", "");
 });
 
-test("tapping a checker and then a point makes the move the package says it is, undo takes it back, Done passes the turn", async ({ page }) => {
+test("tapping a checker and then a point makes the move the package says it is, undo takes it back, Done passes the turn", async ({
+  page,
+}) => {
   const errors = await open(page, TWO);
   await start(page);
   const before = await gameOf(page);
@@ -131,7 +141,9 @@ test("the board is the same size and shape before the roll, mid-turn and after",
   expect(await box()).toEqual(first);
 });
 
-test("the cube is offered, taken, and its value and owner are shown; a dropped double ends the game", async ({ page }) => {
+test("the cube is offered, taken, and its value and owner are shown; a dropped double ends the game", async ({
+  page,
+}) => {
   await open(page, "?players=two&seed=3&delay=0&points=5&cube=1&gammons=1&variant=backgammon");
   await start(page);
   const opening = await gameOf(page);
@@ -223,7 +235,15 @@ test("two computers play a whole single game to its end, and the record replays"
 });
 
 test("every variant opens, rolls, and offers a legal move", async ({ page }) => {
-  for (const variant of ["backgammon", "backgammon-race", "anti-backgammon", "nackgammon", "long-gammon", "hypergammon", "tabula"]) {
+  for (const variant of [
+    "backgammon",
+    "backgammon-race",
+    "anti-backgammon",
+    "nackgammon",
+    "long-gammon",
+    "hypergammon",
+    "tabula",
+  ]) {
     const errors = await open(page, `?players=two&seed=5&delay=0&points=1&variant=${variant}`);
     await start(page);
     if ((await gameOf(page)).phase === "before-roll") await tap(page, primary);
@@ -256,14 +276,19 @@ test("a seeded game is the same game every time", async ({ page }) => {
   expect((await gameOf(page)).dice).toEqual(a);
 });
 
-test("in a race that starts from the bar, a tap on the bar picks a checker up and a tap on a point enters it", async ({ page }) => {
+test("in a race that starts from the bar, a tap on the bar picks a checker up and a tap on a point enters it", async ({
+  page,
+}) => {
   const errors = await open(page, "?players=two&seed=5&delay=0&points=1&variant=backgammon-race");
   await start(page);
   if ((await gameOf(page)).phase === "before-roll") await tap(page, primary);
   const before = await gameOf(page);
   const enter = legalMoves(before).find((move) => move.from === 25);
   expect(enter).toBeDefined();
-  await expect(page.locator(`${at("board")} svg .sg-bar-hit[data-bar="${before.turn}"]`)).toHaveAttribute("data-movable", "true");
+  await expect(page.locator(`${at("board")} svg .sg-bar-hit[data-bar="${before.turn}"]`)).toHaveAttribute(
+    "data-movable",
+    "true",
+  );
   await tapMove(page, before, enter);
   const after = await gameOf(page);
   expect(after.moves[0]).toMatchObject({ from: 25, to: enter.to });

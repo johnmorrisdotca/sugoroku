@@ -4,7 +4,14 @@ import { canDouble, type GameResult, type GameState } from "./game.ts";
 import { finishGame, newMatch, pointsToGo, startGame } from "./match.ts";
 import { settingsFor } from "./rules.ts";
 
-const win = (winner: "white" | "black", points: number): GameResult => ({ winner, how: "bear-off", kind: "single", multiplier: points, cube: 1, points });
+const win = (winner: "white" | "black", points: number): GameResult => ({
+  winner,
+  how: "bear-off",
+  kind: "single",
+  multiplier: points,
+  cube: 1,
+  points,
+});
 const ready = (game: GameState): GameState => ({ ...game, turn: "white", phase: "before-roll" });
 
 describe("a match", () => {
@@ -40,7 +47,10 @@ describe("a match", () => {
   });
 
   it("has no Crawford game if the rule is off", () => {
-    const match = finishGame(newMatch(settingsFor("backgammon", { points: 5, cube: true, crawford: false })), win("white", 4));
+    const match = finishGame(
+      newMatch(settingsFor("backgammon", { points: 5, cube: true, crawford: false })),
+      win("white", 4),
+    );
     expect(match.crawfordNext).toBe(false);
   });
 
@@ -59,7 +69,14 @@ describe("a match", () => {
   it("is over after one game at one point, and a draw ends it with no winner", () => {
     const one = finishGame(newMatch(settingsFor("backgammon")), win("black", 1));
     expect(one).toMatchObject({ over: true, winner: "black" });
-    const draw = finishGame(newMatch(settings), { winner: null, how: "draw", kind: "single", multiplier: 1, cube: 1, points: 0 });
+    const draw = finishGame(newMatch(settings), {
+      winner: null,
+      how: "draw",
+      kind: "single",
+      multiplier: 1,
+      cube: 1,
+      points: 0,
+    });
     expect(draw).toMatchObject({ over: true, winner: null });
   });
 

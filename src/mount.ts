@@ -198,7 +198,14 @@ export type SugorokuMount = {
   /** A new match, in the same variant and rules unless others are given. */
   newMatch: (change?: { variant?: VariantKey; rules?: Partial<Rules>; preset?: string; seed?: RecordSeed }) => void;
   /** Change how it looks or who plays: the look, the computer, the language, the names. */
-  set: (changes: SugorokuLook & { computer?: SugorokuMountOptions["computer"]; language?: SugorokuLanguage; names?: SugorokuMountOptions["names"]; sound?: boolean | SoundUrls }) => void;
+  set: (
+    changes: SugorokuLook & {
+      computer?: SugorokuMountOptions["computer"];
+      language?: SugorokuLanguage;
+      names?: SugorokuMountOptions["names"];
+      sound?: boolean | SoundUrls;
+    },
+  ) => void;
   /** Take the board down: its listeners, its timers and everything it put in the host. */
   destroy: () => void;
 };
@@ -218,7 +225,8 @@ export type SugorokuMount = {
  */
 export function ensureSugorokuPlayStyle(host: Element): void {
   const root = host.getRootNode();
-  const target: ParentNode = typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot ? root : host.ownerDocument.head;
+  const target: ParentNode =
+    typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot ? root : host.ownerDocument.head;
   if (target.querySelector("style[data-sugoroku-play]") !== null) return;
   const style = host.ownerDocument.createElement("style");
   style.setAttribute("data-sugoroku-play", "");
@@ -226,7 +234,12 @@ export function ensureSugorokuPlayStyle(host: Element): void {
   target.append(style);
 }
 
-function create<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className: string, text?: string): HTMLElementTagNameMap[K] {
+function create<K extends keyof HTMLElementTagNameMap>(
+  document: Document,
+  tag: K,
+  className: string,
+  text?: string,
+): HTMLElementTagNameMap[K] {
   const element = document.createElement(tag);
   element.className = className;
   if (text !== undefined) element.textContent = text;
@@ -264,7 +277,16 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
   recorder.startGame();
 
   // What may change while it is mounted.
-  let look: SugorokuLook = { board: options.board, checkers: options.checkers, colours: options.colours, theme: options.theme, home: options.home, view: options.view, numbers: options.numbers, orientation: options.orientation };
+  let look: SugorokuLook = {
+    board: options.board,
+    checkers: options.checkers,
+    colours: options.colours,
+    theme: options.theme,
+    home: options.home,
+    view: options.view,
+    numbers: options.numbers,
+    orientation: options.orientation,
+  };
   let computer = { white: options.computer?.white ?? null, black: options.computer?.black ?? null };
   let language: SugorokuLanguage | undefined = options.language;
   let names = { ...options.names };
@@ -272,7 +294,8 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
   const hostDice = options.dice === "host";
   const reducedMotion = view.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
   const delay = options.computerDelay ?? (reducedMotion ? 0 : 450);
-  const soundsFor = (setting: boolean | SoundUrls | undefined): SoundPlayer | null => (setting === undefined || setting === false ? null : createSounds(setting === true ? packagedSounds() : setting));
+  const soundsFor = (setting: boolean | SoundUrls | undefined): SoundPlayer | null =>
+    setting === undefined || setting === false ? null : createSounds(setting === true ? packagedSounds() : setting);
   let sounds = soundsFor(options.sound);
 
   // The page's own parts.
@@ -314,9 +337,16 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     if (human(side) && isComputer(otherSide(side))) return say("you");
     return say(side);
   };
-  const eventDetail = (side: Side | null, extra: Partial<SugorokuEventDetail> = {}): SugorokuEventDetail => ({ side, game, match, ...extra });
+  const eventDetail = (side: Side | null, extra: Partial<SugorokuEventDetail> = {}): SugorokuEventDetail => ({
+    side,
+    game,
+    match,
+    ...extra,
+  });
   const emit = (name: string, detail: SugorokuEventDetail, callback?: (detail: SugorokuEventDetail) => void): void => {
-    host.dispatchEvent(new view.CustomEvent(name, { detail: JSON.parse(JSON.stringify(detail)), bubbles: true, composed: true }));
+    host.dispatchEvent(
+      new view.CustomEvent(name, { detail: JSON.parse(JSON.stringify(detail)), bubbles: true, composed: true }),
+    );
     callback?.(detail);
   };
   const spec = (): GameState["settings"]["variant"] => game.settings.variant;
@@ -332,7 +362,9 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
   // Drawing.
   const diceShown = (): { side: Side; values: number[]; spent: boolean[] } | null => {
     if (game.phase === "opening") {
-      return lastOpening === null ? null : { side: "white", values: [lastOpening[0], lastOpening[1]], spent: [false, false] };
+      return lastOpening === null
+        ? null
+        : { side: "white", values: [lastOpening[0], lastOpening[1]], spent: [false, false] };
     }
     if (game.dice === null || game.turn === null) return null;
     const values = diceToPlay(spec(), game.dice);
@@ -350,13 +382,15 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     return { side: game.turn, values, spent };
   };
 
-  const legalNow = (): Move[] => (game.phase === "playing" && game.turn !== null && human(game.turn) ? legalMoves(game) : []);
+  const legalNow = (): Move[] =>
+    game.phase === "playing" && game.turn !== null && human(game.turn) ? legalMoves(game) : [];
 
   const draw = (): string => {
     const moves = legalNow();
     const mover = game.turn;
     const sources = [...new Set(moves.map((move) => move.from))];
-    const targets = selected === null ? [] : [...new Set(moves.filter((move) => move.from === selected).map((move) => move.to))];
+    const targets =
+      selected === null ? [] : [...new Set(moves.filter((move) => move.from === selected).map((move) => move.to))];
     return drawSugoroku(game.position, {
       variant: spec(),
       view: viewSide(),
@@ -376,19 +410,33 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
 
   // The words.
   const pointsText = (count: number): string => say(count === 1 ? "point" : "points", { n: count });
-  const diceText = (dice: readonly number[] | null): string => (dice === null ? "" : diceToPlay(spec(), dice).join(" "));
+  const diceText = (dice: readonly number[] | null): string =>
+    dice === null ? "" : diceToPlay(spec(), dice).join(" ");
   const statusText = (): string => {
     if (message !== null) return message;
     const side = game.turn;
-    if (game.phase === "opening") return waitingForDice ? say("waitingDice") : lastOpening !== null && lastOpening[0] === lastOpening[1] ? say("openingTie", { die: lastOpening[0] }) : say("opening");
+    if (game.phase === "opening")
+      return waitingForDice
+        ? say("waitingDice")
+        : lastOpening !== null && lastOpening[0] === lastOpening[1]
+          ? say("openingTie", { die: lastOpening[0] })
+          : say("opening");
     if (game.phase === "over") {
       const result = game.result as GameResult;
       let line: string;
       if (result.winner === null) line = say("drawn");
-      else if (result.how === "drop") line = say("wonDrop", { side: nameOf(result.winner), points: pointsText(result.points) });
-      else if (result.how === "concede") line = say("wonConcede", { side: nameOf(result.winner), points: pointsText(result.points) });
-      else line = say("wonBy", { side: nameOf(result.winner), kind: say(result.kind === "single" ? "singleGame" : result.kind), points: pointsText(result.points) });
-      if (match.over) line += ` ${match.winner === null ? say("matchDrawn") : say("matchWon", { side: nameOf(match.winner), a: match.score[sideIndex(match.winner)], b: match.score[sideIndex(otherSide(match.winner))] })}`;
+      else if (result.how === "drop")
+        line = say("wonDrop", { side: nameOf(result.winner), points: pointsText(result.points) });
+      else if (result.how === "concede")
+        line = say("wonConcede", { side: nameOf(result.winner), points: pointsText(result.points) });
+      else
+        line = say("wonBy", {
+          side: nameOf(result.winner),
+          kind: say(result.kind === "single" ? "singleGame" : result.kind),
+          points: pointsText(result.points),
+        });
+      if (match.over)
+        line += ` ${match.winner === null ? say("matchDrawn") : say("matchWon", { side: nameOf(match.winner), a: match.score[sideIndex(match.winner)], b: match.score[sideIndex(otherSide(match.winner))] })}`;
       return line;
     }
     if (side === null) return "";
@@ -396,23 +444,41 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
       const offerer = game.offeredBy as Side;
       const value = game.phase === "double-offered" ? game.cube.value * 2 : game.cube.value * 4;
       const lose = pointsText(game.phase === "double-offered" ? game.cube.value : game.cube.value * 2);
-      if (human(otherSide(offerer))) return say(game.phase === "double-offered" ? "answerDouble" : "answerBeaver", { side: nameOf(offerer), value, points: lose });
+      if (human(otherSide(offerer)))
+        return say(game.phase === "double-offered" ? "answerDouble" : "answerBeaver", {
+          side: nameOf(offerer),
+          value,
+          points: lose,
+        });
       return say("thinking", { side: nameOf(otherSide(offerer)) });
     }
     if (game.phase === "before-roll") {
       if (isComputer(side)) return say("thinking", { side: nameOf(side) });
       return isComputer(otherSide(side)) ? say("toRollYou") : say("toRoll", { side: nameOf(side) });
     }
-    if (isComputer(side) && game.moves.length === 0 && game.need.length > 0) return say("thinking", { side: nameOf(side) });
-    if (game.plan.length === 0) return say(human(side) && isComputer(otherSide(side)) ? "noMoveYou" : "noMove", { side: nameOf(side) });
-    if (turnIsPlayed(game)) return human(side) ? say("played") : say("toPlay", { side: nameOf(side), dice: diceText(game.dice) });
-    return human(side) && isComputer(otherSide(side)) ? say("toPlayYou", { dice: diceText(game.dice) }) : say("toPlay", { side: nameOf(side), dice: diceText(game.dice) });
+    if (isComputer(side) && game.moves.length === 0 && game.need.length > 0)
+      return say("thinking", { side: nameOf(side) });
+    if (game.plan.length === 0)
+      return say(human(side) && isComputer(otherSide(side)) ? "noMoveYou" : "noMove", { side: nameOf(side) });
+    if (turnIsPlayed(game))
+      return human(side) ? say("played") : say("toPlay", { side: nameOf(side), dice: diceText(game.dice) });
+    return human(side) && isComputer(otherSide(side))
+      ? say("toPlayYou", { dice: diceText(game.dice) })
+      : say("toPlay", { side: nameOf(side), dice: diceText(game.dice) });
   };
   const scoreText = (): string => {
     const { rules } = settings;
-    const parts = [say("score", { white: nameOf("white"), a: match.score[0], black: nameOf("black"), b: match.score[1] }), rules.points === 0 ? say("money") : say("matchTo", { points: rules.points })];
+    const parts = [
+      say("score", { white: nameOf("white"), a: match.score[0], black: nameOf("black"), b: match.score[1] }),
+      rules.points === 0 ? say("money") : say("matchTo", { points: rules.points }),
+    ];
     if (game.crawford && game.phase !== "over") parts.push(say("crawford"));
-    else if (hasCube()) parts.push(game.cube.owner === null ? say("cubeMiddle") : say("cubeHeld", { value: game.cube.value, side: nameOf(game.cube.owner) }));
+    else if (hasCube())
+      parts.push(
+        game.cube.owner === null
+          ? say("cubeMiddle")
+          : say("cubeHeld", { value: game.cube.value, side: nameOf(game.cube.owner) }),
+      );
     return parts.join(" · ");
   };
 
@@ -423,11 +489,27 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     const side = game.turn;
     const turnOfHuman = side !== null && human(side);
     if (game.phase === "over") {
-      return [match.over ? { text: say("newMatch"), enabled: true, run: () => api.newMatch(), primary: true } : { text: say("nextGame"), enabled: true, run: () => api.nextGame(), primary: true }, match.over ? off : { text: say("newMatch"), enabled: true, run: () => api.newMatch() }, off];
+      return [
+        match.over
+          ? { text: say("newMatch"), enabled: true, run: () => api.newMatch(), primary: true }
+          : { text: say("nextGame"), enabled: true, run: () => api.nextGame(), primary: true },
+        match.over ? off : { text: say("newMatch"), enabled: true, run: () => api.newMatch() },
+        off,
+      ];
     }
     if (game.phase === "opening") {
       const nobody = isComputer("white") && isComputer("black");
-      return [{ text: say("rollOpening"), enabled: !nobody && !waitingForDice, run: () => api.roll(), primary: true, attention: !nobody }, off, off];
+      return [
+        {
+          text: say("rollOpening"),
+          enabled: !nobody && !waitingForDice,
+          run: () => api.roll(),
+          primary: true,
+          attention: !nobody,
+        },
+        off,
+        off,
+      ];
     }
     if (game.phase === "double-offered" || game.phase === "beaver-offered") {
       const answerer = otherSide(game.offeredBy as Side);
@@ -440,14 +522,26 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     }
     if (game.phase === "before-roll") {
       return [
-        { text: say("roll"), enabled: turnOfHuman && !waitingForDice, run: () => api.roll(), primary: true, attention: turnOfHuman },
+        {
+          text: say("roll"),
+          enabled: turnOfHuman && !waitingForDice,
+          run: () => api.roll(),
+          primary: true,
+          attention: turnOfHuman,
+        },
         { text: say("double"), enabled: turnOfHuman && canDouble(game), run: () => api.double() },
         { text: say("undo"), enabled: false, run: () => undefined },
       ];
     }
     const played = turnIsPlayed(game);
     return [
-      { text: say("done"), enabled: turnOfHuman && played, run: () => api.done(), primary: true, attention: turnOfHuman && played },
+      {
+        text: say("done"),
+        enabled: turnOfHuman && played,
+        run: () => api.done(),
+        primary: true,
+        attention: turnOfHuman && played,
+      },
       { text: say("double"), enabled: false, run: () => undefined },
       { text: say("undo"), enabled: turnOfHuman && game.moves.length > 0, run: () => api.undo() },
     ];
@@ -494,7 +588,8 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     if (timer !== null) clearTimeout(timer);
     timer = null;
     if (gone || game.phase === "over") return;
-    const actor = game.phase === "opening" ? (isComputer("white") && isComputer("black") ? "white" : null) : sideToAct(game);
+    const actor =
+      game.phase === "opening" ? (isComputer("white") && isComputer("black") ? "white" : null) : sideToAct(game);
     if (actor === null || !isComputer(actor)) return;
     if (waitingForDice) return;
     timer = setTimeout(tick, delay);
@@ -517,7 +612,13 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     message = null;
     finishIfOver();
     render();
-    if (options.autoEnd === true && game.phase === "playing" && turnIsPlayed(game) && game.turn !== null && human(game.turn)) {
+    if (
+      options.autoEnd === true &&
+      game.phase === "playing" &&
+      turnIsPlayed(game) &&
+      game.turn !== null &&
+      human(game.turn)
+    ) {
       timer = setTimeout(endNow, delay === 0 ? 0 : 250);
       return;
     }
@@ -572,7 +673,9 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
   const makeMove = (step: { from: number; to: number }): boolean => {
     if (game.phase !== "playing" || game.turn === null) return false;
     const side = game.turn;
-    const move = legalMoves(game).filter((one) => one.from === step.from && one.to === step.to).sort((a, b) => a.die - b.die)[0];
+    const move = legalMoves(game)
+      .filter((one) => one.from === step.from && one.to === step.to)
+      .sort((a, b) => a.die - b.die)[0];
     if (move === undefined) return false;
     const next = playMove(game, move);
     play(move.hit ? "hit" : "clack");
@@ -593,8 +696,22 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
   };
 
   const cubeAction = (action: "double" | "take" | "drop" | "beaver", side: Side): void => {
-    const next = action === "double" ? offerDouble(game) : action === "take" ? takeDouble(game) : action === "drop" ? dropDouble(game) : beaverDouble(game);
-    (action === "double" ? recorder.double : action === "take" ? recorder.take : action === "drop" ? recorder.drop : recorder.beaver).call(recorder, side);
+    const next =
+      action === "double"
+        ? offerDouble(game)
+        : action === "take"
+          ? takeDouble(game)
+          : action === "drop"
+            ? dropDouble(game)
+            : beaverDouble(game);
+    (action === "double"
+      ? recorder.double
+      : action === "take"
+        ? recorder.take
+        : action === "drop"
+          ? recorder.drop
+          : recorder.beaver
+    ).call(recorder, side);
     play("cube");
     emit("sugoroku-cube", eventDetail(side, { action, game: next }), options.onCube);
     setGame(next);
@@ -668,7 +785,8 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     render();
   };
 
-  let drag: { pointer: number; from: number; x: number; y: number; active: boolean; ghost: HTMLElement | null } | null = null;
+  let drag: { pointer: number; from: number; x: number; y: number; active: boolean; ghost: HTMLElement | null } | null =
+    null;
   const underPointer = (x: number, y: number): Element | null => {
     const root = host.getRootNode() as Document | ShadowRoot;
     return root.elementFromPoint?.(x, y) ?? null;
@@ -772,14 +890,21 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
   boardBox.addEventListener("click", onClick);
 
   // Following the page: its width, and its language.
-  const resize = typeof view.ResizeObserver === "undefined" ? null : new view.ResizeObserver(() => {
-    const wide = look.orientation === "portrait" || (look.orientation !== "landscape" && (host.clientWidth || 600) < 560);
-    if (wide !== portrait) render();
-  });
+  const resize =
+    typeof view.ResizeObserver === "undefined"
+      ? null
+      : new view.ResizeObserver(() => {
+          const wide =
+            look.orientation === "portrait" || (look.orientation !== "landscape" && (host.clientWidth || 600) < 560);
+          if (wide !== portrait) render();
+        });
   resize?.observe(host);
-  const watch = typeof view.MutationObserver === "undefined" ? null : new view.MutationObserver(() => {
-    if (language === undefined) render();
-  });
+  const watch =
+    typeof view.MutationObserver === "undefined"
+      ? null
+      : new view.MutationObserver(() => {
+          if (language === undefined) render();
+        });
   watch?.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
 
   // The handle.
@@ -798,10 +923,12 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
       if (game.turn !== null && canDouble(game)) cubeAction("double", game.turn);
     },
     take: () => {
-      if (game.offeredBy !== null && (game.phase === "double-offered" || game.phase === "beaver-offered")) cubeAction("take", otherSide(game.offeredBy));
+      if (game.offeredBy !== null && (game.phase === "double-offered" || game.phase === "beaver-offered"))
+        cubeAction("take", otherSide(game.offeredBy));
     },
     drop: () => {
-      if (game.offeredBy !== null && (game.phase === "double-offered" || game.phase === "beaver-offered")) cubeAction("drop", otherSide(game.offeredBy));
+      if (game.offeredBy !== null && (game.phase === "double-offered" || game.phase === "beaver-offered"))
+        cubeAction("drop", otherSide(game.offeredBy));
     },
     beaver: () => {
       if (canBeaver(game)) cubeAction("beaver", otherSide(game.offeredBy as Side));
@@ -826,7 +953,11 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
       if (change.seed !== undefined) seed = change.seed;
       source = seed === undefined ? source : seededDice(seed);
       if (change.preset !== undefined) settings = settingsOf(undefined, undefined, change.preset);
-      else if (change.variant !== undefined || change.rules !== undefined) settings = settingsOf(change.variant ?? settings.variant.key, { ...(change.variant === undefined ? settings.rules : {}), ...change.rules });
+      else if (change.variant !== undefined || change.rules !== undefined)
+        settings = settingsOf(change.variant ?? settings.variant.key, {
+          ...(change.variant === undefined ? settings.rules : {}),
+          ...change.rules,
+        });
       match = newMatch(settings);
       recorder = new GameRecorder(settings, seed);
       recorder.startGame();
@@ -836,13 +967,20 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
       setGame(startGame(match));
     },
     set: (changes) => {
-      const { computer: nextComputer, language: nextLanguage, names: nextNames, sound: nextSound, ...nextLook } = changes;
+      const {
+        computer: nextComputer,
+        language: nextLanguage,
+        names: nextNames,
+        sound: nextSound,
+        ...nextLook
+      } = changes;
       if ("sound" in changes) {
         sounds?.destroy();
         sounds = soundsFor(nextSound);
       }
       look = { ...look, ...nextLook };
-      if (nextComputer !== undefined) computer = { white: nextComputer.white ?? null, black: nextComputer.black ?? null };
+      if (nextComputer !== undefined)
+        computer = { white: nextComputer.white ?? null, black: nextComputer.black ?? null };
       if (nextLanguage !== undefined) language = nextLanguage;
       if (nextNames !== undefined) names = { ...nextNames };
       render();
@@ -857,7 +995,8 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
       drag?.ghost?.remove();
       host.replaceChildren();
       host.classList.remove("sugoroku-play");
-      for (const key of ["drag", "phase", "turn", "over", "orientation", "selected", "cube", "need", "ready"]) delete host.dataset[key];
+      for (const key of ["drag", "phase", "turn", "over", "orientation", "selected", "cube", "need", "ready"])
+        delete host.dataset[key];
     },
   };
 

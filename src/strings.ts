@@ -159,7 +159,11 @@ export const SUGOROKU_STRINGS: Record<SugorokuLanguage, Record<string, string>> 
  * console.log(sugorokuSay("en","roll"));
  * ```
  */
-export function sugorokuSay(language: SugorokuLanguage, key: string, values: Record<string, string | number> = {}): string {
+export function sugorokuSay(
+  language: SugorokuLanguage,
+  key: string,
+  values: Record<string, string | number> = {},
+): string {
   const line = SUGOROKU_STRINGS[language][key] ?? SUGOROKU_STRINGS.en[key] ?? key;
   return line.replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole));
 }
@@ -178,6 +182,9 @@ export function sugorokuSay(language: SugorokuLanguage, key: string, values: Rec
  * ```
  */
 export function sugorokuLanguageOf(element: Element | null): SugorokuLanguage {
-  const tag = element?.closest("[lang]")?.getAttribute("lang") ?? element?.ownerDocument?.documentElement.getAttribute("lang") ?? "en";
+  const tag =
+    element?.closest("[lang]")?.getAttribute("lang") ??
+    element?.ownerDocument?.documentElement.getAttribute("lang") ??
+    "en";
   return tag.toLowerCase().startsWith("ja") ? "ja" : "en";
 }

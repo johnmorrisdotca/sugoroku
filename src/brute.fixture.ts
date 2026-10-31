@@ -8,7 +8,12 @@ import type { Side } from "./side.ts";
 import type { VariantSpec } from "./variants.ts";
 
 /** Every position a turn may leave, by trying everything, as a set of position keys. */
-export function bruteForcePositions(spec: VariantSpec, position: Position, side: Side, roll: readonly number[]): Set<string> {
+export function bruteForcePositions(
+  spec: VariantSpec,
+  position: Position,
+  side: Side,
+  roll: readonly number[],
+): Set<string> {
   const dice = diceToPlay(spec, roll);
   type End = { position: Position; used: number[] };
   const ends: End[] = [];
@@ -18,7 +23,11 @@ export function bruteForcePositions(spec: VariantSpec, position: Position, side:
       const die = left[k] as number;
       for (const move of movesOfDie(spec, at, side, die)) {
         moved = true;
-        walk(applyMove(spec, at, side, move), left.filter((_, i) => i !== k), [...used, die]);
+        walk(
+          applyMove(spec, at, side, move),
+          left.filter((_, i) => i !== k),
+          [...used, die],
+        );
       }
     }
     if (!moved) ends.push({ position: at, used });

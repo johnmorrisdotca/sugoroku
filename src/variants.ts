@@ -10,7 +10,14 @@
  * console.log(value);
  * ```
  */
-export type VariantKey = "backgammon" | "backgammon-race" | "anti-backgammon" | "nackgammon" | "long-gammon" | "hypergammon" | "tabula";
+export type VariantKey =
+  | "backgammon"
+  | "backgammon-race"
+  | "anti-backgammon"
+  | "nackgammon"
+  | "long-gammon"
+  | "hypergammon"
+  | "tabula";
 
 /** How the sides' tracks lie on the board.
  *
@@ -158,7 +165,16 @@ export const VARIANTS: Readonly<Record<VariantKey, VariantSpec>> = {
     ],
   },
   /** The Roman game: three dice, no doubles, both sides entering the same way round the same track. */
-  tabula: { ...BASE, key: "tabula", layout: [], dice: 3, doubles: "none", direction: "same", opening: "die-each", holdBelow: 12 },
+  tabula: {
+    ...BASE,
+    key: "tabula",
+    layout: [],
+    dice: 3,
+    doubles: "none",
+    direction: "same",
+    opening: "die-each",
+    holdBelow: 12,
+  },
 };
 
 /** The variants' keys, in the order the demo lists them.
@@ -169,7 +185,15 @@ export const VARIANTS: Readonly<Record<VariantKey, VariantSpec>> = {
  * console.log(VARIANT_KEYS);
  * ```
  */
-export const VARIANT_KEYS: readonly VariantKey[] = ["backgammon", "backgammon-race", "anti-backgammon", "nackgammon", "long-gammon", "hypergammon", "tabula"];
+export const VARIANT_KEYS: readonly VariantKey[] = [
+  "backgammon",
+  "backgammon-race",
+  "anti-backgammon",
+  "nackgammon",
+  "long-gammon",
+  "hypergammon",
+  "tabula",
+];
 
 /** Whether `key` names a variant.
  *

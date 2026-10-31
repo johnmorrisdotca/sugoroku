@@ -1,7 +1,26 @@
 import type { Position } from "./board.ts";
 import { boardPoint, BAR, POINTS } from "./board.ts";
-import { colourProperty, SUGOROKU_BOARDS, SUGOROKU_CHECKER_SETS, SUGOROKU_COLOUR_NAMES, type SugorokuBoardName, type SugorokuCheckerSetName, type SugorokuColours } from "./colours.ts";
-import { BAR_WIDTH, BoardLayout, boardSize, CHECKER, DIE, PAD, POINT_WIDTH, STACK_STEP, TRAY_WIDTH, type Orientation } from "./geometry.ts";
+import {
+  colourProperty,
+  SUGOROKU_BOARDS,
+  SUGOROKU_CHECKER_SETS,
+  SUGOROKU_COLOUR_NAMES,
+  type SugorokuBoardName,
+  type SugorokuCheckerSetName,
+  type SugorokuColours,
+} from "./colours.ts";
+import {
+  BAR_WIDTH,
+  BoardLayout,
+  boardSize,
+  CHECKER,
+  DIE,
+  PAD,
+  POINT_WIDTH,
+  STACK_STEP,
+  TRAY_WIDTH,
+  type Orientation,
+} from "./geometry.ts";
 import { sideIndex, SIDES, type Side } from "./side.ts";
 import { SUGOROKU_STYLE } from "./style.ts";
 import { VARIANTS, type VariantKey, type VariantSpec } from "./variants.ts";
@@ -60,7 +79,8 @@ export type SugorokuDrawOptions = {
   style?: boolean;
 };
 
-const escape = (text: string): string => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const escape = (text: string): string =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const n = (value: number): string => String(Math.round(value * 100) / 100);
 
 /** How many checkers are drawn on a stack before the last one carries the count.
@@ -74,7 +94,15 @@ const n = (value: number): string => String(Math.round(value * 100) / 100);
 export const MOST_DRAWN = 5;
 
 /** The pips of each die face, as places on a three by three grid, 0 to 8 reading across and down. */
-const PIPS: readonly (readonly number[])[] = [[], [4], [0, 8], [0, 4, 8], [0, 2, 6, 8], [0, 2, 4, 6, 8], [0, 2, 3, 5, 6, 8]];
+const PIPS: readonly (readonly number[])[] = [
+  [],
+  [4],
+  [0, 8],
+  [0, 4, 8],
+  [0, 2, 6, 8],
+  [0, 2, 4, 6, 8],
+  [0, 2, 3, 5, 6, 8],
+];
 
 /** The inline custom properties of a drawing: the named board and checkers, then any colour given.
  *
@@ -88,8 +116,14 @@ const PIPS: readonly (readonly number[])[] = [[], [4], [0, 8], [0, 4, 8], [0, 2,
  * ```
  */
 export function colourStyle(options: Pick<SugorokuDrawOptions, "board" | "checkers" | "colours">): string {
-  const colours: Partial<SugorokuColours> = { ...(options.board === undefined ? {} : SUGOROKU_BOARDS[options.board]), ...(options.checkers === undefined ? {} : SUGOROKU_CHECKER_SETS[options.checkers]), ...options.colours };
-  return SUGOROKU_COLOUR_NAMES.filter((name) => colours[name] !== undefined).map((name) => `${colourProperty(name)}:${escape(String(colours[name]))}`).join(";");
+  const colours: Partial<SugorokuColours> = {
+    ...(options.board === undefined ? {} : SUGOROKU_BOARDS[options.board]),
+    ...(options.checkers === undefined ? {} : SUGOROKU_CHECKER_SETS[options.checkers]),
+    ...options.colours,
+  };
+  return SUGOROKU_COLOUR_NAMES.filter((name) => colours[name] !== undefined)
+    .map((name) => `${colourProperty(name)}:${escape(String(colours[name]))}`)
+    .join(";");
 }
 
 /** The words a screen reader hears of a drawing when none is given. */
@@ -138,13 +172,26 @@ export function drawSugoroku(position: Position, options: SugorokuDrawOptions = 
   // The frame, the field of play, the bar, and the trays' wells.
   const field = { x: layout.fieldLeft, y: layout.fieldTop, w: 2 * POINT_WIDTH * 6 + BAR_WIDTH, h: layout.fieldHeight };
   out.push(`<rect class="sg-frame" x="0" y="0" width="${n(layout.width)}" height="${n(layout.height)}" rx="16"/>`);
-  out.push(`<rect class="sg-felt" x="${n(mx(field.x, field.w))}" y="${n(field.y)}" width="${n(field.w)}" height="${n(field.h)}" rx="4"/>`);
-  if (hasCube) out.push(`<rect class="sg-rail" x="${n(mx(PAD, 66))}" y="${n(field.y)}" width="66" height="${n(field.h)}" rx="6"/>`);
-  out.push(`<rect class="sg-tray-well" x="${n(mx(layout.trayLeft, TRAY_WIDTH))}" y="${n(field.y)}" width="${TRAY_WIDTH}" height="${n(field.h)}" rx="4"/>`);
+  out.push(
+    `<rect class="sg-felt" x="${n(mx(field.x, field.w))}" y="${n(field.y)}" width="${n(field.w)}" height="${n(field.h)}" rx="4"/>`,
+  );
+  if (hasCube)
+    out.push(
+      `<rect class="sg-rail" x="${n(mx(PAD, 66))}" y="${n(field.y)}" width="66" height="${n(field.h)}" rx="6"/>`,
+    );
+  out.push(
+    `<rect class="sg-tray-well" x="${n(mx(layout.trayLeft, TRAY_WIDTH))}" y="${n(field.y)}" width="${TRAY_WIDTH}" height="${n(field.h)}" rx="4"/>`,
+  );
 
   // The points, with the highlight on the one picked up and on those it may go to.
   const mover = options.highlight?.side;
-  const fromBoard = mover !== undefined && options.highlight?.from != null && options.highlight.from !== BAR && options.highlight.from > 0 ? boardPoint(spec, mover, options.highlight.from) : null;
+  const fromBoard =
+    mover !== undefined &&
+    options.highlight?.from != null &&
+    options.highlight.from !== BAR &&
+    options.highlight.from > 0
+      ? boardPoint(spec, mover, options.highlight.from)
+      : null;
   const targetBoard = new Set<number>();
   let offTarget = false;
   const movableBoard = new Set<number>();
@@ -175,18 +222,32 @@ export function drawSugoroku(position: Position, options: SugorokuDrawOptions = 
     if (options.numbers === true) {
       const own = view === "white" ? point : POINTS + 1 - point;
       const shown = spec.direction === "same" ? point : own;
-      out.push(text(mx(box.x + box.w / 2), box.top ? box.y - STRIPMID : box.y + box.h + STRIPMID, String(shown), "sg-number", ` data-board="${point}"`));
+      out.push(
+        text(
+          mx(box.x + box.w / 2),
+          box.top ? box.y - STRIPMID : box.y + box.h + STRIPMID,
+          String(shown),
+          "sg-number",
+          ` data-board="${point}"`,
+        ),
+      );
     }
   }
 
   // The bar, and the trays: places a checker can be sent to or taken from.
-  out.push(`<rect class="sg-bar" x="${n(mx(layout.barLeft, BAR_WIDTH))}" y="${n(field.y)}" width="${BAR_WIDTH}" height="${n(field.h)}"/>`);
+  out.push(
+    `<rect class="sg-bar" x="${n(mx(layout.barLeft, BAR_WIDTH))}" y="${n(field.y)}" width="${BAR_WIDTH}" height="${n(field.h)}"/>`,
+  );
   for (const side of SIDES) {
     const bar = layout.barBox(side);
     const tray = layout.trayBox(side);
     const barSelected = mover === side && options.highlight?.from === BAR;
-    out.push(`<rect class="sg-bar-hit" data-bar="${side}" x="${n(mx(bar.x, bar.w))}" y="${n(bar.y)}" width="${bar.w}" height="${n(bar.h)}"${barSelected ? ' data-selected="true"' : ""}${mover === side && barMovable ? ' data-movable="true"' : ""}/>`);
-    out.push(`<rect class="sg-tray" data-tray="${side}" x="${n(mx(tray.x, tray.w))}" y="${n(tray.y)}" width="${tray.w}" height="${n(tray.h)}" rx="3"${offTarget && mover === side ? ' data-target="true"' : ""}/>`);
+    out.push(
+      `<rect class="sg-bar-hit" data-bar="${side}" x="${n(mx(bar.x, bar.w))}" y="${n(bar.y)}" width="${bar.w}" height="${n(bar.h)}"${barSelected ? ' data-selected="true"' : ""}${mover === side && barMovable ? ' data-movable="true"' : ""}/>`,
+    );
+    out.push(
+      `<rect class="sg-tray" data-tray="${side}" x="${n(mx(tray.x, tray.w))}" y="${n(tray.y)}" width="${tray.w}" height="${n(tray.h)}" rx="3"${offTarget && mover === side ? ' data-target="true"' : ""}/>`,
+    );
   }
 
   /** One checker: a face, a rim and a gleam, with the count written on it when it stands for a stack. */
@@ -209,7 +270,15 @@ export function drawSugoroku(position: Position, options: SugorokuDrawOptions = 
       const drawn = Math.min(count, MOST_DRAWN);
       for (let k = 0; k < drawn; k += 1) {
         const cy = box.top ? box.y + CHECKER / 2 + k * STACK_STEP : box.y + box.h - CHECKER / 2 - k * STACK_STEP;
-        out.push(checker(side, cx, cy, `data-board="${point}" data-height="${k + 1}" data-own="${own}"`, k === drawn - 1 && count > MOST_DRAWN ? count : undefined));
+        out.push(
+          checker(
+            side,
+            cx,
+            cy,
+            `data-board="${point}" data-height="${k + 1}" data-own="${own}"`,
+            k === drawn - 1 && count > MOST_DRAWN ? count : undefined,
+          ),
+        );
       }
     }
   }
@@ -224,7 +293,15 @@ export function drawSugoroku(position: Position, options: SugorokuDrawOptions = 
     const drawn = Math.min(waiting, MOST_DRAWN);
     for (let k = 0; k < drawn; k += 1) {
       const cy = box.top ? box.y + CHECKER / 2 + 6 + k * STACK_STEP : box.y + box.h - CHECKER / 2 - 6 - k * STACK_STEP;
-      out.push(checker(side, cx, cy, `data-bar="${side}" data-height="${k + 1}"`, k === drawn - 1 && waiting > MOST_DRAWN ? waiting : undefined));
+      out.push(
+        checker(
+          side,
+          cx,
+          cy,
+          `data-bar="${side}" data-height="${k + 1}"`,
+          k === drawn - 1 && waiting > MOST_DRAWN ? waiting : undefined,
+        ),
+      );
     }
   }
 
@@ -236,7 +313,9 @@ export function drawSugoroku(position: Position, options: SugorokuDrawOptions = 
     for (let k = 0; k < off; k += 1) {
       const h = 9;
       const y = box.top ? box.y + 5 + k * (h + 1) : box.y + box.h - 5 - h - k * (h + 1);
-      out.push(`<rect class="sg-off" data-side="${side}" x="${n(mx(box.x + 8, box.w - 16))}" y="${n(y)}" width="${box.w - 16}" height="${h}" rx="3"/>`);
+      out.push(
+        `<rect class="sg-off" data-side="${side}" x="${n(mx(box.x + 8, box.w - 16))}" y="${n(y)}" width="${box.w - 16}" height="${h}" rx="3"/>`,
+      );
     }
   }
 
@@ -250,8 +329,11 @@ export function drawSugoroku(position: Position, options: SugorokuDrawOptions = 
       const dx = centre.x - total / 2 + k * (DIE + gap);
       const spentFlag = spent?.[k] === true ? ' data-spent="true"' : "";
       let pips = "";
-      for (const place of PIPS[value] ?? []) pips += `<circle class="sg-pip" cx="${n(((place % 3) - 1) * 12)}" cy="${n((Math.floor(place / 3) - 1) * 12)}" r="4"/>`;
-      out.push(`<g class="sg-die" data-die="${value}" data-index="${k}"${spentFlag} transform="translate(${n(mx(dx + DIE / 2))} ${n(centre.y)})"><rect x="${-DIE / 2}" y="${-DIE / 2}" width="${DIE}" height="${DIE}" rx="9"/>${pips}</g>`);
+      for (const place of PIPS[value] ?? [])
+        pips += `<circle class="sg-pip" cx="${n(((place % 3) - 1) * 12)}" cy="${n((Math.floor(place / 3) - 1) * 12)}" r="4"/>`;
+      out.push(
+        `<g class="sg-die" data-die="${value}" data-index="${k}"${spentFlag} transform="translate(${n(mx(dx + DIE / 2))} ${n(centre.y)})"><rect x="${-DIE / 2}" y="${-DIE / 2}" width="${DIE}" height="${DIE}" rx="9"/>${pips}</g>`,
+      );
     });
   }
 

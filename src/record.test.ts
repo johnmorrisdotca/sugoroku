@@ -34,8 +34,14 @@ black 64: 24/14
   it("refuses a turn out of turn, dice that do not fit the opening, and a double that is not allowed", () => {
     expect(replayRecord(`${header()}game 1\nopen 3 1\nblack 31: 24/21 6/5\n`)).toMatchObject({ ok: false });
     expect(replayRecord(`${header()}game 1\nopen 3 1\nwhite 62: 24/18 13/11\n`)).toMatchObject({ ok: false });
-    expect(replayRecord(`${header("cube on\n").replace("points 1", "points 5")}game 1\nopen 3 1\nwhite 31: 8/5 6/5\nwhite doubles\n`)).toMatchObject({ ok: false });
-    expect(replayRecord(`${header("cube on\n")}game 1\nopen 3 1\nwhite 31: 8/5 6/5\nblack doubles\n`)).toMatchObject({ ok: false });
+    expect(
+      replayRecord(
+        `${header("cube on\n").replace("points 1", "points 5")}game 1\nopen 3 1\nwhite 31: 8/5 6/5\nwhite doubles\n`,
+      ),
+    ).toMatchObject({ ok: false });
+    expect(replayRecord(`${header("cube on\n")}game 1\nopen 3 1\nwhite 31: 8/5 6/5\nblack doubles\n`)).toMatchObject({
+      ok: false,
+    });
   });
 
   it("refuses text that is not a record", () => {
@@ -50,7 +56,17 @@ black 64: 24/14
 
   it("writes the header from the settings and the seed", () => {
     const lines = formatRecordHeader(settingsFor("nackgammon", { points: 3, cube: true, gammons: true }), "chibi");
-    expect(lines).toEqual(["sugoroku 1", "variant nackgammon", "points 3", "cube on", "crawford on", "jacoby off", "beaver off", "gammons on", "seed chibi"]);
+    expect(lines).toEqual([
+      "sugoroku 1",
+      "variant nackgammon",
+      "points 3",
+      "cube on",
+      "crawford on",
+      "jacoby off",
+      "beaver off",
+      "gammons on",
+      "seed chibi",
+    ]);
     expect(() => formatRecordHeader(settingsFor("backgammon"), "12345")).toThrow();
   });
 });
@@ -83,7 +99,10 @@ describe("a record of whole games", () => {
 
   it("refuses a result line that is not what the game came to", () => {
     const { text } = randomMatch(settingsFor("backgammon"), 6);
-    const wrong = text.replace(/^result (white|black) /m, (_, side: string) => `result ${side === "white" ? "black" : "white"} `);
+    const wrong = text.replace(
+      /^result (white|black) /m,
+      (_, side: string) => `result ${side === "white" ? "black" : "white"} `,
+    );
     expect(replayRecord(wrong).ok).toBe(false);
   });
 
@@ -91,7 +110,14 @@ describe("a record of whole games", () => {
     const recorder = new GameRecorder(settingsFor("backgammon", { points: 3, cube: true, gammons: true }));
     recorder.startGame();
     recorder.opening([6, 2]);
-    recorder.turn("white", [6, 2], [{ from: 24, to: 18, die: 6, hit: false }, { from: 13, to: 11, die: 2, hit: false }]);
+    recorder.turn(
+      "white",
+      [6, 2],
+      [
+        { from: 24, to: 18, die: 6, hit: false },
+        { from: 13, to: 11, die: 2, hit: false },
+      ],
+    );
     recorder.double("black");
     const replay = replayRecord(recorder.text());
     expect(replay.ok).toBe(true);
@@ -114,7 +140,9 @@ open 5 2
 black 52: 13/8 24/22
 black concedes single
 `;
-    const replay = replayRecord(text.replace("black 52: 13/8 24/22\nblack concedes single", "white 52: 24/22 13/8\nwhite concedes single"));
+    const replay = replayRecord(
+      text.replace("black 52: 13/8 24/22\nblack concedes single", "white 52: 24/22 13/8\nwhite concedes single"),
+    );
     expect(replay.ok, JSON.stringify(replay)).toBe(true);
     if (!replay.ok) return;
     expect(replay.games.map((g) => g.result.points)).toEqual([1, 1]);

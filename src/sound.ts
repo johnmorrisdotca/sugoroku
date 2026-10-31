@@ -43,7 +43,8 @@ const FILES: Record<SoundName, string> = { clack: "clack.wav", hit: "hit.wav", d
 export function packagedSounds(): SoundUrls {
   try {
     const urls: SoundUrls = {};
-    for (const name of Object.keys(FILES) as SoundName[]) urls[name] = new URL(`../sounds/${FILES[name]}`, import.meta.url).href;
+    for (const name of Object.keys(FILES) as SoundName[])
+      urls[name] = new URL(`../sounds/${FILES[name]}`, import.meta.url).href;
     return urls;
   } catch {
     return {};

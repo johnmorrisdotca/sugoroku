@@ -5,7 +5,15 @@ import { newGame, legalMoves, legalPlaysOf, playMove, rollDice, rollOpening, typ
 import { movesOfDie } from "./moves.ts";
 import { formatPlay, parsePosition } from "./notation.ts";
 import { diceToPlay, legalPlays } from "./plays.ts";
-import { DEFAULT_RULES, PRESETS, presetByKey, presetByName, resolveRules, rulesProblems, settingsFor } from "./rules.ts";
+import {
+  DEFAULT_RULES,
+  PRESETS,
+  presetByKey,
+  presetByName,
+  resolveRules,
+  rulesProblems,
+  settingsFor,
+} from "./rules.ts";
 import { startCounts, startReserve, VARIANT_KEYS, VARIANTS } from "./variants.ts";
 
 const at = (text: string): Position => parsePosition(text) as Position;
@@ -42,7 +50,11 @@ describe("Backgammon Race", () => {
 
   it("lets a checker on the board move while others are still to enter, but a hit one must enter first", () => {
     const loose = at("white=19:1 black= reserve=14,15");
-    expect(movesOfDie(spec, loose, "white", 3).map((m) => `${m.from}/${m.to}`).sort()).toEqual(["19/16", "25/22"]);
+    expect(
+      movesOfDie(spec, loose, "white", 3)
+        .map((m) => `${m.from}/${m.to}`)
+        .sort(),
+    ).toEqual(["19/16", "25/22"]);
     const hit = at("white=19:1 black= bar=1,0 reserve=13,15");
     expect(movesOfDie(spec, hit, "white", 3).map((m) => `${m.from}/${m.to}`)).toEqual(["25/22"]);
   });
@@ -55,7 +67,12 @@ describe("Backgammon Race", () => {
   });
 
   it("scores a gammon for a side that still has checkers off the board when the game ends", () => {
-    let game: GameState = { ...newGame(settingsFor("backgammon-race", { points: 3, cube: true, gammons: true })), position: at("white=1:1 black= reserve=0,15 off=14,0"), turn: "white", phase: "before-roll" };
+    let game: GameState = {
+      ...newGame(settingsFor("backgammon-race", { points: 3, cube: true, gammons: true })),
+      position: at("white=1:1 black= reserve=0,15 off=14,0"),
+      turn: "white",
+      phase: "before-roll",
+    };
     game = playMove(rollDice(game, [1, 2]), { from: 1, to: 0 });
     expect(game.result).toMatchObject({ kind: "backgammon", points: 3 });
   });
@@ -82,7 +99,11 @@ describe("Tabula", () => {
   it("holds every checker in the first half until all fifteen have entered", () => {
     // White has a checker on its 13-point and 14 still to enter: a 1 and a 2 may enter, and 13/12 may not.
     const early = at("white=13:1 black= reserve=14,15");
-    expect(movesOfDie(spec, early, "white", 1).map((m) => `${m.from}/${m.to}`).sort()).toEqual(["25/24"]);
+    expect(
+      movesOfDie(spec, early, "white", 1)
+        .map((m) => `${m.from}/${m.to}`)
+        .sort(),
+    ).toEqual(["25/24"]);
     // With everything entered it may cross.
     const done = at("white=13:1,24:14 black= reserve=0,15");
     expect(movesOfDie(spec, done, "white", 1).some((m) => m.from === 13 && m.to === 12)).toBe(true);
@@ -116,7 +137,9 @@ describe("Tabula", () => {
 describe("Anti-Backgammon, Nackgammon, Long Gammon and Hypergammon", () => {
   it("play by the standard rules from their own starts: a Long Gammon back checker hits as any does", () => {
     const start = startPosition(VARIANTS["long-gammon"]);
-    expect(legalPlays(VARIANTS["long-gammon"], start, "white", [6, 5]).map((play) => formatPlay(play.moves))).toContain("24/18 24/19");
+    expect(legalPlays(VARIANTS["long-gammon"], start, "white", [6, 5]).map((play) => formatPlay(play.moves))).toContain(
+      "24/18 24/19",
+    );
     expect(pipCount(start, "white")).toBe(360);
   });
 
@@ -126,11 +149,17 @@ describe("Anti-Backgammon, Nackgammon, Long Gammon and Hypergammon", () => {
   });
 
   it("let Hypergammon end in a few turns: three checkers bear off at once with doubles", () => {
-    const game: GameState = { ...newGame(settingsFor("hypergammon")), position: at("white=3:1,2:1,1:1 black=24:1,23:1,22:1"), turn: "white", phase: "before-roll" };
+    const game: GameState = {
+      ...newGame(settingsFor("hypergammon")),
+      position: at("white=3:1,2:1,1:1 black=24:1,23:1,22:1"),
+      turn: "white",
+      phase: "before-roll",
+    };
     const rolled = rollDice(game, [6, 6]);
     expect(legalMoves(rolled).length).toBeGreaterThan(0);
     let at3 = rolled;
-    while (at3.phase === "playing" && legalMoves(at3).length > 0) at3 = playMove(at3, legalMoves(at3)[0] as { from: number; to: number });
+    while (at3.phase === "playing" && legalMoves(at3).length > 0)
+      at3 = playMove(at3, legalMoves(at3)[0] as { from: number; to: number });
     expect(at3.phase).toBe("over");
     expect(at3.result?.winner).toBe("white");
     expect(legalPlaysOf(rolled).length).toBeGreaterThan(0);
@@ -140,12 +169,19 @@ describe("Anti-Backgammon, Nackgammon, Long Gammon and Hypergammon", () => {
 describe("the rules and the presets", () => {
   it("fill what is left out with a single game, no cube and no gammons", () => {
     expect(resolveRules()).toEqual(DEFAULT_RULES);
-    expect(resolveRules({ points: 5, cube: true })).toMatchObject({ points: 5, cube: true, crawford: true, jacoby: false });
+    expect(resolveRules({ points: 5, cube: true })).toMatchObject({
+      points: 5,
+      cube: true,
+      crawford: true,
+      jacoby: false,
+    });
   });
 
   it("refuse rules that make no sense together, in words", () => {
     expect(rulesProblems({ ...DEFAULT_RULES, jacoby: true })).not.toEqual([]);
-    expect(rulesProblems({ ...DEFAULT_RULES, points: 3, jacoby: true, cube: true, gammons: true })).toEqual(expect.arrayContaining([expect.stringContaining("money play")]));
+    expect(rulesProblems({ ...DEFAULT_RULES, points: 3, jacoby: true, cube: true, gammons: true })).toEqual(
+      expect.arrayContaining([expect.stringContaining("money play")]),
+    );
     expect(rulesProblems({ ...DEFAULT_RULES, points: -1 })).not.toEqual([]);
     expect(rulesProblems({ ...DEFAULT_RULES, cube: true }, VARIANTS["anti-backgammon"])).not.toEqual([]);
     expect(() => resolveRules({ beaver: true })).toThrow(/cannot be played/);
@@ -154,10 +190,36 @@ describe("the rules and the presets", () => {
 
   it("find every name the two sites printed, ignoring case and spacing, and no other", () => {
     const names = [
-      "Backgammon", "Backgammon (3 Point)", "Backgammon (5 Point)", "Backgammon (7 Point)", "Backgammon (9 Point)", "Backgammon Level 2", "Backgammon Level 3", "Backgammon Race", "Backgammon Race Level 2",
-      "Casual Backgammon", "Pro Backgammon", "Pro Backgammon Level 2", "Pro Backgammon Race", "Pro Backgammon-9", "Anti-Backgammon", "Nackgammon", "Nackgammon (3 Point)", "Nackgammon (5 Point)",
-      "Nackgammon (7 Point)", "Nackgammon (9 Point)", "Pro Nackgammon", "Long Gammon", "Long Gammon (3 Point)", "Long Gammon (5 Point)", "Long Gammon (7 Point)", "Long Gammon (9 Point)",
-      "Hypergammon", "Hypergammon (3 Point)", "Hypergammon (5 Point)", "Tabula",
+      "Backgammon",
+      "Backgammon (3 Point)",
+      "Backgammon (5 Point)",
+      "Backgammon (7 Point)",
+      "Backgammon (9 Point)",
+      "Backgammon Level 2",
+      "Backgammon Level 3",
+      "Backgammon Race",
+      "Backgammon Race Level 2",
+      "Casual Backgammon",
+      "Pro Backgammon",
+      "Pro Backgammon Level 2",
+      "Pro Backgammon Race",
+      "Pro Backgammon-9",
+      "Anti-Backgammon",
+      "Nackgammon",
+      "Nackgammon (3 Point)",
+      "Nackgammon (5 Point)",
+      "Nackgammon (7 Point)",
+      "Nackgammon (9 Point)",
+      "Pro Nackgammon",
+      "Long Gammon",
+      "Long Gammon (3 Point)",
+      "Long Gammon (5 Point)",
+      "Long Gammon (7 Point)",
+      "Long Gammon (9 Point)",
+      "Hypergammon",
+      "Hypergammon (3 Point)",
+      "Hypergammon (5 Point)",
+      "Tabula",
     ];
     for (const name of names) expect(presetByName(name), name).toBeDefined();
     expect(presetByName("  pro backgammon-9 ")?.rules.points).toBe(9);
@@ -166,7 +228,12 @@ describe("the rules and the presets", () => {
   });
 
   it("give each name the rules ItsYourTurn's help and GoldToken's rules page say", () => {
-    expect(presetByName("Pro Backgammon")?.rules).toMatchObject({ points: 5, cube: true, crawford: true, gammons: true });
+    expect(presetByName("Pro Backgammon")?.rules).toMatchObject({
+      points: 5,
+      cube: true,
+      crawford: true,
+      gammons: true,
+    });
     expect(presetByName("Pro Backgammon-9")?.rules.points).toBe(9);
     expect(presetByName("Casual Backgammon")?.rules).toMatchObject({ points: 1, cube: false, gammons: false });
     expect(presetByName("Backgammon Race")?.variant).toBe("backgammon-race");

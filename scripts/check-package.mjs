@@ -19,7 +19,11 @@ const scratch = mkdtempSync(join(tmpdir(), "sugoroku-package-"));
 /** Run a command and hand back what it printed. On Windows, npm is a .cmd file, which only a shell runs; node itself is run directly. */
 function run(command, args, cwd, viaShell = false) {
   const shell = viaShell && windows;
-  const ran = spawnSync(shell && /[\\/]/.test(command) ? `"${command}"` : command, args, { cwd, encoding: "utf8", shell });
+  const ran = spawnSync(shell && /[\\/]/.test(command) ? `"${command}"` : command, args, {
+    cwd,
+    encoding: "utf8",
+    shell,
+  });
   if (ran.status !== 0) {
     console.error(`FAIL ${command} ${args.join(" ")}\n${ran.stdout}\n${ran.stderr}`);
     process.exit(1);
@@ -28,7 +32,9 @@ function run(command, args, cwd, viaShell = false) {
 }
 
 // 1. Pack, with npm.
-const packed = JSON.parse(run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", scratch], root, true));
+const packed = JSON.parse(
+  run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", scratch], root, true),
+);
 const tarball = join(scratch, packed[0].filename);
 const inTarball = new Set(packed[0].files.map((file) => file.path));
 console.log(`ok   npm pack: ${packed[0].filename}, ${packed[0].files.length} files`);
@@ -41,7 +47,13 @@ if (shipped.length > 0) {
 console.log("ok   no picture and nothing from docs/ is in the tarball");
 
 // 2. Everything package.json points at is in the tarball.
-const pointed = [pkg.main, pkg.module, pkg.types, ...Object.values(pkg.bin ?? {}), ...Object.values(pkg.exports).flatMap((entry) => (typeof entry === "string" ? [entry] : Object.values(entry)))];
+const pointed = [
+  pkg.main,
+  pkg.module,
+  pkg.types,
+  ...Object.values(pkg.bin ?? {}),
+  ...Object.values(pkg.exports).flatMap((entry) => (typeof entry === "string" ? [entry] : Object.values(entry))),
+];
 for (const file of new Set(pointed)) {
   if (!inTarball.has(file.replace(/^\.\//, ""))) {
     console.error(`FAIL package.json points at ${file}, which is not in the tarball`);
@@ -66,7 +78,19 @@ run("npm", ["install", "--no-audit", "--no-fund", "--silent", tarball], project,
 console.log("ok   npm install of the tarball");
 
 // The game the built package in this checkout plays from a seed: the installed one must play the same.
-const { newGame, settingsFor, seededDice, openingFrom, rollOpening, rollDice, rollFrom, choosePlay, playTurn, formatPosition, positionId } = await import(new URL("../dist/index.js", import.meta.url).href);
+const {
+  newGame,
+  settingsFor,
+  seededDice,
+  openingFrom,
+  rollOpening,
+  rollDice,
+  rollFrom,
+  choosePlay,
+  playTurn,
+  formatPosition,
+  positionId,
+} = await import(new URL("../dist/index.js", import.meta.url).href);
 function playOne(lib) {
   const dice = lib.seededDice(7);
   let game = lib.newGame(lib.settingsFor("backgammon"));
@@ -77,7 +101,19 @@ function playOne(lib) {
   }
   return `${lib.formatPosition(game.position)} ${lib.positionId(game.position, game.turn)}`;
 }
-const expected = playOne({ newGame, settingsFor, seededDice, openingFrom, rollOpening, rollDice, rollFrom, choosePlay, playTurn, formatPosition, positionId });
+const expected = playOne({
+  newGame,
+  settingsFor,
+  seededDice,
+  openingFrom,
+  rollOpening,
+  rollDice,
+  rollFrom,
+  choosePlay,
+  playTurn,
+  formatPosition,
+  positionId,
+});
 
 // 4. Every entry in `exports`, by ESM and by require, and the package used.
 const entries = Object.keys(pkg.exports).map((key) => (key === "." ? pkg.name : `${pkg.name}/${key.slice(2)}`));

@@ -12,8 +12,18 @@ import { VARIANTS } from "./variants.ts";
 const at = (text: string): Position => parsePosition(text) as Position;
 const std = VARIANTS.backgammon;
 
-function game(position: string, rules: Parameters<typeof settingsFor>[1] = { points: 0, cube: true, gammons: true }, side: "white" | "black" = "white"): GameState {
-  return { ...newGame(settingsFor("backgammon", rules)), position: at(position), turnStart: at(position), turn: side, phase: "before-roll" };
+function game(
+  position: string,
+  rules: Parameters<typeof settingsFor>[1] = { points: 0, cube: true, gammons: true },
+  side: "white" | "black" = "white",
+): GameState {
+  return {
+    ...newGame(settingsFor("backgammon", rules)),
+    position: at(position),
+    turnStart: at(position),
+    turn: side,
+    phase: "before-roll",
+  };
 }
 
 describe("the evaluation", () => {
@@ -89,7 +99,12 @@ describe("the computer's play", () => {
     expect(legalPlaysOf(rolled).length).toBeGreaterThan(50);
     // The quickest of three tries of each, so that another process on the machine does not decide the test.
     const times: number[] = [];
-    for (const [roll, strength] of [[[4, 4], "strong"], [[6, 6], "strong"], [[3, 1], "strong"], [[5, 2], "careful"]] as const) {
+    for (const [roll, strength] of [
+      [[4, 4], "strong"],
+      [[6, 6], "strong"],
+      [[3, 1], "strong"],
+      [[5, 2], "careful"],
+    ] as const) {
       const tries = [0, 1, 2].map(() => {
         const start = performance.now();
         choosePlay(rollDice(game("white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5"), [...roll]), { strength });

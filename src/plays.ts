@@ -40,7 +40,8 @@ export type Play = {
  */
 export function diceToPlay(spec: VariantSpec, roll: readonly number[]): number[] {
   const first = roll[0];
-  if (spec.doubles === "four" && roll.length === 2 && first !== undefined && roll[1] === first) return [first, first, first, first];
+  if (spec.doubles === "four" && roll.length === 2 && first !== undefined && roll[1] === first)
+    return [first, first, first, first];
   return [...roll].sort((a, b) => b - a);
 }
 
@@ -119,7 +120,13 @@ export function diceMustPlay(spec: VariantSpec, position: Position, side: Side, 
  * console.log(canPlayAll(spec,position,"white",[3,1]));
  * ```
  */
-export function canPlayAll(spec: VariantSpec, position: Position, side: Side, need: readonly number[], failed: Set<string> = new Set()): boolean {
+export function canPlayAll(
+  spec: VariantSpec,
+  position: Position,
+  side: Side,
+  need: readonly number[],
+  failed: Set<string> = new Set(),
+): boolean {
   const go = (at: Position, left: readonly number[]): boolean => {
     if (left.length === 0) return true;
     const key = `${positionKey(at)}#${left.join("")}`;
@@ -168,7 +175,8 @@ export function nextMoves(spec: VariantSpec, position: Position, side: Side, nee
     if (tried.has(die)) continue;
     tried.add(die);
     const rest = without(need, k);
-    for (const move of movesOfDie(spec, position, side, die)) if (canPlayAll(spec, applyMove(spec, position, side, move), side, rest, failed)) moves.push(move);
+    for (const move of movesOfDie(spec, position, side, die))
+      if (canPlayAll(spec, applyMove(spec, position, side, move), side, rest, failed)) moves.push(move);
   }
   return moves;
 }

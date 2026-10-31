@@ -23,7 +23,8 @@ describe("the starting positions", () => {
     for (const key of VARIANT_KEYS) {
       const spec = VARIANTS[key];
       const start = startPosition(spec);
-      for (const i of [0, 1] as const) expect(start.points[i].reduce((a, b) => a + b) + start.reserve[i], key).toBe(spec.checkers);
+      for (const i of [0, 1] as const)
+        expect(start.points[i].reduce((a, b) => a + b) + start.reserve[i], key).toBe(spec.checkers);
     }
   });
 
@@ -88,7 +89,12 @@ describe("bearing off", () => {
 
   it("takes a checker off by the exact die", () => {
     const position = home("6:1,3:2,1:1");
-    expect(movesOfDie(std, position, "white", 3).find((m) => m.from === 3)).toEqual({ from: 3, to: 0, die: 3, hit: false });
+    expect(movesOfDie(std, position, "white", 3).find((m) => m.from === 3)).toEqual({
+      from: 3,
+      to: 0,
+      die: 3,
+      hit: false,
+    });
   });
 
   it("takes the highest checker off with a larger die than it needs, and no other", () => {
@@ -139,7 +145,9 @@ describe("a turn", () => {
     const position = at("white= black=6:2,8:2 bar=1,0 off=14,0");
     const plays = legalPlays(std, position, "white", [6, 2]);
     expect(diceMustPlay(std, position, "white", [6, 2])).toEqual([2]);
-    expect(plays.every((play) => play.moves.length === 1 && play.moves[0]?.from === BAR && play.moves[0]?.die === 2)).toBe(true);
+    expect(
+      plays.every((play) => play.moves.length === 1 && play.moves[0]?.from === BAR && play.moves[0]?.die === 2),
+    ).toBe(true);
   });
 
   it("passes when nothing can be played", () => {
@@ -178,7 +186,9 @@ describe("the engine against trying everything", () => {
           const roll = Array.from({ length: spec.dice }, () => 1 + Math.floor(random() * 6));
           const plays = legalPlays(spec, position, side, roll);
           const brute = bruteForcePositions(spec, position, side, roll);
-          expect(new Set(plays.map((play) => positionKey(play.position))), `${key} ${roll.join("")} ${turn}`).toEqual(brute);
+          expect(new Set(plays.map((play) => positionKey(play.position))), `${key} ${roll.join("")} ${turn}`).toEqual(
+            brute,
+          );
           checked += 1;
           position = (plays[Math.floor(random() * plays.length)] as { position: Position }).position;
           if (position.off[side === "white" ? 0 : 1] === spec.checkers) break;

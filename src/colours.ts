@@ -107,7 +107,9 @@ const POINTS_CLASSIC = { pointA: "#e7d8b1", pointB: "#8e3a2b" } as const;
  * console.log(SUGOROKU_BOARDS);
  * ```
  */
-export const SUGOROKU_BOARDS: Readonly<Record<SugorokuBoardName, Pick<SugorokuColours, "frame" | "felt" | "pointA" | "pointB" | "bar" | "tray">>> = {
+export const SUGOROKU_BOARDS: Readonly<
+  Record<SugorokuBoardName, Pick<SugorokuColours, "frame" | "felt" | "pointA" | "pointB" | "bar" | "tray">>
+> = {
   green: { frame: "#5b3a1f", felt: "#2f5d4a", ...POINTS_CLASSIC, bar: "#4a2f19", tray: "#24493a" },
   blue: { frame: "#2c3a52", felt: "#2865a6", pointA: "#dfe6ef", pointB: "#16345c", bar: "#1f2b40", tray: "#1d4d80" },
   red: { frame: "#4a2420", felt: "#a3342e", pointA: "#ecd9b8", pointB: "#43171a", bar: "#3a1c19", tray: "#7f2822" },
@@ -145,7 +147,9 @@ export type SugorokuCheckerSetName = "classic" | "red-and-white" | "gold-and-blu
  * console.log(SUGOROKU_CHECKER_SETS);
  * ```
  */
-export const SUGOROKU_CHECKER_SETS: Readonly<Record<SugorokuCheckerSetName, Pick<SugorokuColours, "white" | "whiteEdge" | "black" | "blackEdge">>> = {
+export const SUGOROKU_CHECKER_SETS: Readonly<
+  Record<SugorokuCheckerSetName, Pick<SugorokuColours, "white" | "whiteEdge" | "black" | "blackEdge">>
+> = {
   classic: { white: "#f6f0df", whiteEdge: "#b3a888", black: "#2b2724", blackEdge: "#0d0b0a" },
   "red-and-white": { white: "#f6f0df", whiteEdge: "#b3a888", black: "#b3332b", blackEdge: "#5d1712" },
   "gold-and-blue": { white: "#e8bf4a", whiteEdge: "#8d6a14", black: "#27508f", blackEdge: "#102446" },
@@ -160,4 +164,9 @@ export const SUGOROKU_CHECKER_SETS: Readonly<Record<SugorokuCheckerSetName, Pick
  * console.log(SUGOROKU_CHECKER_SET_NAMES);
  * ```
  */
-export const SUGOROKU_CHECKER_SET_NAMES: readonly SugorokuCheckerSetName[] = ["classic", "red-and-white", "gold-and-blue", "contrast"];
+export const SUGOROKU_CHECKER_SET_NAMES: readonly SugorokuCheckerSetName[] = [
+  "classic",
+  "red-and-white",
+  "gold-and-blue",
+  "contrast",
+];

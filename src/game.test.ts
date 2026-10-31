@@ -31,8 +31,19 @@ const at = (text: string): Position => parsePosition(text) as Position;
 const match5 = { points: 5, cube: true, gammons: true } as const;
 
 /** A game in the middle: the position given, `side` to move before it rolls. */
-function midGame(position: string, side: "white" | "black" = "white", rules: Parameters<typeof settingsFor>[1] = match5, variant: Parameters<typeof settingsFor>[0] = "backgammon"): GameState {
-  return { ...newGame(settingsFor(variant, rules)), position: at(position), turnStart: at(position), turn: side, phase: "before-roll" };
+function midGame(
+  position: string,
+  side: "white" | "black" = "white",
+  rules: Parameters<typeof settingsFor>[1] = match5,
+  variant: Parameters<typeof settingsFor>[0] = "backgammon",
+): GameState {
+  return {
+    ...newGame(settingsFor(variant, rules)),
+    position: at(position),
+    turnStart: at(position),
+    turn: side,
+    phase: "before-roll",
+  };
 }
 
 describe("the opening throw", () => {
@@ -210,15 +221,23 @@ describe("the doubling cube", () => {
   });
 
   it("is frozen once it shows enough for either side to win the match", () => {
-    const game = { ...midGame(start, "white", { points: 5, cube: true, gammons: true }), score: [3, 4] as const, cube: { value: 2, owner: null } };
+    const game = {
+      ...midGame(start, "white", { points: 5, cube: true, gammons: true }),
+      score: [3, 4] as const,
+      cube: { value: 2, owner: null },
+    };
     expect(cubeIsDead(game)).toBe(true);
     expect(canDouble(game)).toBe(false);
     expect(cubeIsDead({ ...game, cube: { value: 1, owner: null } })).toBe(false);
   });
 
   it("stops at 64", () => {
-    expect(canDouble({ ...midGame(start, "white", { points: 0, cube: true }), cube: { value: 64, owner: "white" } })).toBe(false);
-    expect(canDouble({ ...midGame(start, "white", { points: 0, cube: true }), cube: { value: 32, owner: "white" } })).toBe(true);
+    expect(
+      canDouble({ ...midGame(start, "white", { points: 0, cube: true }), cube: { value: 64, owner: "white" } }),
+    ).toBe(false);
+    expect(
+      canDouble({ ...midGame(start, "white", { points: 0, cube: true }), cube: { value: 32, owner: "white" } }),
+    ).toBe(true);
   });
 
   it("allows a beaver only when the rules say so, and then plays it as a redouble that keeps the cube", () => {
@@ -256,7 +275,11 @@ describe("giving up and drawing", () => {
   });
 
   it("scores the other side the kind it was given up at, times the cube", () => {
-    const game = concede({ ...midGame("white=24:2,13:5 black=24:2,13:5"), cube: { value: 2, owner: "black" } }, "white", "single");
+    const game = concede(
+      { ...midGame("white=24:2,13:5 black=24:2,13:5"), cube: { value: 2, owner: "black" } },
+      "white",
+      "single",
+    );
     expect(game.result).toMatchObject({ winner: "black", how: "concede", kind: "single", points: 2 });
     expect(() => concede(midGame("white=3:5 black=3:5"), "white", "backgammon")).toThrow();
   });

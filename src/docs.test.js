@@ -36,22 +36,34 @@ const rows = (text) =>
   text
     .split("\n")
     .filter((line) => line.startsWith("|") && !/^\|[\s|:-]+\|$/.test(line))
-    .map((line) => line.split(/(?<!\\)\|/).slice(1, -1).map((cell) => cell.replace(/\\\|/g, "|").trim()));
+    .map((line) =>
+      line
+        .split(/(?<!\\)\|/)
+        .slice(1, -1)
+        .map((cell) => cell.replace(/\\\|/g, "|").trim()),
+    );
 
 /** The custom properties a block of CSS declares: { name: value }. */
-const declarations = (css) => Object.fromEntries([...css.matchAll(/(--[a-z0-9-]+):\s*([^;}]+)[;}]/g)].map((match) => [match[1], match[2].trim()]));
+const declarations = (css) =>
+  Object.fromEntries([...css.matchAll(/(--[a-z0-9-]+):\s*([^;}]+)[;}]/g)].map((match) => [match[1], match[2].trim()]));
 
 describe("the documents", () => {
   it("say the version package.json says, in the code and at the top of the changelog", () => {
     expect(VERSION).toBe(pkg.version);
-    expect(readFileSync("CHANGELOG.md", "utf8")).toMatch(new RegExp(`^## \\[${pkg.version.replace(/\./g, "\\.")}\\] `, "m"));
+    expect(readFileSync("CHANGELOG.md", "utf8")).toMatch(
+      new RegExp(`^## \\[${pkg.version.replace(/\./g, "\\.")}\\] `, "m"),
+    );
   });
 
   it("name in the README every entry package.json exports, and no other", () => {
-    const exported = Object.keys(pkg.exports).filter((key) => key !== ".").map((key) => `${pkg.name}/${key.slice(2)}`);
+    const exported = Object.keys(pkg.exports)
+      .filter((key) => key !== ".")
+      .map((key) => `${pkg.name}/${key.slice(2)}`);
     for (const entry of exported) expect(readme, entry).toContain(`\`${entry}\``);
     expect(readme).toContain(`\`${pkg.name}\``);
-    const named = [...readme.matchAll(/`@johnmorrisdotca\/sugoroku\/([\w/-]+)`/g)].map((match) => `${pkg.name}/${match[1]}`);
+    const named = [...readme.matchAll(/`@johnmorrisdotca\/sugoroku\/([\w/-]+)`/g)].map(
+      (match) => `${pkg.name}/${match[1]}`,
+    );
     for (const entry of new Set(named)) expect(exported, entry).toContain(entry);
   });
 
@@ -60,12 +72,15 @@ describe("the documents", () => {
     const main = await import("./index.ts");
     const draw = await import("./draw-entry.ts");
     const play = await import("./play-entry.ts");
-    const functions = [...Object.entries({ ...main, ...draw, ...play })].filter(([name, value]) => typeof value === "function" && /^[a-z]/.test(name)).map(([name]) => name);
+    const functions = [...Object.entries({ ...main, ...draw, ...play })]
+      .filter(([name, value]) => typeof value === "function" && /^[a-z]/.test(name))
+      .map(([name]) => name);
     for (const name of functions) expect(api, name).toContain(name);
   });
 
   it("name in the README every attribute of the element", () => {
-    for (const attribute of SugorokuBoard.observedAttributes) expect(readme, attribute).toMatch(new RegExp(`\`${attribute}[\`=]|\`${attribute}\``));
+    for (const attribute of SugorokuBoard.observedAttributes)
+      expect(readme, attribute).toMatch(new RegExp(`\`${attribute}[\`=]|\`${attribute}\``));
   });
 
   it("name every variant in the README and in the variants document, and every name on the sites in the document", () => {
@@ -90,11 +105,20 @@ describe("the documents", () => {
   });
 
   it("list this package in the family's shared template, which every demo copies unchanged", () => {
-    expect(readFileSync("scripts/family-template.mjs", "utf8")).toContain('{ id: "sugoroku", name: "Sugoroku", kana: "双六" }');
+    expect(readFileSync("scripts/family-template.mjs", "utf8")).toContain(
+      '{ id: "sugoroku", name: "Sugoroku", kana: "双六" }',
+    );
   });
 
   it("carry no attribution to an assistant, anywhere in what is published", () => {
-    for (const file of ["README.md", "CHANGELOG.md", "CONTRIBUTING.md", "docs/VARIANTS.md", "demo/demo.js", "sounds/CREDITS.txt"]) {
+    for (const file of [
+      "README.md",
+      "CHANGELOG.md",
+      "CONTRIBUTING.md",
+      "docs/VARIANTS.md",
+      "demo/demo.js",
+      "sounds/CREDITS.txt",
+    ]) {
       expect(readFileSync(file, "utf8"), file).not.toMatch(/co-authored-by|generated with|claude/i);
     }
   });
@@ -109,7 +133,25 @@ describe("the documents", () => {
 
 describe("the README's promises", () => {
   it("has the sections a package of this family has, each with something in it", () => {
-    for (const heading of ["In 30 seconds", "Who it is for", "Features", "Use it in your project", "API", "Theming", "Limits", "Browser support", "Languages", "Roadmap", "Architecture", "The name", "Where it comes from, and where it is used", "Development", "Contributing", "Changes", "Licence"]) {
+    for (const heading of [
+      "In 30 seconds",
+      "Who it is for",
+      "Features",
+      "Use it in your project",
+      "API",
+      "Theming",
+      "Limits",
+      "Browser support",
+      "Languages",
+      "Roadmap",
+      "Architecture",
+      "The name",
+      "Where it comes from, and where it is used",
+      "Development",
+      "Contributing",
+      "Changes",
+      "Licence",
+    ]) {
       expect(section(heading).length, heading).toBeGreaterThan(heading.length + 40);
     }
   });
@@ -132,9 +174,46 @@ describe("the README's promises", () => {
   it("lists every package of the family, with its kana, as the demo's footer does", () => {
     const family = FAMILY;
     expect(family.length).toBeGreaterThanOrEqual(16);
-    const block = readme.slice(readme.indexOf("### The family"), readme.indexOf("\n## ", readme.indexOf("### The family")));
+    const block = readme.slice(
+      readme.indexOf("### The family"),
+      readme.indexOf("\n## ", readme.indexOf("### The family")),
+    );
     for (const { id, name, kana } of family) expect(block, id).toContain(`- [${name}](${familyRepo(id)}) (${kana}`);
-    const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty", "thirty-one", "thirty-two"];
+    const words = [
+      "zero",
+      "one",
+      "two",
+      "three",
+      "four",
+      "five",
+      "six",
+      "seven",
+      "eight",
+      "nine",
+      "ten",
+      "eleven",
+      "twelve",
+      "thirteen",
+      "fourteen",
+      "fifteen",
+      "sixteen",
+      "seventeen",
+      "eighteen",
+      "nineteen",
+      "twenty",
+      "twenty-one",
+      "twenty-two",
+      "twenty-three",
+      "twenty-four",
+      "twenty-five",
+      "twenty-six",
+      "twenty-seven",
+      "twenty-eight",
+      "twenty-nine",
+      "thirty",
+      "thirty-one",
+      "thirty-two",
+    ];
     expect(block).toContain(`one of ${words[family.length]} packages`);
     expect([...block.matchAll(/^- \[/gm)]).toHaveLength(family.length);
   });
@@ -145,7 +224,11 @@ describe("the README's promises", () => {
     const play = SUGOROKU_PLAY_STYLE.slice(SUGOROKU_STYLE.length);
     const playLight = declarations(play.slice(0, play.indexOf("@media")));
     const playDark = declarations(play.slice(play.indexOf(':root[data-theme="dark"]')).split("}")[0]);
-    const table = Object.fromEntries(rows(section("Theming")).filter((row) => row[0].startsWith("`--")).map((row) => [row[0].replace(/`/g, ""), row]));
+    const table = Object.fromEntries(
+      rows(section("Theming"))
+        .filter((row) => row[0].startsWith("`--"))
+        .map((row) => [row[0].replace(/`/g, ""), row]),
+    );
     expect(Object.keys(table).sort()).toEqual([...Object.keys(light), ...Object.keys(playLight)].sort());
     for (const [name, value] of Object.entries({ ...light, ...playLight })) {
       const row = table[name];
@@ -161,7 +244,9 @@ describe("the README's promises", () => {
     expect(limits).toContain(`| ${MOST_DRAWN}, then a count on the fifth |`);
     expect(MOST_DRAWN).toBe(5);
     expect(limits).toContain(`a draw after ${VARIANTS["anti-backgammon"].drawAfter} turns each`);
-    expect(limits).toContain(`| ${VARIANTS.backgammon.checkers}, except Hypergammon's ${VARIANTS.hypergammon.checkers} |`);
+    expect(limits).toContain(
+      `| ${VARIANTS.backgammon.checkers}, except Hypergammon's ${VARIANTS.hypergammon.checkers} |`,
+    );
     expect(limits).toContain(`| ${VARIANTS.backgammon.dice}, and ${VARIANTS.tabula.dice} at Tabula |`);
     expect(limits).toContain(STRENGTHS.map((name) => `\`${name}\``).join(", "));
     expect(limits).toContain(`starts with \`sugoroku ${RECORD_VERSION}\``);
@@ -177,19 +262,39 @@ describe("the README's promises", () => {
 
   it("keeps docs/strings-ja.md as the board's words, English beside Japanese (pnpm docs:make rewrites it)", () => {
     const cell = (text) => text.replace(/\|/g, "\\|").replace(/\n/g, " ");
-    const lines = ["# Sugoroku's words, in English and Japanese", "", "Made from `src/strings.ts` by `pnpm docs:make`; a test fails if the two differ, so this list is never out of date.", "", "**The Japanese has not yet been reviewed by a native reader.** If a line reads wrongly or unnaturally, please", "open a *Fix a translation* issue with the string's name. `{name}` and the other braces are filled in when shown.", "", "| Name | English | Japanese |", "| --- | --- | --- |"];
-    for (const key of Object.keys(SUGOROKU_STRINGS.en)) lines.push(`| \`${key}\` | ${cell(SUGOROKU_STRINGS.en[key])} | ${cell(SUGOROKU_STRINGS.ja[key] ?? "")} |`);
+    const lines = [
+      "# Sugoroku's words, in English and Japanese",
+      "",
+      "Made from `src/strings.ts` by `pnpm docs:make`; a test fails if the two differ, so this list is never out of date.",
+      "",
+      "**The Japanese has not yet been reviewed by a native reader.** If a line reads wrongly or unnaturally, please",
+      "open a *Fix a translation* issue with the string's name. `{name}` and the other braces are filled in when shown.",
+      "",
+      "| Name | English | Japanese |",
+      "| --- | --- | --- |",
+    ];
+    for (const key of Object.keys(SUGOROKU_STRINGS.en))
+      lines.push(`| \`${key}\` | ${cell(SUGOROKU_STRINGS.en[key])} | ${cell(SUGOROKU_STRINGS.ja[key] ?? "")} |`);
     const made = `${lines.join("\n")}\n`;
     if (process.env.UPDATE_DOCS === "1") writeFileSync("docs/strings-ja.md", made);
     expect(readFileSync("docs/strings-ja.md", "utf8")).toBe(made);
   });
 
   it("has the files a visitor looks for: the package's own issue templates, its security policy, and the rest of what its README links", () => {
-    for (const file of [".github/ISSUE_TEMPLATE/report-a-bug.md", ".github/ISSUE_TEMPLATE/suggest-a-feature.md", ".github/ISSUE_TEMPLATE/fix-a-translation.md", ".github/ISSUE_TEMPLATE/add-my-project.md", ".github/ISSUE_TEMPLATE/config.yml", "SECURITY.md"]) expect(existsSync(file), file).toBe(true);
+    for (const file of [
+      ".github/ISSUE_TEMPLATE/report-a-bug.md",
+      ".github/ISSUE_TEMPLATE/suggest-a-feature.md",
+      ".github/ISSUE_TEMPLATE/fix-a-translation.md",
+      ".github/ISSUE_TEMPLATE/add-my-project.md",
+      ".github/ISSUE_TEMPLATE/config.yml",
+      "SECURITY.md",
+    ])
+      expect(existsSync(file), file).toBe(true);
     expect(readme).toContain("issues/new?template=fix-a-translation.md");
   });
 
   it("keeps SECURITY.md and CODE_OF_CONDUCT.md equal to the family's master text, a copy of which is kept in scripts/community", () => {
-    for (const file of ["SECURITY.md", "CODE_OF_CONDUCT.md"]) expect(readFileSync(file, "utf8"), file).toBe(readFileSync(`scripts/community/${file}`, "utf8"));
+    for (const file of ["SECURITY.md", "CODE_OF_CONDUCT.md"])
+      expect(readFileSync(file, "utf8"), file).toBe(readFileSync(`scripts/community/${file}`, "utf8"));
   });
 });

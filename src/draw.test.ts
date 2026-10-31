@@ -22,7 +22,12 @@ describe("the drawing", () => {
 
   it("is the same size whatever is on the board, so that a page never shifts", () => {
     const boxes = new Set<string>();
-    for (const position of ["white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5", "white= black= off=15,15", "white=6:15 black=19:15 bar=0,0", "white=24:1 black=24:1 bar=3,4 off=11,10"]) {
+    for (const position of [
+      "white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5",
+      "white= black= off=15,15",
+      "white=6:15 black=19:15 bar=0,0",
+      "white=24:1 black=24:1 bar=3,4 off=11,10",
+    ]) {
       boxes.add(viewBox(drawSugoroku(at(position))));
       boxes.add(viewBox(drawSugoroku(at(position), { dice: { side: "white", values: [6, 6] }, numbers: true })));
       boxes.add(viewBox(drawSugoroku(at(position), { highlight: { side: "white", from: 24, targets: [18, 0] } })));
@@ -34,7 +39,10 @@ describe("the drawing", () => {
     const land = boardSize({ cube: true, orientation: "landscape" });
     const port = boardSize({ cube: true, orientation: "portrait" });
     expect([port.width, port.height]).toEqual([land.height, land.width]);
-    const a = drawSugoroku(startPosition(VARIANTS.backgammon), { orientation: "portrait", cube: { value: 1, owner: null } });
+    const a = drawSugoroku(startPosition(VARIANTS.backgammon), {
+      orientation: "portrait",
+      cube: { value: 1, owner: null },
+    });
     expect(viewBox(a)).toBe(`0 0 ${port.width} ${port.height}`);
     expect(a).toContain('data-orientation="portrait"');
   });
@@ -43,7 +51,9 @@ describe("the drawing", () => {
     const without = viewBox(drawSugoroku(startPosition(VARIANTS.backgammon)));
     const withCube = viewBox(drawSugoroku(startPosition(VARIANTS.backgammon), { cube: { value: 1, owner: null } }));
     expect(without).not.toBe(withCube);
-    expect(drawSugoroku(startPosition(VARIANTS.backgammon), { cube: { value: 8, owner: "black" } })).toContain('data-owner="black"');
+    expect(drawSugoroku(startPosition(VARIANTS.backgammon), { cube: { value: 8, owner: "black" } })).toContain(
+      'data-owner="black"',
+    );
   });
 
   it("draws the 24 points, each with its number counted as white counts, to listen on", () => {
@@ -56,7 +66,12 @@ describe("the drawing", () => {
 
   it("draws each stack as high as it is, to five, and writes the count on the fifth when there are more", () => {
     const svg = drawSugoroku(at("white=13:3,6:7 black=24:5,12:15"));
-    const stack = (side: string, board: number): string[] => [...svg.matchAll(new RegExp(`<g class="sg-checker" data-side="${side}" data-board="${board}"[^>]*>.*?</g>`, "g"))].map((m) => m[0]);
+    const stack = (side: string, board: number): string[] =>
+      [
+        ...svg.matchAll(
+          new RegExp(`<g class="sg-checker" data-side="${side}" data-board="${board}"[^>]*>.*?</g>`, "g"),
+        ),
+      ].map((m) => m[0]);
     expect(stack("white", 13)).toHaveLength(3);
     // White's own 6-point is the board's 6; its 13 is the board's 13.
     expect(stack("white", 6)).toHaveLength(MOST_DRAWN);
@@ -80,11 +95,17 @@ describe("the drawing", () => {
   });
 
   it("puts the dice and the cube on the board, spent dice marked, a cube in the middle until somebody owns it", () => {
-    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), { dice: { side: "black", values: [5, 5], spent: [true, false] }, cube: { value: 1, owner: null } });
+    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), {
+      dice: { side: "black", values: [5, 5], spent: [true, false] },
+      cube: { value: 1, owner: null },
+    });
     expect(count(svg, /class="sg-die"/g)).toBe(2);
     expect(svg).toContain('data-spent="true"');
     expect(svg).toContain('data-owner="none"');
-    const three = drawSugoroku(startPosition(VARIANTS.tabula), { variant: "tabula", dice: { side: "white", values: [1, 2, 3] } });
+    const three = drawSugoroku(startPosition(VARIANTS.tabula), {
+      variant: "tabula",
+      dice: { side: "white", values: [1, 2, 3] },
+    });
     expect(count(three, /class="sg-die"/g)).toBe(3);
   });
 
@@ -94,7 +115,8 @@ describe("the drawing", () => {
     const black = drawSugoroku(startPosition(VARIANTS.backgammon), { numbers: true, view: "black" });
     expect(count(off, /class="sg-number"/g)).toBe(0);
     expect(count(on, /class="sg-number"/g)).toBe(24);
-    const numberOf = (svg: string, board: number): string => new RegExp(`class="sg-number"[^>]*data-board="${board}"[^>]*>(\\d+)<`).exec(svg)?.[1] ?? "";
+    const numberOf = (svg: string, board: number): string =>
+      new RegExp(`class="sg-number"[^>]*data-board="${board}"[^>]*>(\\d+)<`).exec(svg)?.[1] ?? "";
     expect(numberOf(on, 13)).toBe("13");
     expect(numberOf(black, 13)).toBe("12");
     expect(numberOf(black, 1)).toBe("24");
@@ -118,17 +140,27 @@ describe("the drawing", () => {
   });
 
   it("takes any colour, a named board or a named set of checkers, and the theme", () => {
-    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), { board: "blue", checkers: "gold-and-blue", colours: { felt: "#123456", white: "#fff" }, theme: "dark" });
+    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), {
+      board: "blue",
+      checkers: "gold-and-blue",
+      colours: { felt: "#123456", white: "#fff" },
+      theme: "dark",
+    });
     expect(svg).toContain("--sg-felt:#123456");
     expect(svg).toContain("--sg-white:#fff");
     expect(svg).toContain("--sg-black:#27508f");
     expect(svg).toContain('data-theme="dark"');
-    for (const board of SUGOROKU_BOARD_NAMES) expect(drawSugoroku(startPosition(VARIANTS.backgammon), { board })).toContain("--sg-felt");
-    for (const checkers of SUGOROKU_CHECKER_SET_NAMES) expect(drawSugoroku(startPosition(VARIANTS.backgammon), { checkers })).toContain("--sg-white");
+    for (const board of SUGOROKU_BOARD_NAMES)
+      expect(drawSugoroku(startPosition(VARIANTS.backgammon), { board })).toContain("--sg-felt");
+    for (const checkers of SUGOROKU_CHECKER_SET_NAMES)
+      expect(drawSugoroku(startPosition(VARIANTS.backgammon), { checkers })).toContain("--sg-white");
   });
 
   it("cannot be made to break out of its own attributes by a colour or a label", () => {
-    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), { colours: { felt: '#fff" onload="alert(1)' }, label: '"><script>alert(1)</script>' });
+    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), {
+      colours: { felt: '#fff" onload="alert(1)' },
+      label: '"><script>alert(1)</script>',
+    });
     expect(svg).not.toMatch(/<script/);
     // The quote that would end the attribute is escaped, so what follows it is still only text inside it.
     expect(svg).toContain("--sg-felt:#fff&quot; onload=&quot;alert(1)");
@@ -136,12 +168,16 @@ describe("the drawing", () => {
   });
 
   it("marks the checker picked up and the places it may go", () => {
-    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), { highlight: { side: "white", from: 13, targets: [10, 0] } });
+    const svg = drawSugoroku(startPosition(VARIANTS.backgammon), {
+      highlight: { side: "white", from: 13, targets: [10, 0] },
+    });
     expect(svg).toMatch(/data-board="13" data-tone="[ab]" data-selected="true"/);
     expect(svg).toMatch(/data-board="10" data-tone="[ab]" data-target="true"/);
     expect(svg).toMatch(/data-tray="white"[^>]*data-target="true"/);
     // Black's view of its own numbering: its 24 is the board's 1.
-    expect(drawSugoroku(startPosition(VARIANTS.backgammon), { highlight: { side: "black", from: 24 } })).toMatch(/data-board="1" data-tone="[ab]" data-selected="true"/);
+    expect(drawSugoroku(startPosition(VARIANTS.backgammon), { highlight: { side: "black", from: 24 } })).toMatch(
+      /data-board="1" data-tone="[ab]" data-selected="true"/,
+    );
   });
 
   it("draws every variant's starting position", () => {
@@ -162,7 +198,11 @@ describe("the drawing", () => {
   });
 
   it("describes itself to a screen reader, in the words it is given", () => {
-    expect(drawSugoroku(startPosition(VARIANTS.backgammon))).toContain('aria-label="Backgammon board. White: 15 on the board, 0 borne off. Black: 15 on the board, 0 borne off."');
-    expect(drawSugoroku(startPosition(VARIANTS.backgammon), { label: 'a "board"' })).toContain('aria-label="a &quot;board&quot;"');
+    expect(drawSugoroku(startPosition(VARIANTS.backgammon))).toContain(
+      'aria-label="Backgammon board. White: 15 on the board, 0 borne off. Black: 15 on the board, 0 borne off."',
+    );
+    expect(drawSugoroku(startPosition(VARIANTS.backgammon), { label: 'a "board"' })).toContain(
+      'aria-label="a &quot;board&quot;"',
+    );
   });
 });

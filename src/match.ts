@@ -48,7 +48,15 @@ export type Match = {
  * ```
  */
 export function newMatch(settings: Settings): Match {
-  return { settings, score: [0, 0], results: [], crawfordNext: false, crawfordPlayed: false, over: false, winner: null };
+  return {
+    settings,
+    score: [0, 0],
+    results: [],
+    crawfordNext: false,
+    crawfordPlayed: false,
+    over: false,
+    winner: null,
+  };
 }
 
 /** The first game, or the next game, of a match.
@@ -110,9 +118,15 @@ export function finishGame(match: Match, result: GameResult): Match {
   if (result.winner !== null) score[sideIndex(result.winner)] += result.points;
   const results = [...match.results, result];
   if (result.how === "draw") return { ...match, score, results, crawfordNext: false, over: true, winner: null };
-  if (points > 0 && result.winner !== null && score[sideIndex(result.winner)] >= points) return { ...match, score, results, crawfordNext: false, over: true, winner: result.winner };
+  if (points > 0 && result.winner !== null && score[sideIndex(result.winner)] >= points)
+    return { ...match, score, results, crawfordNext: false, over: true, winner: result.winner };
   // The Crawford game is the one after a side first comes within a point of winning, and there is only one.
   const crawfordPlayed = match.crawfordPlayed || match.crawfordNext;
-  const reachedNow = points > 1 && crawford && !crawfordPlayed && Math.max(score[0], score[1]) === points - 1 && Math.max(match.score[0], match.score[1]) < points - 1;
+  const reachedNow =
+    points > 1 &&
+    crawford &&
+    !crawfordPlayed &&
+    Math.max(score[0], score[1]) === points - 1 &&
+    Math.max(match.score[0], match.score[1]) < points - 1;
   return { ...match, score, results, crawfordNext: reachedNow, crawfordPlayed, over: false, winner: null };
 }

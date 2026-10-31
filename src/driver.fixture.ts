@@ -1,7 +1,20 @@
 // Plays games out for the tests: every choice made at random from the legal ones, from a seed. Used to hold the
 // engine, the record format and the simulator to whole games, not just to positions someone thought of.
 import { openingFrom, rollFrom, seededDice, type DiceSource } from "./dice.ts";
-import { canDouble, canBeaver, beaverDouble, dropDouble, endTurn, legalPlaysOf, offerDouble, playTurn, rollDice, rollOpening, takeDouble, type GameState } from "./game.ts";
+import {
+  canDouble,
+  canBeaver,
+  beaverDouble,
+  dropDouble,
+  endTurn,
+  legalPlaysOf,
+  offerDouble,
+  playTurn,
+  rollDice,
+  rollOpening,
+  takeDouble,
+  type GameState,
+} from "./game.ts";
 import { finishGame, newMatch, startGame, type Match } from "./match.ts";
 import { GameRecorder, type RecordSeed } from "./record.ts";
 import { seededRandom } from "./random.ts";
@@ -11,7 +24,13 @@ import { otherSide } from "./side.ts";
 export type Driven = { game: GameState; turns: number };
 
 /** Play one game to its end at random: the dice from `dice`, the choices from `choose` (a number from 0 up to but not including 1). */
-export function randomGame(game: GameState, dice: DiceSource, choose: () => number, recorder?: GameRecorder, limit = 4000): Driven {
+export function randomGame(
+  game: GameState,
+  dice: DiceSource,
+  choose: () => number,
+  recorder?: GameRecorder,
+  limit = 4000,
+): Driven {
   let at = game;
   let turns = 0;
   recorder?.startGame();

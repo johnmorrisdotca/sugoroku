@@ -294,7 +294,12 @@ export function checkersOf(position: Position, side: Side): number {
  */
 export function withCounts(
   position: Position,
-  changes: { points?: [number[], number[]]; bar?: [number, number]; reserve?: [number, number]; off?: [number, number] },
+  changes: {
+    points?: [number[], number[]];
+    bar?: [number, number];
+    reserve?: [number, number];
+    off?: [number, number];
+  },
 ): Position {
   return {
     points: changes.points ?? position.points,

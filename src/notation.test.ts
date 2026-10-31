@@ -24,10 +24,22 @@ describe("moves as text", () => {
   });
 
   it("read written plays back, chains and counts included", () => {
-    expect(parseHops("24/18 13/11")).toEqual([{ from: 24, to: 18 }, { from: 13, to: 11 }]);
-    expect(parseHops("24/20*/18")).toEqual([{ from: 24, to: 20 }, { from: 20, to: 18 }]);
-    expect(parseHops("13/11(2)")).toEqual([{ from: 13, to: 11 }, { from: 13, to: 11 }]);
-    expect(parseHops("bar/22* 6/off")).toEqual([{ from: 25, to: 22 }, { from: 6, to: 0 }]);
+    expect(parseHops("24/18 13/11")).toEqual([
+      { from: 24, to: 18 },
+      { from: 13, to: 11 },
+    ]);
+    expect(parseHops("24/20*/18")).toEqual([
+      { from: 24, to: 20 },
+      { from: 20, to: 18 },
+    ]);
+    expect(parseHops("13/11(2)")).toEqual([
+      { from: 13, to: 11 },
+      { from: 13, to: 11 },
+    ]);
+    expect(parseHops("bar/22* 6/off")).toEqual([
+      { from: 25, to: 22 },
+      { from: 6, to: 0 },
+    ]);
     expect(parseHops("-")).toEqual([]);
     expect(parseHops("24-18")).toBeNull();
     expect(parseHops("99/3")).toBeNull();
@@ -56,7 +68,20 @@ describe("moves as text", () => {
     for (const key of VARIANT_KEYS) {
       const spec = VARIANTS[key];
       const start = startPosition(spec);
-      const rolls = spec.dice === 2 ? [[3, 1], [6, 6], [4, 2], [5, 5], [2, 1]] : [[3, 2, 1], [6, 6, 6], [5, 5, 2]];
+      const rolls =
+        spec.dice === 2
+          ? [
+              [3, 1],
+              [6, 6],
+              [4, 2],
+              [5, 5],
+              [2, 1],
+            ]
+          : [
+              [3, 2, 1],
+              [6, 6, 6],
+              [5, 5, 2],
+            ];
       for (const roll of rolls) {
         for (const play of legalPlays(spec, start, "white", roll)) {
           const text = formatPlay(play.moves);
@@ -78,7 +103,9 @@ describe("positions as text", () => {
   });
 
   it("write each side highest point first, then the bar, those yet to enter and those off", () => {
-    expect(formatPosition(startPosition(std))).toBe("white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5 bar=0,0 reserve=0,0 off=0,0");
+    expect(formatPosition(startPosition(std))).toBe(
+      "white=24:2,13:5,8:3,6:5 black=24:2,13:5,8:3,6:5 bar=0,0 reserve=0,0 off=0,0",
+    );
   });
 
   it("read text with the bar, reserve and off left out, and refuse text that is not a position", () => {

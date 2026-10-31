@@ -73,7 +73,10 @@ export type Box = { x: number; y: number; w: number; h: number };
 /** The width and height of the board drawn lying down. */
 export function landscapeSize(cube: boolean): { width: number; height: number } {
   const rail = cube ? RAIL_WIDTH + 10 : 0;
-  return { width: PAD + rail + 2 * HALF_WIDTH + BAR_WIDTH + TRAY_GAP + TRAY_WIDTH + PAD, height: PAD + STRIP + 2 * POINT_LENGTH + MIDDLE + STRIP + PAD };
+  return {
+    width: PAD + rail + 2 * HALF_WIDTH + BAR_WIDTH + TRAY_GAP + TRAY_WIDTH + PAD,
+    height: PAD + STRIP + 2 * POINT_LENGTH + MIDDLE + STRIP + PAD,
+  };
 }
 
 /** The width and height the board is drawn in, which is the other way about when it stands up.
@@ -157,26 +160,46 @@ export class BoardLayout {
 
   /** The x of the left edge of column `col`, before mirroring. */
   columnLeft(col: number): number {
-    return col < 6 ? this.#fieldLeft + col * POINT_WIDTH : this.#fieldLeft + HALF_WIDTH + BAR_WIDTH + (col - 6) * POINT_WIDTH;
+    return col < 6
+      ? this.#fieldLeft + col * POINT_WIDTH
+      : this.#fieldLeft + HALF_WIDTH + BAR_WIDTH + (col - 6) * POINT_WIDTH;
   }
 
   /** The box of a point, as a base on its edge of the field and its length. */
   pointBox(point: number): Box & { top: boolean } {
     const { top, col } = this.slotOf(point);
     const x = this.columnLeft(col);
-    return { x, y: top ? this.fieldTop : this.fieldTop + this.fieldHeight - POINT_LENGTH, w: POINT_WIDTH, h: POINT_LENGTH, top };
+    return {
+      x,
+      y: top ? this.fieldTop : this.fieldTop + this.fieldHeight - POINT_LENGTH,
+      w: POINT_WIDTH,
+      h: POINT_LENGTH,
+      top,
+    };
   }
 
   /** The tray of a side: the bottom one is white's when seen from white's side. */
   trayBox(side: Side): Box & { top: boolean } {
     const top = (side === "black") === (this.options.view === "white");
-    return { x: this.trayLeft, y: top ? this.fieldTop : this.fieldTop + this.fieldHeight - POINT_LENGTH, w: TRAY_WIDTH, h: POINT_LENGTH, top };
+    return {
+      x: this.trayLeft,
+      y: top ? this.fieldTop : this.fieldTop + this.fieldHeight - POINT_LENGTH,
+      w: TRAY_WIDTH,
+      h: POINT_LENGTH,
+      top,
+    };
   }
 
   /** The half of the bar a side's checkers wait in: the nearer half to the side's own tray. */
   barBox(side: Side): Box & { top: boolean } {
     const top = this.trayBox(side).top;
-    return { x: this.barLeft, y: top ? this.fieldTop : this.fieldTop + this.fieldHeight / 2, w: BAR_WIDTH, h: this.fieldHeight / 2, top };
+    return {
+      x: this.barLeft,
+      y: top ? this.fieldTop : this.fieldTop + this.fieldHeight / 2,
+      w: BAR_WIDTH,
+      h: this.fieldHeight / 2,
+      top,
+    };
   }
 
   /** Where the cube rests: the middle of the rail, or the end of it nearer its owner. */
@@ -184,7 +207,12 @@ export class BoardLayout {
     const size = 44;
     const x = PAD + (RAIL_WIDTH - size) / 2;
     const top = owner === null ? null : (owner === "black") === (this.options.view === "white");
-    const y = top === null ? this.fieldTop + this.fieldHeight / 2 - size / 2 : top ? this.fieldTop + 4 : this.fieldTop + this.fieldHeight - size - 4;
+    const y =
+      top === null
+        ? this.fieldTop + this.fieldHeight / 2 - size / 2
+        : top
+          ? this.fieldTop + 4
+          : this.fieldTop + this.fieldHeight - size - 4;
     return { x, y, w: size, h: size };
   }
 

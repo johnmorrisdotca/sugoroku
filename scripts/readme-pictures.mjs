@@ -18,7 +18,13 @@ async function playUp(page, turns) {
   for (let guard = 0; guard < 600; guard += 1) {
     const game = await state(page);
     if (game.phase === "over") throw new Error("the game ended before the picture was ready");
-    if (game.cube.value > 1 && game.turns[0] >= turns && (game.phase === "before-roll" || game.phase === "playing") && game.turn === "white") return;
+    if (
+      game.cube.value > 1 &&
+      game.turns[0] >= turns &&
+      (game.phase === "before-roll" || game.phase === "playing") &&
+      game.turn === "white"
+    )
+      return;
     if (game.phase === "opening") await page.evaluate(() => window.sugoroku.roll());
     else if (game.phase === "before-roll" && game.turn === "white") {
       if (game.turns[0] >= turns && game.cube.value === 1) await page.evaluate(() => window.sugoroku.double());
@@ -35,7 +41,6 @@ async function playUp(page, turns) {
   throw new Error("the picture's game did not get where it was meant to");
 }
 
-
 const MATCH = "players=white&strength=strong&seed=31&points=3&cube=1&gammons=1&variant=backgammon&delay=0";
 /** A match to 3 against the computer, in the middle of a game with the cube at 2. */
 const played = async (page) => {
@@ -44,7 +49,14 @@ const played = async (page) => {
 };
 
 /** One variant's board as it opens, cropped to the board. */
-const variant = (subject, key, extra = "") => ({ subject, views: ["desk"], scale: 1, url: `/?lang=en&variant=${key}&seed=5&delay=0${extra}`, ready: READY, target: `${BOARD} svg.sugoroku` });
+const variant = (subject, key, extra = "") => ({
+  subject,
+  views: ["desk"],
+  scale: 1,
+  url: `/?lang=en&variant=${key}&seed=5&delay=0${extra}`,
+  ready: READY,
+  target: `${BOARD} svg.sugoroku`,
+});
 
 await takePictures({
   shots: [
@@ -61,7 +73,9 @@ await takePictures({
           await page.goto(`http://sugoroku.test/?${MATCH}&lang=ja`);
           await page.waitForSelector(READY);
           await played(page);
-          await page.locator("#board").evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 4));
+          await page
+            .locator("#board")
+            .evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 4));
         } else {
           await played(page);
           await page.evaluate(() => window.scrollTo(0, 0));

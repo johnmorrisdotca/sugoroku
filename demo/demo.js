@@ -4,7 +4,12 @@
 // and spoken in the language the header's chooser picks. The page only chooses a game and hands the settings on:
 // the rules, the drawing, the moves and the computer are the package's own.
 import { replayRecord, STRENGTHS, VARIANT_KEYS } from "./dist/index.js";
-import { SUGOROKU_BOARD_NAMES, SUGOROKU_BOARDS, SUGOROKU_CHECKER_SET_NAMES, SUGOROKU_CHECKER_SETS } from "./dist/draw-entry.js";
+import {
+  SUGOROKU_BOARD_NAMES,
+  SUGOROKU_BOARDS,
+  SUGOROKU_CHECKER_SET_NAMES,
+  SUGOROKU_CHECKER_SETS,
+} from "./dist/draw-entry.js";
 import { mountSugoroku } from "./dist/play-entry.js";
 
 // The page's own words, in the two languages it speaks. Set as text, never as HTML.
@@ -12,14 +17,24 @@ const WORDS = {
   en: {
     pageDocs: "Docs",
     pageApi: "API",
-    pitch: "Backgammon and its relatives: Nackgammon, Long Gammon, Hypergammon, Tabula and more, with the doubling cube and matches to any number of points. Tap a checker and then a point, or drag it, against the computer or a friend.",
+    pitch:
+      "Backgammon and its relatives: Nackgammon, Long Gammon, Hypergammon, Tabula and more, with the doubling cube and matches to any number of points. Tap a checker and then a point, or drag it, against the computer or a friend.",
     name: "Sugoroku (双六) is the Japanese name for backgammon.",
     nameLink: "About the name",
     game: "Game",
-    variants: { backgammon: "Backgammon", "backgammon-race": "Race", "anti-backgammon": "Anti", nackgammon: "Nackgammon", "long-gammon": "Long Gammon", hypergammon: "Hypergammon", tabula: "Tabula" },
+    variants: {
+      backgammon: "Backgammon",
+      "backgammon-race": "Race",
+      "anti-backgammon": "Anti",
+      nackgammon: "Nackgammon",
+      "long-gammon": "Long Gammon",
+      hypergammon: "Hypergammon",
+      tabula: "Tabula",
+    },
     variantNotes: {
       backgammon: "The classic: bring all fifteen checkers home and bear them off before the other side does.",
-      "backgammon-race": "All fifteen checkers start off the board, on the bar, and are entered with the dice as the game goes.",
+      "backgammon-race":
+        "All fifteen checkers start off the board, on the bar, and are entered with the dice as the game goes.",
       "anti-backgammon": "The same board played to lose: whoever bears off every checker first loses.",
       nackgammon: "Four back checkers each instead of two: a longer game with more to fight over.",
       "long-gammon": "All fifteen checkers start together on the 24-point and must run the whole way.",
@@ -38,7 +53,12 @@ const WORDS = {
     on: "On",
     off: "Off",
     players: "Players",
-    playerChoices: { two: "Two players", white: "You are White", black: "You are Black", watch: "Computer plays itself" },
+    playerChoices: {
+      two: "Two players",
+      white: "You are White",
+      black: "You are Black",
+      watch: "Computer plays itself",
+    },
     strength: "Computer",
     strengths: { random: "Random", greedy: "Greedy", careful: "Careful", strong: "Strong" },
     newMatch: "New match",
@@ -46,7 +66,12 @@ const WORDS = {
     boardLook: "Board",
     boards: { cloth: "Cloth", green: "Green", blue: "Blue", red: "Red", black: "Black", wood: "Wood" },
     checkersLook: "Checkers",
-    checkerSets: { classic: "Classic", "red-and-white": "Red and white", "gold-and-blue": "Gold and blue", contrast: "High contrast" },
+    checkerSets: {
+      classic: "Classic",
+      "red-and-white": "Red and white",
+      "gold-and-blue": "Gold and blue",
+      contrast: "High contrast",
+    },
     numbers: "Numbers",
     home: "Bear off at",
     right: "Right",
@@ -57,11 +82,13 @@ const WORDS = {
     orientations: { auto: "Automatic", landscape: "Wide", portrait: "Tall" },
     sound: "Sound",
     recordTitle: "The record",
-    recordText: "Every game is written down as text that a server can replay against the rules. This page does it: it plays the record again, move by move, as the match goes.",
+    recordText:
+      "Every game is written down as text that a server can replay against the rules. This page does it: it plays the record again, move by move, as the match goes.",
     replays: "The record replays correctly.",
     replayFails: (line, reason) => `The record fails at line ${line}: ${reason}`,
     moreTitle: "Using it",
-    moreText: "The board above is the package itself: the rules, the cube, the computer and the drawing. Each line below is all it takes.",
+    moreText:
+      "The board above is the package itself: the rules, the cube, the computer and the drawing. Each line below is all it takes.",
     tagTitle: "As a tag",
     tagText: "The same board in one element, with no framework: a Nackgammon match to 3 points against the computer.",
     foot: "The rules are held to a brute-force check on thousands of positions and to games of every variant played to their end. Your choices stay on this device.",
@@ -69,11 +96,20 @@ const WORDS = {
   ja: {
     pageDocs: "ドキュメント",
     pageApi: "API（英語）",
-    pitch: "バックギャモンとその仲間（ナックギャモン、ロングギャモン、ハイパーギャモン、タブラなど）を、ダブリングキューブと好きなポイント数のマッチで遊べます。駒をタップして行き先をタップするか、ドラッグして動かします。相手はコンピューターでも友だちでも。",
+    pitch:
+      "バックギャモンとその仲間（ナックギャモン、ロングギャモン、ハイパーギャモン、タブラなど）を、ダブリングキューブと好きなポイント数のマッチで遊べます。駒をタップして行き先をタップするか、ドラッグして動かします。相手はコンピューターでも友だちでも。",
     name: "双六（すごろく）は、バックギャモンの日本での古い呼び名です。",
     nameLink: "名前について（英語）",
     game: "ゲーム",
-    variants: { backgammon: "バックギャモン", "backgammon-race": "レース", "anti-backgammon": "アンチ", nackgammon: "ナックギャモン", "long-gammon": "ロングギャモン", hypergammon: "ハイパーギャモン", tabula: "タブラ" },
+    variants: {
+      backgammon: "バックギャモン",
+      "backgammon-race": "レース",
+      "anti-backgammon": "アンチ",
+      nackgammon: "ナックギャモン",
+      "long-gammon": "ロングギャモン",
+      hypergammon: "ハイパーギャモン",
+      tabula: "タブラ",
+    },
     variantNotes: {
       backgammon: "定番のルール。15個の駒を先に自分の陣地に入れて、先にすべて上がった方の勝ちです。",
       "backgammon-race": "15個の駒は盤の外（バー）から始まり、サイコロの目で盤に入れていきます。",
@@ -114,11 +150,13 @@ const WORDS = {
     orientations: { auto: "自動", landscape: "横長", portrait: "縦長" },
     sound: "音",
     recordTitle: "棋譜",
-    recordText: "どのゲームも、サーバーがルールに照らして再生できるテキストとして書き留められます。このページも、マッチが進むたびに棋譜を一手ずつ再生して確かめています。",
+    recordText:
+      "どのゲームも、サーバーがルールに照らして再生できるテキストとして書き留められます。このページも、マッチが進むたびに棋譜を一手ずつ再生して確かめています。",
     replays: "棋譜は正しく再生できました。",
     replayFails: (line, reason) => `棋譜は${line}行目で失敗しました：${reason}`,
     moreTitle: "使い方",
-    moreText: "上の盤面は、このパッケージそのもの（ルール、キューブ、コンピューター、描き方）で動いています。下の各行がそれぞれ必要なコードのすべてです。",
+    moreText:
+      "上の盤面は、このパッケージそのもの（ルール、キューブ、コンピューター、描き方）で動いています。下の各行がそれぞれ必要なコードのすべてです。",
     tagTitle: "タグとして",
     tagText: "同じ盤面を、フレームワークなしの一つの要素で。3ポイントのナックギャモン、相手はコンピューターです。",
     foot: "ルールは、数千の局面での総当たりの確認と、すべての種類のゲームを最後まで遊ばせる試験で守られています。選んだ内容はこの端末に残ります。",
@@ -141,14 +179,25 @@ const write = (value) => {
     /* Not remembered on this device; the board still plays. */
   }
 };
-const pick = (asked, allowed, kept, fallback) => (allowed.includes(asked) ? asked : allowed.includes(kept) ? kept : fallback);
-const flag = (name, kept, fallback) => (params.has(name) ? params.get(name) !== "off" && params.get(name) !== "0" : typeof kept === "boolean" ? kept : fallback);
+const pick = (asked, allowed, kept, fallback) =>
+  allowed.includes(asked) ? asked : allowed.includes(kept) ? kept : fallback;
+const flag = (name, kept, fallback) =>
+  params.has(name)
+    ? params.get(name) !== "off" && params.get(name) !== "0"
+    : typeof kept === "boolean"
+      ? kept
+      : fallback;
 
 const kept = read();
 const MATCHES = [1, 3, 5, 7, 9, 0];
 const choice = {
   variant: pick(params.get("variant"), VARIANT_KEYS, kept.variant, "backgammon"),
-  points: params.has("points") && MATCHES.includes(Number(params.get("points"))) ? Number(params.get("points")) : MATCHES.includes(kept.points) ? kept.points : 3,
+  points:
+    params.has("points") && MATCHES.includes(Number(params.get("points")))
+      ? Number(params.get("points"))
+      : MATCHES.includes(kept.points)
+        ? kept.points
+        : 3,
   cube: flag("cube", kept.cube, true),
   gammons: flag("gammons", kept.gammons, true),
   jacoby: flag("jacoby", kept.jacoby, false),
@@ -165,11 +214,23 @@ const look = {
   orientation: pick(params.get("orientation"), ["auto", "landscape", "portrait"], kept.look?.orientation, "auto"),
   sound: flag("sound", kept.look?.sound, false),
 };
-const seed = params.get("seed") === null ? undefined : /^\d+$/.test(params.get("seed")) ? Number(params.get("seed")) : params.get("seed");
+const seed =
+  params.get("seed") === null
+    ? undefined
+    : /^\d+$/.test(params.get("seed"))
+      ? Number(params.get("seed"))
+      : params.get("seed");
 const delay = params.has("delay") ? Number(params.get("delay")) : undefined;
 let mount = null;
 
-const language = familyLanguage({ id: "sugoroku", words: WORDS, onChange: () => { docsLink(); render(); } });
+const language = familyLanguage({
+  id: "sugoroku",
+  words: WORDS,
+  onChange: () => {
+    docsLink();
+    render();
+  },
+});
 const say = (key, ...args) => {
   const word = WORDS[language.lang][key];
   return typeof word === "function" ? word(...args) : word;
@@ -205,7 +266,10 @@ function dots(name) {
   const set = SUGOROKU_CHECKER_SETS[name];
   const span = document.createElement("span");
   span.className = "dots";
-  for (const [fill, edge] of [[set.white, set.whiteEdge], [set.black, set.blackEdge]]) {
+  for (const [fill, edge] of [
+    [set.white, set.whiteEdge],
+    [set.black, set.blackEdge],
+  ]) {
     const dot = document.createElement("i");
     dot.style.background = fill;
     dot.style.boxShadow = `0 0 0 2px ${edge}`;
@@ -219,7 +283,13 @@ const rulesOf = () => ({
   points: choice.points,
   cube: choice.cube && choice.points !== 1 && choice.variant !== "anti-backgammon",
   gammons: choice.gammons && choice.variant !== "anti-backgammon" && choice.variant !== "tabula",
-  jacoby: choice.points === 0 && choice.cube && choice.gammons && choice.jacoby && choice.variant !== "anti-backgammon" && choice.variant !== "tabula",
+  jacoby:
+    choice.points === 0 &&
+    choice.cube &&
+    choice.gammons &&
+    choice.jacoby &&
+    choice.variant !== "anti-backgammon" &&
+    choice.variant !== "tabula",
   beaver: choice.points === 0 && choice.cube && choice.beaver && choice.variant !== "anti-backgammon",
 });
 const computerOf = () => ({
@@ -239,35 +309,133 @@ const lookOf = () => ({
 const host = document.getElementById("board");
 
 function choices() {
-  const row = (id, items, chosen, choose, labelOf, extra) => seg(document.getElementById(id), items, chosen, choose, labelOf, extra);
-  row("variants", VARIANT_KEYS, choice.variant, (value) => change({ variant: value }), (value) => say("variants")[value]);
-  row("points", MATCHES, choice.points, (value) => change({ points: value }), (value) => (value === 1 ? say("single") : value === 0 ? say("money") : String(value)));
+  const row = (id, items, chosen, choose, labelOf, extra) =>
+    seg(document.getElementById(id), items, chosen, choose, labelOf, extra);
+  row(
+    "variants",
+    VARIANT_KEYS,
+    choice.variant,
+    (value) => change({ variant: value }),
+    (value) => say("variants")[value],
+  );
+  row(
+    "points",
+    MATCHES,
+    choice.points,
+    (value) => change({ points: value }),
+    (value) => (value === 1 ? say("single") : value === 0 ? say("money") : String(value)),
+  );
   const rules = rulesOf();
   const noCube = choice.points === 1 || choice.variant === "anti-backgammon";
-  row("cube", [true, false], choice.cube && !noCube, (value) => change({ cube: value }), (value) => say(value ? "on" : "off"));
-  row("gammons", [true, false], rules.gammons, (value) => change({ gammons: value }), (value) => say(value ? "on" : "off"));
-  row("jacoby", [true, false], rules.jacoby, (value) => change({ jacoby: value }), (value) => say(value ? "on" : "off"));
-  row("beaver", [true, false], rules.beaver, (value) => change({ beaver: value }), (value) => say(value ? "on" : "off"));
-  const disabled = (id, off) => document.getElementById(id).querySelectorAll("button").forEach((button) => (button.disabled = off));
+  row(
+    "cube",
+    [true, false],
+    choice.cube && !noCube,
+    (value) => change({ cube: value }),
+    (value) => say(value ? "on" : "off"),
+  );
+  row(
+    "gammons",
+    [true, false],
+    rules.gammons,
+    (value) => change({ gammons: value }),
+    (value) => say(value ? "on" : "off"),
+  );
+  row(
+    "jacoby",
+    [true, false],
+    rules.jacoby,
+    (value) => change({ jacoby: value }),
+    (value) => say(value ? "on" : "off"),
+  );
+  row(
+    "beaver",
+    [true, false],
+    rules.beaver,
+    (value) => change({ beaver: value }),
+    (value) => say(value ? "on" : "off"),
+  );
+  const disabled = (id, off) =>
+    document
+      .getElementById(id)
+      .querySelectorAll("button")
+      .forEach((button) => (button.disabled = off));
   disabled("cube", noCube);
   disabled("gammons", choice.variant === "anti-backgammon" || choice.variant === "tabula");
   disabled("jacoby", choice.points !== 0 || !rules.cube || !rules.gammons);
   disabled("beaver", choice.points !== 0 || !rules.cube);
-  row("players", ["two", "white", "black", "watch"], choice.players, (value) => change({ players: value }), (value) => say("playerChoices")[value]);
-  row("strength", STRENGTHS, choice.strength, (value) => change({ strength: value }), (value) => say("strengths")[value]);
+  row(
+    "players",
+    ["two", "white", "black", "watch"],
+    choice.players,
+    (value) => change({ players: value }),
+    (value) => say("playerChoices")[value],
+  );
+  row(
+    "strength",
+    STRENGTHS,
+    choice.strength,
+    (value) => change({ strength: value }),
+    (value) => say("strengths")[value],
+  );
   disabled("strength", choice.players === "two");
   document.getElementById("variant-note").textContent = say("variantNotes")[choice.variant];
 }
 
 function settings() {
-  const row = (id, items, chosen, choose, labelOf, extra) => seg(document.getElementById(id), items, chosen, choose, labelOf, extra);
-  row("board-look", ["cloth", ...SUGOROKU_BOARD_NAMES], look.board, (value) => changeLook({ board: value }), (value) => say("boards")[value], (button, value) => button.append(patch(value)));
-  row("checkers-look", SUGOROKU_CHECKER_SET_NAMES, look.checkers, (value) => changeLook({ checkers: value }), (value) => say("checkerSets")[value], (button, value) => button.append(dots(value)));
-  row("numbers", [true, false], look.numbers, (value) => changeLook({ numbers: value }), (value) => say(value ? "on" : "off"));
-  row("home", ["right", "left"], look.home, (value) => changeLook({ home: value }), (value) => say(value));
-  row("theme", ["auto", "light", "dark"], look.theme, (value) => changeLook({ theme: value }), (value) => say("themes")[value]);
-  row("orientation", ["auto", "landscape", "portrait"], look.orientation, (value) => changeLook({ orientation: value }), (value) => say("orientations")[value]);
-  row("sound", [true, false], look.sound, (value) => changeLook({ sound: value }), (value) => say(value ? "on" : "off"));
+  const row = (id, items, chosen, choose, labelOf, extra) =>
+    seg(document.getElementById(id), items, chosen, choose, labelOf, extra);
+  row(
+    "board-look",
+    ["cloth", ...SUGOROKU_BOARD_NAMES],
+    look.board,
+    (value) => changeLook({ board: value }),
+    (value) => say("boards")[value],
+    (button, value) => button.append(patch(value)),
+  );
+  row(
+    "checkers-look",
+    SUGOROKU_CHECKER_SET_NAMES,
+    look.checkers,
+    (value) => changeLook({ checkers: value }),
+    (value) => say("checkerSets")[value],
+    (button, value) => button.append(dots(value)),
+  );
+  row(
+    "numbers",
+    [true, false],
+    look.numbers,
+    (value) => changeLook({ numbers: value }),
+    (value) => say(value ? "on" : "off"),
+  );
+  row(
+    "home",
+    ["right", "left"],
+    look.home,
+    (value) => changeLook({ home: value }),
+    (value) => say(value),
+  );
+  row(
+    "theme",
+    ["auto", "light", "dark"],
+    look.theme,
+    (value) => changeLook({ theme: value }),
+    (value) => say("themes")[value],
+  );
+  row(
+    "orientation",
+    ["auto", "landscape", "portrait"],
+    look.orientation,
+    (value) => changeLook({ orientation: value }),
+    (value) => say("orientations")[value],
+  );
+  row(
+    "sound",
+    [true, false],
+    look.sound,
+    (value) => changeLook({ sound: value }),
+    (value) => say(value ? "on" : "off"),
+  );
 }
 
 function change(next) {
@@ -329,5 +497,9 @@ render();
 put();
 host.dataset.ready = "true";
 
-function docsLink(){document.querySelector('[data-say="pageDocs"]')?.setAttribute("href",language.lang==="ja"?"docs/ja/index.html":"docs/index.html");}
+function docsLink() {
+  document
+    .querySelector('[data-say="pageDocs"]')
+    ?.setAttribute("href", language.lang === "ja" ? "docs/ja/index.html" : "docs/index.html");
+}
 docsLink();

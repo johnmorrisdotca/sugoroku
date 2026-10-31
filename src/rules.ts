@@ -40,7 +40,14 @@ export type Rules = {
  * console.log(DEFAULT_RULES);
  * ```
  */
-export const DEFAULT_RULES: Rules = { points: 1, cube: false, crawford: true, jacoby: false, beaver: false, gammons: false };
+export const DEFAULT_RULES: Rules = {
+  points: 1,
+  cube: false,
+  crawford: true,
+  jacoby: false,
+  beaver: false,
+  gammons: false,
+};
 
 /** What goes wrong with a set of rules, as sentences; empty when they are fine.
  *
@@ -58,12 +65,14 @@ export const DEFAULT_RULES: Rules = { points: 1, cube: false, crawford: true, ja
  */
 export function rulesProblems(rules: Rules, variant?: VariantSpec): string[] {
   const problems: string[] = [];
-  if (!Number.isInteger(rules.points) || rules.points < 0) problems.push("points must be 0 (money play) or a whole number of points");
+  if (!Number.isInteger(rules.points) || rules.points < 0)
+    problems.push("points must be 0 (money play) or a whole number of points");
   if (rules.jacoby && rules.points !== 0) problems.push("the Jacoby rule is for money play (points: 0)");
   if (rules.beaver && rules.points !== 0) problems.push("a beaver is for money play (points: 0)");
   if ((rules.jacoby || rules.beaver) && !rules.cube) problems.push("the Jacoby rule and beavers need the cube");
   if (rules.jacoby && !rules.gammons) problems.push("the Jacoby rule is about gammons, which are off");
-  if (variant !== undefined && variant.goal === "last-off" && (rules.cube || rules.gammons)) problems.push("a game played to lose has no cube and no gammons");
+  if (variant !== undefined && variant.goal === "last-off" && (rules.cube || rules.gammons))
+    problems.push("a game played to lose has no cube and no gammons");
   return problems;
 }
 
@@ -139,7 +148,14 @@ export type Preset = {
   names: readonly string[];
 };
 
-const MATCH = (points: number): Rules => ({ points, cube: true, crawford: true, jacoby: false, beaver: false, gammons: true });
+const MATCH = (points: number): Rules => ({
+  points,
+  cube: true,
+  crawford: true,
+  jacoby: false,
+  beaver: false,
+  gammons: true,
+});
 const SINGLE: Rules = DEFAULT_RULES;
 
 /** Every named way of playing, in the order of `docs/VARIANTS.md`.
@@ -151,12 +167,27 @@ const SINGLE: Rules = DEFAULT_RULES;
  * ```
  */
 export const PRESETS: readonly Preset[] = [
-  { key: "backgammon", variant: "backgammon", rules: SINGLE, names: ["Backgammon", "Backgammon Level 2", "Backgammon Level 3", "Casual Backgammon"] },
+  {
+    key: "backgammon",
+    variant: "backgammon",
+    rules: SINGLE,
+    names: ["Backgammon", "Backgammon Level 2", "Backgammon Level 3", "Casual Backgammon"],
+  },
   { key: "backgammon-3", variant: "backgammon", rules: MATCH(3), names: ["Backgammon (3 Point)"] },
-  { key: "backgammon-5", variant: "backgammon", rules: MATCH(5), names: ["Backgammon (5 Point)", "Pro Backgammon", "Pro Backgammon Level 2"] },
+  {
+    key: "backgammon-5",
+    variant: "backgammon",
+    rules: MATCH(5),
+    names: ["Backgammon (5 Point)", "Pro Backgammon", "Pro Backgammon Level 2"],
+  },
   { key: "backgammon-7", variant: "backgammon", rules: MATCH(7), names: ["Backgammon (7 Point)"] },
   { key: "backgammon-9", variant: "backgammon", rules: MATCH(9), names: ["Backgammon (9 Point)", "Pro Backgammon-9"] },
-  { key: "backgammon-race", variant: "backgammon-race", rules: SINGLE, names: ["Backgammon Race", "Backgammon Race Level 2"] },
+  {
+    key: "backgammon-race",
+    variant: "backgammon-race",
+    rules: SINGLE,
+    names: ["Backgammon Race", "Backgammon Race Level 2"],
+  },
   { key: "backgammon-race-5", variant: "backgammon-race", rules: MATCH(5), names: ["Pro Backgammon Race"] },
   { key: "anti-backgammon", variant: "anti-backgammon", rules: SINGLE, names: ["Anti-Backgammon"] },
   { key: "nackgammon", variant: "nackgammon", rules: SINGLE, names: ["Nackgammon"] },

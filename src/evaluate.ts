@@ -26,7 +26,13 @@ const SHOT_ROLLS: readonly Uint8Array[] = (() => {
       for (let b = 1; b <= 6; b += 1) {
         const roll = (a - 1) * 6 + (b - 1);
         const double = a === b;
-        if (distance === a || distance === b || (!double && distance === a + b) || (double && distance <= 4 * a && distance % a === 0)) hits[roll] = 1;
+        if (
+          distance === a ||
+          distance === b ||
+          (!double && distance === a + b) ||
+          (double && distance <= 4 * a && distance % a === 0)
+        )
+          hits[roll] = 1;
       }
     }
     table.push(hits);
@@ -153,7 +159,12 @@ function distancesTo(counts: readonly number[], onBarOrReserve: number, target: 
  * console.log(evaluate(spec,position,"white"));
  * ```
  */
-export function evaluate(spec: VariantSpec, position: Position, side: Side, weights: EvaluationWeights = EVALUATION_WEIGHTS): number {
+export function evaluate(
+  spec: VariantSpec,
+  position: Position,
+  side: Side,
+  weights: EvaluationWeights = EVALUATION_WEIGHTS,
+): number {
   const i = sideIndex(side);
   const opp = otherSide(side);
   const j = sideIndex(opp);
@@ -229,7 +240,12 @@ export function evaluate(spec: VariantSpec, position: Position, side: Side, weig
  * console.log(evaluateFor(spec,position,"white"));
  * ```
  */
-export function evaluateFor(spec: VariantSpec, position: Position, side: Side, weights: EvaluationWeights = EVALUATION_WEIGHTS): number {
+export function evaluateFor(
+  spec: VariantSpec,
+  position: Position,
+  side: Side,
+  weights: EvaluationWeights = EVALUATION_WEIGHTS,
+): number {
   const score = evaluate(spec, position, side, weights);
   return spec.goal === "first-off" ? score : -score;
 }
