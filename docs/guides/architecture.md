@@ -36,9 +36,12 @@ src/
 ├── strings.ts        the words, in English and Japanese
 ├── sound.ts          the optional sounds
 ├── playStyle.ts      the style of the playable board
-├── mount.ts          a board to play in any element: touch, mouse, buttons, computer, events, record
+├── mount.ts          a board to play in any element: the game, the computer, events and the record
+├── mountView.ts      drawing, words, buttons and the pointer on that board
 ├── play-entry.ts     the "/play" entry
+├── elementFrame.ts   the shared frame of the board and position elements
 ├── element.ts        the <sugoroku-board> class
+├── positionElement.ts the <sugoroku-position> class
 ├── element-define.ts defines the tag on the page
 └── version.ts        the package's version
 ```

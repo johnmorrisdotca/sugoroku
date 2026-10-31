@@ -1,8 +1,6 @@
-import { BAR, boardPoint } from "./board.ts";
 import type { SugorokuBoardName, SugorokuCheckerSetName, SugorokuColours } from "./colours.ts";
 import { computerAction, type Strength, sideToAct } from "./computer.ts";
 import { type DiceSource, openingFrom, randomDice, rollFrom, seededDice } from "./dice.ts";
-import { drawSugoroku } from "./draw.ts";
 import {
   beaverDouble,
   canBeaver,
@@ -21,15 +19,16 @@ import {
   turnIsPlayed,
   undoMove,
 } from "./game.ts";
-import { boardSize, CHECKER, type Orientation } from "./geometry.ts";
+import type { Orientation } from "./geometry.ts";
 import { finishGame, type Match, newMatch, startGame } from "./match.ts";
+import { attachSugorokuView } from "./mountView.ts";
 import type { Move } from "./moves.ts";
 import { formatMove, formatPlay } from "./notation.ts";
 import { SUGOROKU_PLAY_STYLE } from "./playStyle.ts";
-import { diceToPlay } from "./plays.ts";
 import { GameRecorder, type RecordSeed } from "./record.ts";
 import { presetByKey, type Rules, type Settings, settingsFor } from "./rules.ts";
-import { otherSide, type Side, sideIndex } from "./side.ts";
+import type { Side } from "./side.ts";
+import { otherSide } from "./side.ts";
 import { createSounds, packagedSounds, type SoundName, type SoundPlayer, type SoundUrls } from "./sound.ts";
 import { type SugorokuLanguage, sugorokuLanguageOf, sugorokuSay } from "./strings.ts";
 import type { VariantKey } from "./variants.ts";
@@ -317,14 +316,11 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
   controls.hidden = options.controls === false;
   host.replaceChildren(score, boardBox, status, controls);
 
-  let selected: number | null = null;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let queue: Move[] = [];
   let gone = false;
-  let portrait = false;
   let waitingForDice = false;
   let lastOpening: readonly [number, number] | null = null;
-  let message: string | null = null;
 
   const lang = (): SugorokuLanguage => language ?? sugorokuLanguageOf(host);
   const say = (key: string, values: Record<string, string | number> = {}): string => sugorokuSay(lang(), key, values);
@@ -350,236 +346,9 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     callback?.(detail);
   };
   const spec = (): GameState["settings"]["variant"] => game.settings.variant;
-  const hasCube = (): boolean => settings.rules.cube && settings.rules.points !== 1;
-
-  /** Whose home board is at the bottom. */
-  const viewSide = (): Side => {
-    if (look.view !== undefined && look.view !== "auto") return look.view;
-    if (isComputer("white") && human("black")) return "black";
-    return "white";
-  };
-
-  // Drawing.
-  const diceShown = (): { side: Side; values: number[]; spent: boolean[] } | null => {
-    if (game.phase === "opening") {
-      return lastOpening === null
-        ? null
-        : { side: "white", values: [lastOpening[0], lastOpening[1]], spent: [false, false] };
-    }
-    if (game.dice === null || game.turn === null) return null;
-    const values = diceToPlay(spec(), game.dice);
-    const unused = [...game.need];
-    const planLeft = [...game.plan];
-    const spent = values.map((value) => {
-      const inPlan = planLeft.indexOf(value);
-      if (inPlan === -1) return true;
-      planLeft.splice(inPlan, 1);
-      const open = unused.indexOf(value);
-      if (open === -1) return true;
-      unused.splice(open, 1);
-      return false;
-    });
-    return { side: game.turn, values, spent };
-  };
-
-  const legalNow = (): Move[] =>
-    game.phase === "playing" && game.turn !== null && human(game.turn) ? legalMoves(game) : [];
-
-  const draw = (): string => {
-    const moves = legalNow();
-    const mover = game.turn;
-    const sources = [...new Set(moves.map((move) => move.from))];
-    const targets =
-      selected === null ? [] : [...new Set(moves.filter((move) => move.from === selected).map((move) => move.to))];
-    return drawSugoroku(game.position, {
-      variant: spec(),
-      view: viewSide(),
-      home: look.home,
-      orientation: portrait ? "portrait" : "landscape",
-      numbers: look.numbers,
-      board: look.board,
-      checkers: look.checkers,
-      colours: look.colours,
-      theme: look.theme,
-      dice: diceShown(),
-      cube: hasCube() ? { value: game.cube.value, owner: game.cube.owner } : null,
-      highlight: mover === null ? null : { side: mover, from: selected, targets, movable: sources },
-      label: say("board", { variant: say(`variant_${spec().key}`) }),
-    });
-  };
-
-  // The words.
-  const pointsText = (count: number): string => say(count === 1 ? "point" : "points", { n: count });
-  const diceText = (dice: readonly number[] | null): string =>
-    dice === null ? "" : diceToPlay(spec(), dice).join(" ");
-  const statusText = (): string => {
-    if (message !== null) return message;
-    const side = game.turn;
-    if (game.phase === "opening")
-      return waitingForDice
-        ? say("waitingDice")
-        : lastOpening !== null && lastOpening[0] === lastOpening[1]
-          ? say("openingTie", { die: lastOpening[0] })
-          : say("opening");
-    if (game.phase === "over") {
-      const result = game.result as GameResult;
-      let line: string;
-      if (result.winner === null) line = say("drawn");
-      else if (result.how === "drop")
-        line = say("wonDrop", { side: nameOf(result.winner), points: pointsText(result.points) });
-      else if (result.how === "concede")
-        line = say("wonConcede", { side: nameOf(result.winner), points: pointsText(result.points) });
-      else
-        line = say("wonBy", {
-          side: nameOf(result.winner),
-          kind: say(result.kind === "single" ? "singleGame" : result.kind),
-          points: pointsText(result.points),
-        });
-      if (match.over)
-        line += ` ${match.winner === null ? say("matchDrawn") : say("matchWon", { side: nameOf(match.winner), a: match.score[sideIndex(match.winner)], b: match.score[sideIndex(otherSide(match.winner))] })}`;
-      return line;
-    }
-    if (side === null) return "";
-    if (game.phase === "double-offered" || game.phase === "beaver-offered") {
-      const offerer = game.offeredBy as Side;
-      const value = game.phase === "double-offered" ? game.cube.value * 2 : game.cube.value * 4;
-      const lose = pointsText(game.phase === "double-offered" ? game.cube.value : game.cube.value * 2);
-      if (human(otherSide(offerer)))
-        return say(game.phase === "double-offered" ? "answerDouble" : "answerBeaver", {
-          side: nameOf(offerer),
-          value,
-          points: lose,
-        });
-      return say("thinking", { side: nameOf(otherSide(offerer)) });
-    }
-    if (game.phase === "before-roll") {
-      if (isComputer(side)) return say("thinking", { side: nameOf(side) });
-      return isComputer(otherSide(side)) ? say("toRollYou") : say("toRoll", { side: nameOf(side) });
-    }
-    if (isComputer(side) && game.moves.length === 0 && game.need.length > 0)
-      return say("thinking", { side: nameOf(side) });
-    if (game.plan.length === 0)
-      return say(human(side) && isComputer(otherSide(side)) ? "noMoveYou" : "noMove", { side: nameOf(side) });
-    if (turnIsPlayed(game))
-      return human(side) ? say("played") : say("toPlay", { side: nameOf(side), dice: diceText(game.dice) });
-    return human(side) && isComputer(otherSide(side))
-      ? say("toPlayYou", { dice: diceText(game.dice) })
-      : say("toPlay", { side: nameOf(side), dice: diceText(game.dice) });
-  };
-  const scoreText = (): string => {
-    const { rules } = settings;
-    const parts = [
-      say("score", { white: nameOf("white"), a: match.score[0], black: nameOf("black"), b: match.score[1] }),
-      rules.points === 0 ? say("money") : say("matchTo", { points: rules.points }),
-    ];
-    if (game.crawford && game.phase !== "over") parts.push(say("crawford"));
-    else if (hasCube())
-      parts.push(
-        game.cube.owner === null
-          ? say("cubeMiddle")
-          : say("cubeHeld", { value: game.cube.value, side: nameOf(game.cube.owner) }),
-      );
-    return parts.join(" · ");
-  };
-
-  /** What the three buttons say and do now. */
-  type Slot = { text: string; enabled: boolean; run: () => void; primary?: boolean; attention?: boolean };
-  const slots = (): [Slot, Slot, Slot] => {
-    const off: Slot = { text: "", enabled: false, run: () => undefined };
-    const side = game.turn;
-    const turnOfHuman = side !== null && human(side);
-    if (game.phase === "over") {
-      return [
-        match.over
-          ? { text: say("newMatch"), enabled: true, run: () => api.newMatch(), primary: true }
-          : { text: say("nextGame"), enabled: true, run: () => api.nextGame(), primary: true },
-        match.over ? off : { text: say("newMatch"), enabled: true, run: () => api.newMatch() },
-        off,
-      ];
-    }
-    if (game.phase === "opening") {
-      const nobody = isComputer("white") && isComputer("black");
-      return [
-        {
-          text: say("rollOpening"),
-          enabled: !nobody && !waitingForDice,
-          run: () => api.roll(),
-          primary: true,
-          attention: !nobody,
-        },
-        off,
-        off,
-      ];
-    }
-    if (game.phase === "double-offered" || game.phase === "beaver-offered") {
-      const answerer = otherSide(game.offeredBy as Side);
-      const mine = human(answerer);
-      return [
-        { text: say("take"), enabled: mine, run: () => api.take(), primary: true, attention: mine },
-        { text: say("drop"), enabled: mine, run: () => api.drop() },
-        { text: say("beaver"), enabled: mine && canBeaver(game), run: () => api.beaver() },
-      ];
-    }
-    if (game.phase === "before-roll") {
-      return [
-        {
-          text: say("roll"),
-          enabled: turnOfHuman && !waitingForDice,
-          run: () => api.roll(),
-          primary: true,
-          attention: turnOfHuman,
-        },
-        { text: say("double"), enabled: turnOfHuman && canDouble(game), run: () => api.double() },
-        { text: say("undo"), enabled: false, run: () => undefined },
-      ];
-    }
-    const played = turnIsPlayed(game);
-    return [
-      {
-        text: say("done"),
-        enabled: turnOfHuman && played,
-        run: () => api.done(),
-        primary: true,
-        attention: turnOfHuman && played,
-      },
-      { text: say("double"), enabled: false, run: () => undefined },
-      { text: say("undo"), enabled: turnOfHuman && game.moves.length > 0, run: () => api.undo() },
-    ];
-  };
-
-  let handlers: [() => void, () => void, () => void] = [() => undefined, () => undefined, () => undefined];
-  const render = (): void => {
-    if (gone) return;
-    const width = host.clientWidth || 600;
-    portrait = look.orientation === "portrait" || (look.orientation !== "landscape" && width < 560);
-    const size = boardSize({ cube: hasCube(), orientation: portrait ? "portrait" : "landscape" });
-    boardBox.style.aspectRatio = `${size.width} / ${size.height}`;
-    boardBox.innerHTML = draw();
-    host.dataset.phase = game.phase;
-    host.dataset.turn = game.turn ?? "";
-    host.dataset.over = String(game.phase === "over");
-    host.dataset.orientation = portrait ? "portrait" : "landscape";
-    host.dataset.selected = selected === null ? "" : String(selected);
-    host.dataset.cube = String(game.cube.value);
-    host.dataset.need = game.need.join("");
-    host.dataset.ready = "true";
-    score.textContent = scoreText();
-    status.textContent = statusText();
-    const [a, b, c] = slots();
-    const buttons = [slotA, slotB, slotC];
-    [a, b, c].forEach((slot, index) => {
-      const button = buttons[index] as HTMLButtonElement;
-      button.textContent = slot.text;
-      button.disabled = !slot.enabled;
-      button.dataset.primary = String(slot.primary === true);
-      button.dataset.attention = String(slot.attention === true);
-      button.style.visibility = slot.text === "" ? "hidden" : "visible";
-    });
-    handlers = [a.run, b.run, c.run];
-  };
-  slotA.addEventListener("click", () => handlers[0]());
-  slotB.addEventListener("click", () => handlers[1]());
-  slotC.addEventListener("click", () => handlers[2]());
+  let render: () => void = () => undefined;
+  let resetPointer: () => void = () => undefined;
+  let disconnectView: () => void = () => undefined;
 
   const play = (name: SoundName): void => sounds?.play(name);
 
@@ -608,8 +377,7 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
 
   const setGame = (next: GameState): void => {
     game = next;
-    selected = null;
-    message = null;
+    resetPointer();
     finishIfOver();
     render();
     if (
@@ -757,156 +525,6 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     }
   };
 
-  // Touch and mouse.
-  const whereIs = (target: Element | null): number | null => {
-    const mover = game.turn;
-    if (mover === null || target === null) return null;
-    const bar = target.closest<SVGElement>("[data-bar]");
-    if (bar !== null) return bar.dataset.bar === mover ? BAR : null;
-    const tray = target.closest<SVGElement>("[data-tray]");
-    if (tray !== null) return tray.dataset.tray === mover ? 0 : null;
-    const point = target.closest<SVGElement>("[data-board]");
-    if (point === null || point.dataset.board === undefined) return null;
-    return boardPoint(spec(), mover, Number(point.dataset.board));
-  };
-
-  const press = (own: number | null): void => {
-    const moves = legalNow();
-    if (own === null) {
-      selected = null;
-    } else if (selected !== null && moves.some((move) => move.from === selected && move.to === own)) {
-      makeMove({ from: selected, to: own });
-      return;
-    } else if (moves.some((move) => move.from === own)) {
-      selected = selected === own ? null : own;
-    } else {
-      selected = null;
-    }
-    render();
-  };
-
-  let drag: { pointer: number; from: number; x: number; y: number; active: boolean; ghost: HTMLElement | null } | null =
-    null;
-  const underPointer = (x: number, y: number): Element | null => {
-    const root = host.getRootNode() as Document | ShadowRoot;
-    return root.elementFromPoint?.(x, y) ?? null;
-  };
-  const sampleColour = (side: Side): { fill: string; edge: string } => {
-    const svg = boardBox.querySelector("svg");
-    const face = svg?.querySelector(`.sg-checker[data-side="${side}"] .sg-face`);
-    const style = face === null || face === undefined ? null : view.getComputedStyle(face);
-    return { fill: style?.fill ?? "#fff", edge: style?.stroke ?? "#000" };
-  };
-
-  const onDown = (event: PointerEvent): void => {
-    if (event.button !== 0 && event.pointerType === "mouse") return;
-    if (game.phase !== "playing" || game.turn === null || !human(game.turn)) return;
-    const own = whereIs(event.target as Element);
-    if (own === null) return;
-    const moves = legalNow();
-    if (dragAllowed && moves.some((move) => move.from === own)) {
-      drag = { pointer: event.pointerId, from: own, x: event.clientX, y: event.clientY, active: false, ghost: null };
-    }
-  };
-
-  const onMove = (event: PointerEvent): void => {
-    if (drag === null || event.pointerId !== drag.pointer) return;
-    if (!drag.active) {
-      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 8) return;
-      drag.active = true;
-      selected = drag.from;
-      render();
-      const svg = boardBox.querySelector("svg");
-      const rect = svg?.getBoundingClientRect();
-      const viewWidth = svg?.viewBox.baseVal.width ?? 1;
-      const scale = rect === undefined ? 1 : rect.width / viewWidth;
-      const side = game.turn as Side;
-      const colours = sampleColour(side);
-      const ghost = create(document, "div", "sgp-ghost");
-      const diameter = CHECKER * scale;
-      ghost.style.width = `${diameter}px`;
-      ghost.style.height = `${diameter}px`;
-      ghost.style.background = colours.fill;
-      ghost.style.borderColor = colours.edge;
-      host.append(ghost);
-      drag.ghost = ghost;
-      try {
-        boardBox.setPointerCapture(event.pointerId);
-      } catch {
-        /* Capture is a nicety. */
-      }
-    }
-    if (drag.ghost !== null) {
-      const w = drag.ghost.offsetWidth;
-      drag.ghost.style.transform = `translate(${event.clientX - w / 2}px, ${event.clientY - w / 2}px)`;
-    }
-  };
-
-  const onUp = (event: PointerEvent): void => {
-    if (drag === null || event.pointerId !== drag.pointer) {
-      return;
-    }
-    const finished = drag;
-    drag = null;
-    finished.ghost?.remove();
-    try {
-      boardBox.releasePointerCapture(event.pointerId);
-    } catch {
-      /* Already released. */
-    }
-    if (!finished.active) return;
-    const to = whereIs(underPointer(event.clientX, event.clientY));
-    if (to !== null && makeMove({ from: finished.from, to })) return;
-    selected = null;
-    render();
-  };
-
-  const onCancel = (event: PointerEvent): void => {
-    if (drag === null || event.pointerId !== drag.pointer) return;
-    drag.ghost?.remove();
-    const wasActive = drag.active;
-    drag = null;
-    if (wasActive) {
-      selected = null;
-      render();
-    }
-  };
-
-  /** A tap or a click: the drag handlers deal with a drag, and a click that follows one is ignored. */
-  let lastDragEnd = 0;
-  const onClick = (event: MouseEvent): void => {
-    if (Date.now() - lastDragEnd < 60) return;
-    if (game.phase !== "playing" || game.turn === null || !human(game.turn)) return;
-    press(whereIs(event.target as Element));
-  };
-  boardBox.addEventListener("pointerdown", onDown);
-  boardBox.addEventListener("pointermove", onMove);
-  boardBox.addEventListener("pointerup", (event) => {
-    const wasDrag = drag?.active === true;
-    onUp(event);
-    if (wasDrag) lastDragEnd = Date.now();
-  });
-  boardBox.addEventListener("pointercancel", onCancel);
-  boardBox.addEventListener("click", onClick);
-
-  // Following the page: its width, and its language.
-  const resize =
-    typeof view.ResizeObserver === "undefined"
-      ? null
-      : new view.ResizeObserver(() => {
-          const wide =
-            look.orientation === "portrait" || (look.orientation !== "landscape" && (host.clientWidth || 600) < 560);
-          if (wide !== portrait) render();
-        });
-  resize?.observe(host);
-  const watch =
-    typeof view.MutationObserver === "undefined"
-      ? null
-      : new view.MutationObserver(() => {
-          if (language === undefined) render();
-        });
-  watch?.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
-
   // The handle.
   const api: SugorokuMount = {
     host,
@@ -989,16 +607,45 @@ export function mountSugoroku(host: HTMLElement, options: SugorokuMountOptions =
     destroy: () => {
       gone = true;
       if (timer !== null) clearTimeout(timer);
-      resize?.disconnect();
-      watch?.disconnect();
+      disconnectView();
       sounds?.destroy();
-      drag?.ghost?.remove();
       host.replaceChildren();
       host.classList.remove("sugoroku-play");
       for (const key of ["drag", "phase", "turn", "over", "orientation", "selected", "cube", "need", "ready"])
         delete host.dataset[key];
     },
   };
+
+  const viewHandle = attachSugorokuView({
+    host,
+    doc: document,
+    page: view,
+    boardBox,
+    score,
+    status,
+    slotA,
+    slotB,
+    slotC,
+    dragAllowed,
+    say,
+    nameOf,
+    human,
+    isComputer,
+    spec,
+    makeMove,
+    game: () => game,
+    match: () => match,
+    settings: () => settings,
+    look: () => look,
+    waitingForDice: () => waitingForDice,
+    lastOpening: () => lastOpening,
+    followsPageLanguage: () => language === undefined,
+    stopped: () => gone,
+    actions: () => api,
+  });
+  render = viewHandle.render;
+  resetPointer = viewHandle.resetPointer;
+  disconnectView = viewHandle.disconnect;
 
   render();
   startComputer();
