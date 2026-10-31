@@ -10,6 +10,7 @@ All notable changes to this project are written here. The format follows
 
 - Biome replaces ESLint as the formatter and linter, with the family's shared settings in `scripts/biome-family.json`; `pnpm lint` checks formatting too, and `pnpm format` applies it. The code is formatted once to 120 columns. Nothing a user of the package sees has changed.
 - TypeScript targets ES2022, treats an indexed read as possibly missing, and refuses switch fallthrough and unmarked overrides.
+- `pnpm check` also holds every source file to at most 500 lines of code (`scripts/check-size.mjs`; blank lines, comments, tests and data files are not counted). The board is split across `src/elementFrame.ts` and `src/positionElement.ts`, and the play view lives in `src/mountView.ts`, so those files stay within that.
 
 ### Fixed
 
