@@ -971,7 +971,7 @@ Please follow the [code of conduct](./CODE_OF_CONDUCT.md). A record or a positio
 
 See [CHANGELOG.md](./CHANGELOG.md).
 
-The latest release is 1.1.0: the board and position as elements, the shared embed builder, and the documentation site with a checked example for every export.
+The latest release, 1.1.1, changes nothing a player sees.
 
 ## Licence
 
