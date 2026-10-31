@@ -3,13 +3,14 @@
 // panel, the game written out as a record that the page replays against the rules, kept on this device between visits,
 // and spoken in the language the header's chooser picks. The page only chooses a game and hands the settings on:
 // the rules, the drawing, the moves and the computer are the package's own.
-import { replayRecord, STRENGTHS, VARIANT_KEYS } from "./dist/index.js";
+
 import {
   SUGOROKU_BOARD_NAMES,
   SUGOROKU_BOARDS,
   SUGOROKU_CHECKER_SET_NAMES,
   SUGOROKU_CHECKER_SETS,
 } from "./dist/draw-entry.js";
+import { replayRecord, STRENGTHS, VARIANT_KEYS } from "./dist/index.js";
 import { mountSugoroku } from "./dist/play-entry.js";
 
 // The page's own words, in the two languages it speaks. Set as text, never as HTML.
@@ -359,7 +360,9 @@ function choices() {
     document
       .getElementById(id)
       .querySelectorAll("button")
-      .forEach((button) => (button.disabled = off));
+      .forEach((button) => {
+        button.disabled = off;
+      });
   disabled("cube", noCube);
   disabled("gammons", choice.variant === "anti-backgammon" || choice.variant === "tabula");
   disabled("jacoby", choice.points !== 0 || !rules.cube || !rules.gammons);

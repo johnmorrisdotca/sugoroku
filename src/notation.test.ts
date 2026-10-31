@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { startPosition, type Position } from "./board.ts";
+import { type Position, startPosition } from "./board.ts";
 import { formatMove, formatPlay, formatPosition, parseHops, parsePlay, parsePosition } from "./notation.ts";
 import { legalPlays, playMoves } from "./plays.ts";
 import { VARIANT_KEYS, VARIANTS } from "./variants.ts";

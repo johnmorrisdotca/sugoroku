@@ -1,4 +1,4 @@
-import { isVariantKey, variantSpec, type VariantKey, type VariantSpec } from "./variants.ts";
+import { isVariantKey, type VariantKey, type VariantSpec, variantSpec } from "./variants.ts";
 
 /**
  * HOW A GAME IS SCORED AND STAKED, beside the variant's board. A variant says

@@ -1,16 +1,17 @@
-import { VERSION, VARIANT_KEYS, PRESETS, settingsFor, DEFAULT_RULES, STRENGTHS } from "./dist/index.js";
+import { SUGOROKU_BOARD_NAMES, SUGOROKU_CHECKER_SET_NAMES } from "./dist/colours.js";
 import {
+  readEmbedPosition,
+  SUGOROKU_DRAW_OPTION_KEYS,
+  SUGOROKU_EMBED_OPTION_KEYS,
+  SUGOROKU_POSITION_OPTION_KEYS,
   SugorokuBoard,
   SugorokuPosition,
-  SUGOROKU_EMBED_OPTION_KEYS,
-  SUGOROKU_DRAW_OPTION_KEYS,
-  SUGOROKU_POSITION_OPTION_KEYS,
-  readEmbedPosition,
 } from "./dist/element.js";
-import { SUGOROKU_BOARD_NAMES, SUGOROKU_CHECKER_SET_NAMES } from "./dist/colours.js";
+import { DEFAULT_RULES, PRESETS, STRENGTHS, settingsFor, VARIANT_KEYS, VERSION } from "./dist/index.js";
 import { SUGOROKU_STRINGS } from "./dist/strings.js";
 import "./dist/element-define.js";
-import { familyEmbedBuilder, FAMILY_EMBED_BUILDER_WORDS } from "./family-embed-builder.js";
+import { FAMILY_EMBED_BUILDER_WORDS, familyEmbedBuilder } from "./family-embed-builder.js";
+
 const words = {
   en: {
     ...FAMILY_EMBED_BUILDER_WORDS.en,
@@ -305,14 +306,14 @@ function problem(maker, settings) {
 }
 let mounted;
 const page = globalThis.familyLanguage({
-    id: "sugoroku",
-    words,
-    onChange: () => {
-      docsLink();
-      mounted?.draw();
-    },
-  }),
-  heights = {};
+  id: "sugoroku",
+  words,
+  onChange: () => {
+    docsLink();
+    mounted?.draw();
+  },
+});
+const heights = {};
 const key = (maker, settings) => JSON.stringify([maker, settings]);
 const makers = {};
 for (const name of ["board", "position"])

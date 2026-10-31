@@ -11,6 +11,7 @@ import {
   cubeIsDead,
   dropDouble,
   endTurn,
+  type GameState,
   legalMoves,
   legalPlaysOf,
   newGame,
@@ -22,7 +23,6 @@ import {
   takeDouble,
   turnIsPlayed,
   undoMove,
-  type GameState,
 } from "./game.ts";
 import { parsePosition } from "./notation.ts";
 import { settingsFor } from "./rules.ts";

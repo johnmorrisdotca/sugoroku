@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { BAR, boardPoint, inContact, mirrorPoint, pipCount, startPosition, type Position } from "./board.ts";
-import { newGame, legalMoves, legalPlaysOf, playMove, rollDice, rollOpening, type GameState } from "./game.ts";
+import { BAR, boardPoint, inContact, mirrorPoint, type Position, pipCount, startPosition } from "./board.ts";
+import { type GameState, legalMoves, legalPlaysOf, newGame, playMove, rollDice, rollOpening } from "./game.ts";
 import { movesOfDie } from "./moves.ts";
 import { formatPlay, parsePosition } from "./notation.ts";
 import { diceToPlay, legalPlays } from "./plays.ts";

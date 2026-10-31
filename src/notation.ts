@@ -1,8 +1,8 @@
 import { BAR, POINTS, type Position } from "./board.ts";
 import type { Move } from "./moves.ts";
-import { diceMustPlay, diceToPlay, nextMoves } from "./plays.ts";
 import { applyMove } from "./moves.ts";
-import { sideIndex, type Side } from "./side.ts";
+import { diceMustPlay, diceToPlay, nextMoves } from "./plays.ts";
+import { type Side, sideIndex } from "./side.ts";
 import type { VariantSpec } from "./variants.ts";
 
 /**

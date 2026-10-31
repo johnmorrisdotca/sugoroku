@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { serve } from "./demo.mjs";
+
 test("the shared builder covers playable and static options and writes every host format", async ({ page }) => {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -26,16 +27,16 @@ test("the playable board preserves native actions and callback changes preserve 
   await expect(board.locator("svg")).toBeVisible();
   const result = await board.evaluate((element) => {
     element.roll([5, 2]);
-    const mount = element.mount,
-      game = element.game;
+    const mount = element.mount;
+    const game = element.game;
     let called = false;
     element.options = {
       onMove: () => {
         called = true;
       },
     };
-    const same = element.mount === mount && element.game === game,
-      moved = element.move(13, 8);
+    const same = element.mount === mount && element.game === game;
+    const moved = element.move(13, 8);
     element.beaver = false;
     return {
       same,
@@ -66,8 +67,8 @@ test("position IDs and JSON positions reproduce the native position for every va
   await expect(page.locator("svg")).toBeVisible();
   const result = await page.locator("sugoroku-position").evaluate(async (element) => {
     const { startPosition, VARIANTS, VARIANT_KEYS } = await import("../../dist/index.js");
-    const first = { actual: element.value, expected: startPosition(VARIANTS.backgammon) },
-      positions = [];
+    const first = { actual: element.value, expected: startPosition(VARIANTS.backgammon) };
+    const positions = [];
     let count = 0;
     for (const variant of VARIANT_KEYS) {
       element.variant = variant;
@@ -90,8 +91,8 @@ test("static and playable events compose across shadow roots with JSON-safe deta
     defineBoard("article-backgammon");
     definePosition("article-position");
     definePosition("article-position");
-    const host = document.createElement("div"),
-      shadow = host.attachShadow({ mode: "open" });
+    const host = document.createElement("div");
+    const shadow = host.attachShadow({ mode: "open" });
     document.body.append(host);
     const board = document.createElement("article-backgammon");
     board.dice = "host";

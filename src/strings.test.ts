@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { BoardLayout } from "./geometry.ts";
-import { SUGOROKU_STRINGS, sugorokuLanguageOf, sugorokuSay } from "./strings.ts";
 import { createSounds, packagedSounds } from "./sound.ts";
+import { SUGOROKU_STRINGS, sugorokuLanguageOf, sugorokuSay } from "./strings.ts";
 
 describe("the words", () => {
   it("have every line in both languages, with the same values to fill in", () => {

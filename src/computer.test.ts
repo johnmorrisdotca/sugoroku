@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
-
-import { choosePlay, computerAction, sideToAct, STRENGTHS, wantsToDouble, wantsToTake } from "./computer.ts";
-import { evaluate, evaluateFor, keithCount, winChance } from "./evaluate.ts";
-import { legalPlaysOf, newGame, offerDouble, rollDice, type GameState } from "./game.ts";
-import { formatPlay, parsePosition } from "./notation.ts";
 import type { Position } from "./board.ts";
+import { choosePlay, computerAction, STRENGTHS, sideToAct, wantsToDouble, wantsToTake } from "./computer.ts";
+import { evaluate, evaluateFor, keithCount, winChance } from "./evaluate.ts";
+import { type GameState, legalPlaysOf, newGame, offerDouble, rollDice } from "./game.ts";
+import { formatPlay, parsePosition } from "./notation.ts";
 import { seededRandom } from "./random.ts";
 import { settingsFor } from "./rules.ts";
 import { VARIANTS } from "./variants.ts";

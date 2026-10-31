@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { allHome, BAR, pipCount, positionKey, startPosition, type Position } from "./board.ts";
+import { allHome, BAR, type Position, pipCount, positionKey, startPosition } from "./board.ts";
 import { bruteForcePositions } from "./brute.fixture.ts";
-import { formatPlay, parsePosition } from "./notation.ts";
 import { applyMove, movesOfDie } from "./moves.ts";
+import { formatPlay, parsePosition } from "./notation.ts";
 import { diceMustPlay, diceToPlay, legalPlays, nextMoves } from "./plays.ts";
 import { seededRandom } from "./random.ts";
-import { VARIANTS, VARIANT_KEYS } from "./variants.ts";
+import { VARIANT_KEYS, VARIANTS } from "./variants.ts";
 
 const std = VARIANTS.backgammon;
 const at = (text: string): Position => parsePosition(text) as Position;

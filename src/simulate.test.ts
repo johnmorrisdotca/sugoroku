@@ -3,14 +3,14 @@
 // was moved and hit, and a game written down must replay to the same result.
 import { describe, expect, it } from "vitest";
 
-import { checkersOf, pipCount, type Position } from "./board.ts";
-import { stepComputer, sideToAct, type Strength } from "./computer.ts";
+import { checkersOf, type Position, pipCount } from "./board.ts";
+import { type Strength, sideToAct, stepComputer } from "./computer.ts";
 import { rollFrom, seededDice } from "./dice.ts";
 import { randomGame, randomMatch } from "./driver.fixture.ts";
-import { legalPlaysOf, newGame, playTurn, rollDice, rollOpening, type GameState } from "./game.ts";
+import { type GameState, legalPlaysOf, newGame, playTurn, rollDice, rollOpening } from "./game.ts";
 import type { Play } from "./plays.ts";
-import { replayRecord } from "./record.ts";
 import { seededRandom } from "./random.ts";
+import { replayRecord } from "./record.ts";
 import { settingsFor } from "./rules.ts";
 import { otherSide, SIDES, type Side } from "./side.ts";
 import { VARIANT_KEYS, VARIANTS, type VariantKey } from "./variants.ts";

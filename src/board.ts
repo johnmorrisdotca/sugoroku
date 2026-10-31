@@ -1,4 +1,4 @@
-import { sideIndex, otherSide, type Side } from "./side.ts";
+import { otherSide, type Side, sideIndex } from "./side.ts";
 import { startCounts, startReserve, type VariantSpec } from "./variants.ts";
 
 /** The points on the board.

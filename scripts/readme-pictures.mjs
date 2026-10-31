@@ -4,9 +4,9 @@
 // played by the package's own computer for white (through the board's own methods) until the cube has been turned and a few turns
 // have gone, the dice are on the board, and motion is reduced. It waits on the board's own state, never on a clock.
 // Output: docs/images/<subject>-<desk|phone>-<light|dark>.webp.
-import { takePictures } from "./readme-pictures-lib.mjs";
 
 import { choosePlay, legalPlaysOf } from "../dist/index.js";
+import { takePictures } from "./readme-pictures-lib.mjs";
 
 const BOARD = '[data-testid="board"]';
 const READY = `${BOARD}[data-ready="true"] svg.sugoroku`;

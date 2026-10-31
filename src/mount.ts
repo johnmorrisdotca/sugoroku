@@ -1,9 +1,8 @@
 import { BAR, boardPoint } from "./board.ts";
 import type { SugorokuBoardName, SugorokuCheckerSetName, SugorokuColours } from "./colours.ts";
-import { computerAction, sideToAct, type Strength } from "./computer.ts";
-import { openingFrom, randomDice, rollFrom, seededDice, type DiceSource } from "./dice.ts";
+import { computerAction, type Strength, sideToAct } from "./computer.ts";
+import { type DiceSource, openingFrom, randomDice, rollFrom, seededDice } from "./dice.ts";
 import { drawSugoroku } from "./draw.ts";
-import { boardSize, CHECKER, type Orientation } from "./geometry.ts";
 import {
   beaverDouble,
   canBeaver,
@@ -11,6 +10,8 @@ import {
   concede,
   dropDouble,
   endTurn,
+  type GameResult,
+  type GameState,
   legalMoves,
   offerDouble,
   playMove,
@@ -19,19 +20,18 @@ import {
   takeDouble,
   turnIsPlayed,
   undoMove,
-  type GameResult,
-  type GameState,
 } from "./game.ts";
-import { finishGame, newMatch, startGame, type Match } from "./match.ts";
+import { boardSize, CHECKER, type Orientation } from "./geometry.ts";
+import { finishGame, type Match, newMatch, startGame } from "./match.ts";
 import type { Move } from "./moves.ts";
 import { formatMove, formatPlay } from "./notation.ts";
-import { diceToPlay } from "./plays.ts";
 import { SUGOROKU_PLAY_STYLE } from "./playStyle.ts";
+import { diceToPlay } from "./plays.ts";
 import { GameRecorder, type RecordSeed } from "./record.ts";
-import { presetByKey, settingsFor, type Rules, type Settings } from "./rules.ts";
-import { otherSide, sideIndex, type Side } from "./side.ts";
+import { presetByKey, type Rules, type Settings, settingsFor } from "./rules.ts";
+import { otherSide, type Side, sideIndex } from "./side.ts";
 import { createSounds, packagedSounds, type SoundName, type SoundPlayer, type SoundUrls } from "./sound.ts";
-import { sugorokuLanguageOf, sugorokuSay, type SugorokuLanguage } from "./strings.ts";
+import { type SugorokuLanguage, sugorokuLanguageOf, sugorokuSay } from "./strings.ts";
 import type { VariantKey } from "./variants.ts";
 
 /**

@@ -1,7 +1,8 @@
 import { expect, it } from "vitest";
-import { readEmbedPosition } from "./element.ts";
 import { startPosition } from "./board.ts";
-import { VARIANTS, VARIANT_KEYS } from "./variants.ts";
+import { readEmbedPosition } from "./element.ts";
+import { VARIANT_KEYS, VARIANTS } from "./variants.ts";
+
 it("validates complete native positions, including race reserves", () => {
   for (const variant of VARIANT_KEYS) {
     const start = startPosition(VARIANTS[variant]);

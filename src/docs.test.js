@@ -1,17 +1,16 @@
-import { FAMILY, familyRepo } from "../scripts/family-template.mjs";
 // The documents and the demo, held to the source. Plain JavaScript, so that reading files needs no Node types.
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import process from "node:process";
-
 import { describe, expect, it } from "vitest";
+import { FAMILY, familyRepo } from "../scripts/family-template.mjs";
 
 import { startPosition } from "./board.ts";
 import { STRENGTHS } from "./computer.ts";
 import { MOST_DRAWN } from "./draw.ts";
 import { SugorokuBoard } from "./element.ts";
-import { positionId } from "./positionId.ts";
 import { SUGOROKU_PLAY_STYLE } from "./playStyle.ts";
+import { positionId } from "./positionId.ts";
 import { RECORD_VERSION } from "./record.ts";
 import { CUBE_LIMIT, PRESETS } from "./rules.ts";
 import { SUGOROKU_STRINGS } from "./strings.ts";

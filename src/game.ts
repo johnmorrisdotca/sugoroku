@@ -1,8 +1,8 @@
-import { mirrorPoint, POINTS, startPosition, type Position } from "./board.ts";
+import { mirrorPoint, POINTS, type Position, startPosition } from "./board.ts";
 import { applyMove, type Move } from "./moves.ts";
-import { diceMustPlay, diceToPlay, legalPlays, nextMoves, playMoves, type Play } from "./plays.ts";
+import { diceMustPlay, diceToPlay, legalPlays, nextMoves, type Play, playMoves } from "./plays.ts";
 import { CUBE_LIMIT, cubeInPlay, type Settings } from "./rules.ts";
-import { otherSide, sideIndex, type Side } from "./side.ts";
+import { otherSide, type Side, sideIndex } from "./side.ts";
 
 /** Where a game has got to.
  *

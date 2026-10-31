@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { randomMatch } from "./driver.fixture.ts";
-import { GameRecorder, formatRecordHeader, replayRecord, RECORD_VERSION } from "./record.ts";
+import { formatRecordHeader, GameRecorder, RECORD_VERSION, replayRecord } from "./record.ts";
 import { settingsFor } from "./rules.ts";
 import { VARIANT_KEYS } from "./variants.ts";
 

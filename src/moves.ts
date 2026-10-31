@@ -1,5 +1,5 @@
-import { allHome, BAR, countAt, mirrorPoint, opponentAt, POINTS, withCounts, type Position } from "./board.ts";
-import { otherSide, sideIndex, type Side } from "./side.ts";
+import { allHome, BAR, countAt, mirrorPoint, opponentAt, POINTS, type Position, withCounts } from "./board.ts";
+import { otherSide, type Side, sideIndex } from "./side.ts";
 import type { VariantSpec } from "./variants.ts";
 
 /**

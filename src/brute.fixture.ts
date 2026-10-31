@@ -1,7 +1,7 @@
 // A second, plain way to find every legal turn, to hold the engine to: try every order of the dice and every
 // move of each, stop where nothing more can be played, and keep what the rules keep. It shares only the move
 // generator for one die with the engine, and none of its memoising or its search for what must be played.
-import { positionKey, type Position } from "./board.ts";
+import { type Position, positionKey } from "./board.ts";
 import { applyMove, movesOfDie } from "./moves.ts";
 import { diceToPlay } from "./plays.ts";
 import type { Side } from "./side.ts";

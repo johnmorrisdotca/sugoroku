@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { startPosition, type Position } from "./board.ts";
+import { type Position, startPosition } from "./board.ts";
 import { SUGOROKU_BOARD_NAMES, SUGOROKU_CHECKER_SET_NAMES } from "./colours.ts";
 import { drawSugoroku, MOST_DRAWN } from "./draw.ts";
 import { boardSize } from "./geometry.ts";

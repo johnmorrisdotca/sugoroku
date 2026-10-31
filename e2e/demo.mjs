@@ -77,9 +77,15 @@ export async function tap(page, selector) {
 
 /** The board's game, as plain data, read off the page. */
 export const gameOf = (page, handle = "window.sugoroku") =>
-  page.evaluate((expression) => JSON.parse(JSON.stringify(eval(expression).game())), handle);
+  page.evaluate((expression) => {
+    // biome-ignore lint/security/noGlobalEval: the expression is this page's own handle, read in the page
+    return JSON.parse(JSON.stringify(eval(expression).game()));
+  }, handle);
 export const matchOf = (page, handle = "window.sugoroku") =>
-  page.evaluate((expression) => JSON.parse(JSON.stringify(eval(expression).match())), handle);
+  page.evaluate((expression) => {
+    // biome-ignore lint/security/noGlobalEval: the expression is this page's own handle, read in the page
+    return JSON.parse(JSON.stringify(eval(expression).match()));
+  }, handle);
 
 /** Where on the page a board point is to be tapped: its hit rectangle. */
 export const pointAt = (page, host, boardPoint) =>

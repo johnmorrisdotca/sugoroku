@@ -1,12 +1,12 @@
 // Builds the static demo for GitHub Pages into ./site: the page, written here from the family's
 // shared header and footer, with the family's stylesheet, Sugoroku's own, the page's script, the
 // compiled library and the sounds beside it, and the API reference made from the source.
-import { cpSync, readFileSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 
 import { API_CSS, apiPage } from "./api.mjs";
 import {
-  FAMILY_SCRIPT,
   FAMILY_EMBED_BUILDER_WORDS,
+  FAMILY_SCRIPT,
   familyEmbedBuilder,
   familyFooter,
   familyHead,
@@ -28,7 +28,7 @@ const uses = [
   `<sugoroku-board variant="long-gammon" points="3" cube black="strong"></sugoroku-board>`,
   `formatPlay(moves)  // "24/18 13/11" and "bar/22*", standard notation`,
 ];
-const escape = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const escapeHtml = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const seg = (name, extra = "") =>
   `<div class="fam-seg" role="group" data-say-label="${name}" id="${name}" data-testid="${name}"${extra}></div>`;
 /** The line for each option row, in English and Japanese, for the family's Help switch. */
@@ -146,7 +146,7 @@ const page = `<!doctype html>
         <h2 id="more-title" data-say="moreTitle"></h2>
         <p data-say="moreText"></p>
         <ul class="uses">
-          ${uses.map((line) => `<li><code>${escape(line)}</code></li>`).join("\n          ")}
+          ${uses.map((line) => `<li><code>${escapeHtml(line)}</code></li>`).join("\n          ")}
         </ul>
       </section>
       <section class="more tag" aria-labelledby="tag-title">

@@ -1,5 +1,5 @@
 import type { Position } from "./board.ts";
-import { boardPoint, BAR, POINTS } from "./board.ts";
+import { BAR, boardPoint, POINTS } from "./board.ts";
 import {
   colourProperty,
   SUGOROKU_BOARDS,
@@ -15,13 +15,13 @@ import {
   boardSize,
   CHECKER,
   DIE,
+  type Orientation,
   PAD,
   POINT_WIDTH,
   STACK_STEP,
   TRAY_WIDTH,
-  type Orientation,
 } from "./geometry.ts";
-import { sideIndex, SIDES, type Side } from "./side.ts";
+import { SIDES, type Side, sideIndex } from "./side.ts";
 import { SUGOROKU_STYLE } from "./style.ts";
 import { VARIANTS, type VariantKey, type VariantSpec } from "./variants.ts";
 
@@ -79,7 +79,7 @@ export type SugorokuDrawOptions = {
   style?: boolean;
 };
 
-const escape = (text: string): string =>
+const escapeXml = (text: string): string =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const n = (value: number): string => String(Math.round(value * 100) / 100);
 
@@ -122,7 +122,7 @@ export function colourStyle(options: Pick<SugorokuDrawOptions, "board" | "checke
     ...options.colours,
   };
   return SUGOROKU_COLOUR_NAMES.filter((name) => colours[name] !== undefined)
-    .map((name) => `${colourProperty(name)}:${escape(String(colours[name]))}`)
+    .map((name) => `${colourProperty(name)}:${escapeXml(String(colours[name]))}`)
     .join(";");
 }
 
@@ -167,7 +167,7 @@ export function drawSugoroku(position: Position, options: SugorokuDrawOptions = 
 
   /** Text drawn upright whichever way the board is turned. */
   const text = (x: number, y: number, content: string, className: string, extra = ""): string =>
-    `<text class="${className}" x="${n(x)}" y="${n(y)}" text-anchor="middle" dominant-baseline="central"${portrait ? ` transform="rotate(-90 ${n(x)} ${n(y)})"` : ""}${extra}>${escape(content)}</text>`;
+    `<text class="${className}" x="${n(x)}" y="${n(y)}" text-anchor="middle" dominant-baseline="central"${portrait ? ` transform="rotate(-90 ${n(x)} ${n(y)})"` : ""}${extra}>${escapeXml(content)}</text>`;
 
   // The frame, the field of play, the bar, and the trays' wells.
   const field = { x: layout.fieldLeft, y: layout.fieldTop, w: 2 * POINT_WIDTH * 6 + BAR_WIDTH, h: layout.fieldHeight };
@@ -351,7 +351,7 @@ export function drawSugoroku(position: Position, options: SugorokuDrawOptions = 
   const theme = options.theme === undefined || options.theme === "auto" ? "" : ` data-theme="${options.theme}"`;
   const inline = options.style === true ? `<style>${SUGOROKU_STYLE}</style>` : "";
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" class="sugoroku" viewBox="0 0 ${n(width)} ${n(height)}" role="img" aria-label="${escape(options.label ?? describe(position))}"` +
+    `<svg xmlns="http://www.w3.org/2000/svg" class="sugoroku" viewBox="0 0 ${n(width)} ${n(height)}" role="img" aria-label="${escapeXml(options.label ?? describe(position))}"` +
     ` data-orientation="${orientation}" data-view="${view}" data-home="${options.home ?? "right"}"${theme}${colours === "" ? "" : ` style="${colours}"`}>${inline}${root}</svg>`
   );
 }

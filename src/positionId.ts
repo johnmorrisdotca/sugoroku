@@ -1,5 +1,5 @@
 import { POINTS, type Position } from "./board.ts";
-import { otherSide, sideIndex, type Side } from "./side.ts";
+import { otherSide, type Side, sideIndex } from "./side.ts";
 
 /**
  * POSITION IDS, in the 14-character form the GNU Backgammon manual publishes

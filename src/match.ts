@@ -1,6 +1,6 @@
-import { newGame, type GameResult, type GameState } from "./game.ts";
+import { type GameResult, type GameState, newGame } from "./game.ts";
 import type { Settings } from "./rules.ts";
-import { sideIndex, type Side } from "./side.ts";
+import { type Side, sideIndex } from "./side.ts";
 
 /**
  * A MATCH: games played one after another to a number of points, or without

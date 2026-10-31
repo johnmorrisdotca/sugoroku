@@ -17,12 +17,12 @@ async function tapMove(page, game, move) {
   const spec = game.settings.variant;
   const from =
     move.from === 25
-      ? page.locator('[data-testid="board"] svg .sg-bar-hit[data-bar="' + game.turn + '"]')
+      ? page.locator(`[data-testid="board"] svg .sg-bar-hit[data-bar="${game.turn}"]`)
       : pointAt(page, at("board"), boardPoint(spec, game.turn, move.from));
   await tap(page, from);
   const to =
     move.to === 0
-      ? page.locator('[data-testid="board"] svg .sg-tray[data-tray="' + game.turn + '"]')
+      ? page.locator(`[data-testid="board"] svg .sg-tray[data-tray="${game.turn}"]`)
       : pointAt(page, at("board"), boardPoint(spec, game.turn, move.to));
   await tap(page, to);
 }

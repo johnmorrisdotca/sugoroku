@@ -1,5 +1,5 @@
-import { positionKey, type Position } from "./board.ts";
-import { applyMove, movesOfDie, type Move } from "./moves.ts";
+import { type Position, positionKey } from "./board.ts";
+import { applyMove, type Move, movesOfDie } from "./moves.ts";
 import type { Side } from "./side.ts";
 import type { VariantSpec } from "./variants.ts";
 

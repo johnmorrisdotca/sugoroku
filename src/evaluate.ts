@@ -1,5 +1,5 @@
-import { inContact, mirrorPoint, pipCount, POINTS, type Position } from "./board.ts";
-import { otherSide, sideIndex, type Side } from "./side.ts";
+import { inContact, mirrorPoint, POINTS, type Position, pipCount } from "./board.ts";
+import { otherSide, type Side, sideIndex } from "./side.ts";
 import type { VariantSpec } from "./variants.ts";
 
 /**

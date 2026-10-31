@@ -1,22 +1,21 @@
-import { drawSugoroku, type SugorokuDrawOptions } from "./draw.ts";
-import { startPosition, type Position } from "./board.ts";
-import { positionFromId } from "./positionId.ts";
-import { VARIANTS } from "./variants.ts";
-import type { Strength } from "./computer.ts";
-import { STRENGTHS } from "./computer.ts";
+import { type Position, startPosition } from "./board.ts";
 import {
   SUGOROKU_BOARD_NAMES,
   SUGOROKU_CHECKER_SET_NAMES,
   type SugorokuBoardName,
   type SugorokuCheckerSetName,
 } from "./colours.ts";
+import type { Strength } from "./computer.ts";
+import { STRENGTHS } from "./computer.ts";
+import { drawSugoroku, type SugorokuDrawOptions } from "./draw.ts";
 import type { GameState } from "./game.ts";
 import type { Match } from "./match.ts";
 import { mountSugoroku, type SugorokuMount, type SugorokuMountOptions } from "./mount.ts";
-import { SUGOROKU_STYLE } from "./style.ts";
+import { positionFromId } from "./positionId.ts";
 import type { Rules } from "./rules.ts";
 import type { Side } from "./side.ts";
-import { isVariantKey, type VariantKey } from "./variants.ts";
+import { SUGOROKU_STYLE } from "./style.ts";
+import { isVariantKey, VARIANTS, type VariantKey } from "./variants.ts";
 
 /**
  * THE `<sugoroku-board>` ELEMENT: a playable backgammon board in a tag, with no
@@ -80,8 +79,8 @@ class SugorokuFrame extends ElementBase {
   protected frame(): void {
     this.style.display = "block";
     this.style.maxWidth = "100%";
-    const width = Number(this.getAttribute("width")),
-      size = this.getAttribute("size");
+    const width = Number(this.getAttribute("width"));
+    const size = this.getAttribute("size");
     const pixels =
       this.hasAttribute("width") && width > 0 && Number.isFinite(width)
         ? Math.min(width, 2000)
@@ -103,9 +102,9 @@ class SugorokuFrame extends ElementBase {
     const theme = this.getAttribute("theme");
     this.style.colorScheme = theme === "light" || theme === "dark" ? theme : "light dark";
     this.setAttribute("data-sugoroku-embed", "");
-    const root = this.getRootNode(),
-      target: ParentNode =
-        typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot ? root : this.ownerDocument.head;
+    const root = this.getRootNode();
+    const target: ParentNode =
+      typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot ? root : this.ownerDocument.head;
     if (target.querySelector("style[data-sugoroku-embed-style]") === null) {
       const style = this.ownerDocument.createElement("style");
       style.setAttribute("data-sugoroku-embed-style", "");
@@ -577,8 +576,8 @@ export class SugorokuBoard extends SugorokuFrame {
       this.#mount?.destroy();
       this.#mount = null;
       this.#key = "";
-      const message = error instanceof Error ? error.message : String(error),
-        status = this.ownerDocument.createElement("p");
+      const message = error instanceof Error ? error.message : String(error);
+      const status = this.ownerDocument.createElement("p");
       status.setAttribute("role", "status");
       status.textContent = message;
       this.replaceChildren(status);
@@ -888,8 +887,8 @@ export class SugorokuPosition extends SugorokuFrame {
       this.dispatchEvent(new CustomEvent("sugoroku-load", { bubbles: true, composed: true, detail }));
     } catch (error) {
       this.#value = null;
-      const message = error instanceof Error ? error.message : String(error),
-        status = this.ownerDocument.createElement("p");
+      const message = error instanceof Error ? error.message : String(error);
+      const status = this.ownerDocument.createElement("p");
       status.setAttribute("role", "status");
       status.textContent = message;
       this.replaceChildren(status);

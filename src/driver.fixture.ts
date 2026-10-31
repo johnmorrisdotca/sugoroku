@@ -1,23 +1,23 @@
 // Plays games out for the tests: every choice made at random from the legal ones, from a seed. Used to hold the
 // engine, the record format and the simulator to whole games, not just to positions someone thought of.
-import { openingFrom, rollFrom, seededDice, type DiceSource } from "./dice.ts";
+import { type DiceSource, openingFrom, rollFrom, seededDice } from "./dice.ts";
 import {
-  canDouble,
-  canBeaver,
   beaverDouble,
+  canBeaver,
+  canDouble,
   dropDouble,
   endTurn,
+  type GameState,
   legalPlaysOf,
   offerDouble,
   playTurn,
   rollDice,
   rollOpening,
   takeDouble,
-  type GameState,
 } from "./game.ts";
-import { finishGame, newMatch, startGame, type Match } from "./match.ts";
-import { GameRecorder, type RecordSeed } from "./record.ts";
+import { finishGame, type Match, newMatch, startGame } from "./match.ts";
 import { seededRandom } from "./random.ts";
+import { GameRecorder, type RecordSeed } from "./record.ts";
 import type { Settings } from "./rules.ts";
 import { otherSide } from "./side.ts";
 

@@ -1,19 +1,19 @@
 import { inContact, type Position } from "./board.ts";
 import type { DiceSource } from "./dice.ts";
 import { rollFrom } from "./dice.ts";
+import { EVALUATION_WEIGHTS, type EvaluationWeights, evaluateFor, keithCount, winChance } from "./evaluate.ts";
 import {
   canDouble,
+  dropDouble,
   endTurn,
+  type GameState,
   legalPlaysOf,
   offerDouble,
   playTurn,
   rollDice,
   rollOpening,
   takeDouble,
-  dropDouble,
-  type GameState,
 } from "./game.ts";
-import { EVALUATION_WEIGHTS, evaluateFor, keithCount, winChance, type EvaluationWeights } from "./evaluate.ts";
 import { legalPlays, type Play } from "./plays.ts";
 import type { Random } from "./random.ts";
 import { otherSide, type Side } from "./side.ts";

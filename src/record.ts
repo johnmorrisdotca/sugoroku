@@ -1,25 +1,25 @@
-import { seededDice, type DiceSource } from "./dice.ts";
+import type { Position } from "./board.ts";
+import { type DiceSource, seededDice } from "./dice.ts";
 import {
   agreeDraw,
   beaverDouble,
   concede,
   dropDouble,
+  type GameResult,
+  type GameState,
   offerDouble,
   playTurn,
   rollDice,
   rollOpening,
   takeDouble,
-  type GameResult,
-  type GameState,
   type WinKind,
 } from "./game.ts";
-import { finishGame, newMatch, startGame, type Match } from "./match.ts";
-import { formatPlay, parsePlay } from "./notation.ts";
+import { finishGame, type Match, newMatch, startGame } from "./match.ts";
 import type { Move } from "./moves.ts";
-import { settingsFor, type Rules, type Settings } from "./rules.ts";
+import { formatPlay, parsePlay } from "./notation.ts";
+import { type Rules, type Settings, settingsFor } from "./rules.ts";
 import { otherSide, type Side } from "./side.ts";
 import { isVariantKey } from "./variants.ts";
-import type { Position } from "./board.ts";
 
 /**
  * GAMES AS TEXT. A record is plain lines a server can store and read back, and
