@@ -1,3 +1,5 @@
+<p align="center"><a href="https://johnmorrisdotca.github.io/sugoroku/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/thumbnail-dark.png"><img src="https://raw.githubusercontent.com/johnmorrisdotca/sugoroku/main/docs/images/thumbnail.png" alt="Sugoroku: a backgammon board drawn as SVG in the middle of a match, the doubling cube at 2 and two dice just rolled." width="1200"></picture></a></p>
+
 <h1 align="center">Sugoroku <sub>双六</sub> — Backgammon and its variants</h1>
 
 <p align="center"><strong>Backgammon and its variants for JavaScript and TypeScript.</strong><br>

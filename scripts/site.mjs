@@ -13,8 +13,11 @@ import {
   familyHeader,
   familyUnreviewed,
 } from "./family-template.mjs";
+import { publishThumbnails, thumbnailHead } from "./family-thumbnail.mjs";
 
 const id = "sugoroku";
+const ALT =
+  "Sugoroku: a backgammon board drawn as SVG in the middle of a match, the doubling cube at 2 and two dice just rolled.";
 const ICON =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232f5d4a'/%3E%3Crect x='20' y='20' width='60' height='60' rx='12' fill='%23f3efe4'/%3E%3Cg fill='%231f2320'%3E%3Ccircle cx='38' cy='34' r='6'/%3E%3Ccircle cx='62' cy='34' r='6'/%3E%3Ccircle cx='38' cy='50' r='6'/%3E%3Ccircle cx='62' cy='50' r='6'/%3E%3Ccircle cx='38' cy='66' r='6'/%3E%3Ccircle cx='62' cy='66' r='6'/%3E%3C/g%3E%3C/svg%3E";
 
@@ -98,6 +101,7 @@ const page = `<!doctype html>
       ogDescription:
         "Backgammon, Nackgammon, Long Gammon, Hypergammon and Tabula, with the doubling cube, against the computer.",
     })}
+    ${thumbnailHead(JSON.parse(readFileSync("package.json", "utf8")), { alt: ALT })}
     <link rel="icon" href="${ICON}" />
     <link rel="stylesheet" href="family.css" />
     <link rel="stylesheet" href="sugoroku.css" />
@@ -169,6 +173,8 @@ cpSync("demo", "site", { recursive: true });
 cpSync("dist", "site/dist", { recursive: true });
 cpSync("sounds", "site/sounds", { recursive: true });
 writeFileSync("site/index.html", page);
+// The family's card, dark card and icon, at <site>/thumbnail.png, thumbnail-dark.png and icon.png.
+publishThumbnails(".", "site");
 // The API reference, made from the source: every export of every entry point.
 writeFileSync("site/api.css", API_CSS);
 writeFileSync("site/api.html", apiPage({ id, name: "Sugoroku", icon: ICON }));

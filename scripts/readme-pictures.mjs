@@ -89,4 +89,29 @@ await takePictures({
     variant("tabula", "tabula"),
     variant("backgammon-race", "backgammon-race"),
   ],
+  // The family's thumbnail, dark thumbnail and icon (scripts/family-thumbnail.mjs): the SVG board of a match to 3 in the
+  // middle of a game, the cube at 2 and white's dice just rolled, off the page's felt; the icon is the half of the board
+  // the dice are on.
+  thumbnail: {
+    url: `/?${MATCH}&lang=en`,
+    ready: READY,
+    target: `${BOARD} svg.sugoroku`,
+    label: "Sugoroku 双六",
+    async prepare(page) {
+      await played(page);
+      if ((await state(page)).phase === "before-roll") await page.evaluate(() => window.sugoroku.roll());
+      await page.waitForFunction(() => window.sugoroku.game().phase === "playing");
+    },
+    icon: {
+      async prepare(page) {
+        await page.locator(`${BOARD} svg.sugoroku`).evaluate((svg) => {
+          // From the middle of the bar to the right-hand edge.
+          const { x, y, width, height } = svg.viewBox.baseVal;
+          const from = 0.529;
+          svg.setAttribute("viewBox", `${x + width * from} ${y} ${width * (1 - from)} ${height}`);
+          svg.style.width = `${svg.getBoundingClientRect().width * (1 - from)}px`;
+        });
+      },
+    },
+  },
 });
